@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/img/logo_mesinfos.png" sizes="50x50">
+  {{.CozyClientJS}}
+  {{.CozyBar}}
+  <script src="/public/vendor.js"></script>
+  <script src="/public/app.js"></script>
+  <link href="/styles/app.css"  rel="stylesheet" type="text/css"/>
+  <title>Mon Logis</title>
+</head>
+<body>
+  <div role="application" data-cozy-token="{{.Token}}" data-cozy-domain="{{.Domain}}" class="container-fluid" data-cozy-app-name="{{.AppName}}" data-cozy-icon-path="{{.IconPath}}" ></div>
+  <script type="text/javascript" src="index.js"></script>
+</body>
+</html>

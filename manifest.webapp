@@ -1,0 +1,73 @@
+{
+  "version": "0.0.1",
+  "name": "MonLogis",
+  "slug": "app",
+  "icon": "/img/icon.svg",
+  "description": "Le tableau de bord de mon logement",
+  "source": "",
+  "developer": {
+    "name": "Fing",
+    "url": "http://mesinfos.fing.org"
+  },
+  "default_locale": "fr",
+  "locales": {
+    "fr": {
+      "description": "Le tableau de bord de mon logement."
+    }
+  },
+  "routes": {
+    "/": {
+      "folder": "/",
+      "index": "index.html",
+      "public": false
+    }
+  },
+  "licence": "AGPL-3.0",
+  "permissions": {
+    "properties": {
+      "description": "App properties.",
+      "type": "org.fing.mesinfos.monlogis.properties"
+    },
+    "io.cozy.files": {
+      "description": "TODO",
+      "type": "io.cozy.files"
+    },
+    "apps": {
+      "description": "Required by the cozy-bar to display the icons of the apps",
+      "type": "io.cozy.apps",
+      "verbs": ["GET"]
+    },
+    "org.fing.mesinfos.foyer": {
+      "description": "TODO",
+      "type": "org.fing.mesinfos.foyer"
+    },
+    "org.fing.mesinfos.paymentterms": {
+      "description": "TODO",
+      "type": "org.fing.mesinfos.paymentterms"
+    },
+    "org.fing.mesinfos.consumptionstatement": {
+      "description": "TODO",
+      "type": "org.fing.mesinfos.consumptionstatement"
+    },
+    "io.cozy.bill": {
+      "description": "TODO",
+      "type": "io.cozy.bill"
+    },
+    "org.fing.mesinfos.client": {
+      "description": "TODO",
+      "type": "org.fing.mesinfos.client"
+    },
+    "org.fing.mesinfos.home": {
+      "description": "TODO",
+      "type": "org.fing.mesinfos.home"
+    },
+    "org.fing.mesinfos.insuranceclaim": {
+      "description": "TODO",
+      "type": "org.fing.mesinfos.insuranceclaim"
+    },
+    "org.fing.meisnfos.vehicle": {
+      "description": "TODO",
+      "type": "org.fing.meisnfos.vehicle"
+    }
+  }
+}
