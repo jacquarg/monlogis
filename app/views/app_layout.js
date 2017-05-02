@@ -1,7 +1,8 @@
 'use-strict';
 
-const MessageView = require('views/message');
 const template = require('views/templates/app_layout');
+const MessageView = require('views/message');
+const InfosClientView = require('views/infos_client');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -11,6 +12,7 @@ module.exports = Mn.View.extend({
 
   regions: {
     message: '.message',
+    infosClient: '.client',
   },
 
   initialize: function () {
@@ -18,5 +20,6 @@ module.exports = Mn.View.extend({
 
   onRender: function () {
     this.showChildView('message', new MessageView());
+    this.showChildView('infosClient', new InfosClientView());
   },
 });

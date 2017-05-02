@@ -358,6 +358,17 @@ module.exports.getFirst = function (obj) {
 
 });
 
+require.register("models/client.js", function(exports, require, module) {
+'use-strict';
+
+const CozySingleton = require('../lib/backbone_cozysingleton');
+
+module.exports = CozySingleton.extend({
+  docType: 'org.fing.mesinfos.client',
+});
+
+});
+
 require.register("models/properties.js", function(exports, require, module) {
 var CozySingleton = require('../lib/backbone_cozysingleton');
 
@@ -411,8 +422,9 @@ module.exports = Backbone.Router.extend({
 require.register("views/app_layout.js", function(exports, require, module) {
 'use-strict';
 
-const MessageView = require('views/message');
 const template = require('views/templates/app_layout');
+const MessageView = require('views/message');
+const InfosClientView = require('views/infos_client');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -422,6 +434,7 @@ module.exports = Mn.View.extend({
 
   regions: {
     message: '.message',
+    infosClient: '.client',
   },
 
   initialize: function () {
@@ -429,6 +442,7 @@ module.exports = Mn.View.extend({
 
   onRender: function () {
     this.showChildView('message', new MessageView());
+    this.showChildView('infosClient', new InfosClientView());
   },
 });
 
@@ -503,6 +517,36 @@ module.exports = Mn.Behavior.extend({
 
 });
 
+require.register("views/infos_client.js", function(exports, require, module) {
+'use strict';
+
+const template = require('./templates/infos_client');
+const Client = require('../models/client');
+
+module.exports = Mn.View.extend({
+  template: template,
+
+  events:  {
+  },
+
+  modelEvents: {
+    change: 'render',
+  },
+
+  initialize: function () {
+    this.model = new Client();
+    this.model.fetch();
+  },
+
+  // onRender: function () {
+
+  // },
+
+
+});
+
+});
+
 require.register("views/message.js", function(exports, require, module) {
 'use-strict';
 
@@ -569,7 +613,29 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<div class=\"container\"><main><h1>Mon Logis</h1></main></div><div class=\"message\"></div>");;return buf.join("");
+buf.push("<div class=\"container\"><main><h1>Mon Logis</h1><div class=\"infos\"><h2>Les infos de mon logis</h2><div class=\"client\"></div></div></main></div><div class=\"message\"></div>");;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
+;require.register("views/templates/infos_client.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (address) {
+if ( address)
+{
+buf.push("<h3>L'adresse de mon logis</h3><div class=\"address\">" + (jade.escape(null == (jade_interp = address.formated) ? "" : jade_interp)) + "</div>");
+}}.call(this,"address" in locals_for_with?locals_for_with.address:typeof address!=="undefined"?address:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
