@@ -2,13 +2,9 @@
 
 // Main application that create a Mn.Application singleton and
 // exposes it.
-const AsyncPromise = require('./lib/asyncpromise');
 const Router = require('router');
 const AppLayout = require('views/app_layout');
 const Properties = require('models/properties');
-
-const bPromise = AsyncPromise.backbone2Promise;
-
 
 require('views/behaviors');
 
@@ -17,17 +13,17 @@ const Application = Mn.Application.extend({
   prepare: function () {
     this._splashMessages();
 
-    var app = $('[role=application]')[0];
+    const appElem = $('[role=application]')[0];
     cozy.client.init({
-      cozyURL: '//' + app.dataset.cozyDomain,
-      token: app.dataset.cozyToken,
+      cozyURL: `//${appElem.dataset.cozyDomain}`,
+      token: appElem.dataset.cozyToken,
     });
-    cozy.bar.init({appName: "MesInfos-Dev"});
+    cozy.bar.init({ appName: 'Mon Logis' });
 
     this.properties = Properties;
 
     return this.properties.fetch()
-    .then(() => this._defineViews())
+    .then(() => this._defineViews());
   },
 
   prepareInBackground: function () {

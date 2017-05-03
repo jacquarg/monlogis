@@ -152,13 +152,9 @@ require.register("application.js", function(exports, require, module) {
 
 // Main application that create a Mn.Application singleton and
 // exposes it.
-const AsyncPromise = require('./lib/asyncpromise');
 const Router = require('router');
 const AppLayout = require('views/app_layout');
 const Properties = require('models/properties');
-
-const bPromise = AsyncPromise.backbone2Promise;
-
 
 require('views/behaviors');
 
@@ -167,17 +163,17 @@ const Application = Mn.Application.extend({
   prepare: function () {
     this._splashMessages();
 
-    var app = $('[role=application]')[0];
+    const appElem = $('[role=application]')[0];
     cozy.client.init({
-      cozyURL: '//' + app.dataset.cozyDomain,
-      token: app.dataset.cozyToken,
+      cozyURL: `//${appElem.dataset.cozyDomain}`,
+      token: appElem.dataset.cozyToken,
     });
-    cozy.bar.init({appName: "MesInfos-Dev"});
+    cozy.bar.init({ appName: 'Mon Logis' });
 
     this.properties = Properties;
 
     return this.properties.fetch()
-    .then(() => this._defineViews())
+    .then(() => this._defineViews());
   },
 
   prepareInBackground: function () {
@@ -255,28 +251,59 @@ module.exports = `${name}-${version}`;
 
 });
 
-require.register("lib/asyncpromise.js", function(exports, require, module) {
-module.exports = {
-  
-  series: function(iterable, callback, self) {
-    var results = [];
-    
-    return iterable.reduce(function(sequence, id, index, array) {
-      return sequence.then(function(res) {
-        results.push(res);
-        return callback.call(self, id, index, array);
-      });
-    }, Promise.resolve(true)).then(function(res) {
-      return new Promise(function(resolve, reject) {
-        results.push(res);
-        resolve(results.slice(1));
-      });
+require.register("lib/async_promise.js", function(exports, require, module) {
+'use-strict';
+
+module.exports.series = function (iterable, callback, self) {
+  const results = [];
+
+  return iterable.reduce((sequence, id, index, array) => {
+    return sequence.then((res) => {
+      results.push(res);
+      return callback.call(self, id, index, array);
     });
-  },
-}
+  }, Promise.resolve(true))
+  .then(res => new Promise((resolve) => { // don't handle reject there.
+    results.push(res);
+    resolve(results.slice(1));
+  }));
+};
+
+const waitPromise = function (period) {
+  return new Promise((resolve) => { // this promise always resolve :)
+    setTimeout(resolve, period);
+  });
+};
+
+module.exports.find = function (iterable, predicate, period) {
+  const recursive = (list) => {
+    const current = list.shift();
+    if (current === undefined) { return Promise.resolve(undefined); }
+
+    return predicate(current)
+    .then((res) => {
+      if (res === false) {
+        return waitPromise(period).then(() => recursive(list));
+      }
+
+      return res;
+    });
+  };
+
+  return recursive(iterable.slice());
+};
+
+module.exports.backbone2Promise = function (obj, method, options) {
+  return new Promise((resolve, reject) => {
+    options = options || {};
+    options = $.extend(options, { success: resolve, error: reject });
+    method.call(obj, options);
+  });
+};
+
 });
 
-;require.register("lib/backbone_cozymodel.js", function(exports, require, module) {
+require.register("lib/backbone_cozymodel.js", function(exports, require, module) {
 'use-strict';
 
 const appName = require('../lib/appname_version');
@@ -295,25 +322,25 @@ module.exports = Backbone.Model.extend({
   sync: function (method, model, options) {
     return this.syncPromise(method, model, options)
     .then(options.success, (err) => {
-        console.log(err);
-        options.error(err);
-      });
+      console.log(err);
+      options.error(err);
+    });
   },
 
-  syncPromise: function (method, model, options) {
+  syncPromise: function (method, model) {
     console.log(model);
     if (method === 'create') {
-      return cozy.client.data.create(this.docType, model.attributes)
+      return cozy.client.data.create(this.docType, model.attributes);
     } else if (method === 'update') {
       // TODO !!
-      return cozy.client.data.update(this.docType, model.attributes, model.attributes)
+      return cozy.client.data.update(this.docType, model.attributes, model.attributes);
     } else if (method === 'patch') {
       // TODO !!
-      return cozy.client.data.updateAttributes(this.docType, model.attributes_id, model.attributes)
+      return cozy.client.data.updateAttributes(this.docType, model.attributes_id, model.attributes);
     } else if (method === 'delete') {
-      return cozy.client.data.delete(this.docType, model.attributes)
+      return cozy.client.data.delete(this.docType, model.attributes);
     } else if (method === 'read') {
-      return cozy.client.find(this.docType, model.attributes._id)
+      return cozy.client.find(this.docType, model.attributes._id);
     }
   },
 });
@@ -326,6 +353,7 @@ require.register("lib/backbone_cozysingleton.js", function(exports, require, mod
 const CozyModel = require('./backbone_cozymodel');
 
 module.exports = CozyModel.extend({
+
   sync: function (method, model, options) {
     if (method === 'read' && model.isNew()) {
       return cozy.client.data.defineIndex(this.docType.toLowerCase(), ['_id'])
@@ -333,7 +361,7 @@ module.exports = CozyModel.extend({
         return cozy.client.data.query(index, { selector: { _id: { $gt: null } }, limit: 1 });
       })
       .then(res => ((res && res.length !== 0) ? res[0] : {}))
-      .then(options.success, function(err) {
+      .then(options.success, (err) => {
         console.error(err);
         return options.error(err);
       });
@@ -370,36 +398,20 @@ module.exports = CozySingleton.extend({
 });
 
 require.register("models/properties.js", function(exports, require, module) {
-var CozySingleton = require('../lib/backbone_cozysingleton');
+'use-strict';
 
-var Properties = CozySingleton.extend({
-  docType: 'org.fing.mesinfos.mesinfos-dev.properties',
+const CozySingleton = require('../lib/backbone_cozysingleton');
+
+const Properties = CozySingleton.extend({
+  docType: 'org.fing.mesinfos.monlogis.properties',
   defaults: _.extend({
     synthSets: {},
   }, CozySingleton.defaults),
 
-  _promiseSave: function(attributes) {
-    return new Promise(function(resolve, reject) {
+  _promiseSave: function (attributes) {
+    return new Promise((resolve, reject) => {
       this.save(attributes, { success: resolve, error: reject });
-    }.bind(this));
-  },
-
-  addSynthSetIds: function(setName, ids) {
-    var set = this.get('synthSets')[setName];
-    set = set ? set.concat(ids) : ids;
-
-    var sets = this.get('synthSets');
-    sets[setName] = set;
-    return this._promiseSave({ synthSets: sets });
-    // return new Promise(function(resolve, reject) {
-    //   this.save({ synthSets: sets }, { success: resolve, error: reject });
-    // }.bind(this));
-  },
-
-  cleanSynthSetIds: function(setName) {
-    var sets = this.get('synthSets');
-    delete sets[setName];
-    return this._promiseSave({ synthSets: sets});
+    });
   },
 
 });
@@ -526,7 +538,7 @@ const Client = require('../models/client');
 module.exports = Mn.View.extend({
   template: template,
 
-  events:  {
+  events: {
   },
 
   modelEvents: {

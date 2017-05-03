@@ -6,7 +6,7 @@ const Client = require('../models/client');
 module.exports = Mn.View.extend({
   template: template,
 
-  events:  {
+  events: {
   },
 
   modelEvents: {

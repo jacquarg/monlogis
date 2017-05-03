@@ -16,25 +16,25 @@ module.exports = Backbone.Model.extend({
   sync: function (method, model, options) {
     return this.syncPromise(method, model, options)
     .then(options.success, (err) => {
-        console.log(err);
-        options.error(err);
-      });
+      console.log(err);
+      options.error(err);
+    });
   },
 
-  syncPromise: function (method, model, options) {
+  syncPromise: function (method, model) {
     console.log(model);
     if (method === 'create') {
-      return cozy.client.data.create(this.docType, model.attributes)
+      return cozy.client.data.create(this.docType, model.attributes);
     } else if (method === 'update') {
       // TODO !!
-      return cozy.client.data.update(this.docType, model.attributes, model.attributes)
+      return cozy.client.data.update(this.docType, model.attributes, model.attributes);
     } else if (method === 'patch') {
       // TODO !!
-      return cozy.client.data.updateAttributes(this.docType, model.attributes_id, model.attributes)
+      return cozy.client.data.updateAttributes(this.docType, model.attributes_id, model.attributes);
     } else if (method === 'delete') {
-      return cozy.client.data.delete(this.docType, model.attributes)
+      return cozy.client.data.delete(this.docType, model.attributes);
     } else if (method === 'read') {
-      return cozy.client.find(this.docType, model.attributes._id)
+      return cozy.client.find(this.docType, model.attributes._id);
     }
   },
 });
