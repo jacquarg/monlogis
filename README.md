@@ -1,10 +1,13 @@
+[![Build Status](https://travis-ci.org/jacquarg/monlogis.png)](https://travis-ci.org/jacquarg/monlogis)
+
 # Mon Logis une applcation MesInfos !
 
 Open source, développée par la Fing, sous licence AGPL v3.
 
 ## Contribuer !
 
-TODO
+
+
 
 ## TODO-list
 
