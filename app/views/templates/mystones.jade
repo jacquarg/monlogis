@@ -1,0 +1,15 @@
+.mapcontainer
+  #map
+
+.well
+  if address
+    .address= address.street
+      | &ensp;
+      = address.city
+
+    .description
+     = natureLieu
+     |&ensp;
+     = nombrePieces
+     |,&ensp;
+     = situationJuridiqueLieu

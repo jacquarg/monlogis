@@ -397,6 +397,17 @@ module.exports = CozySingleton.extend({
 
 });
 
+require.register("models/home.js", function(exports, require, module) {
+'use-strict';
+
+const CozySingleton = require('../lib/backbone_cozysingleton');
+
+module.exports = CozySingleton.extend({
+  docType: 'org.fing.mesinfos.home',
+});
+
+});
+
 require.register("models/properties.js", function(exports, require, module) {
 'use-strict';
 
@@ -436,7 +447,7 @@ require.register("views/app_layout.js", function(exports, require, module) {
 
 const template = require('views/templates/app_layout');
 const MessageView = require('views/message');
-
+const MystonesView = require('views/mystones');
 const HouseitemDetailsEDFView = require('views/houseitems/details_edf');
 
 module.exports = Mn.View.extend({
@@ -447,6 +458,7 @@ module.exports = Mn.View.extend({
 
   regions: {
     message: '.message',
+    myStones: '.mystones',
     houseitemDetails: '.houseitemdetails',
   },
 
@@ -455,6 +467,7 @@ module.exports = Mn.View.extend({
 
   onRender: function () {
     this.showChildView('message', new MessageView());
+    this.showChildView('myStones', new MystonesView());
     this.showChildView('houseitemDetails', new HouseitemDetailsEDFView());
   },
 });
@@ -650,6 +663,80 @@ module.exports = Mn.View.extend({
 
 });
 
+require.register("views/mystones.js", function(exports, require, module) {
+'use strict';
+
+const template = require('./templates/mystones');
+const Home = require('../models/home');
+
+module.exports = Mn.View.extend({
+  template: template,
+
+  events: {
+  },
+
+  modelEvents: {
+    change: 'render',
+  },
+
+  initialize: function () {
+    this.model = new Home();
+    this.model.fetch();
+  },
+
+  onBeforeRender: function () {
+
+    console.log('here');
+    console.log(this.model.toJSON());
+  },
+
+  geocode: function () {
+    const address = this.model.get('address');
+    return $.get(`//nominatim.openstreetmap.org/search?format=json&q=${address.street}+${address.city}+${address.country}`).then((res) => {
+        console.log(res);
+        address.point = res[0];
+        return address.point;
+      });
+  },
+
+  onRender: function () {
+    if (this.model.isNew()) { return; }
+    this.geocode()
+    .then((point) => {
+
+        var osmb = new OSMBuildings({
+          position: {
+            latitude: point.lat,
+            longitude: point.lon,
+          },
+
+          zoom: 20,
+          disabled: true,
+          tilt: 180,
+          rotation: 0,
+          // fast: true,
+        });
+
+    osmb.appendTo('map');
+
+    osmb.addMapTiles(
+      'https://{s}.tiles.mapbox.com/v3/osmbuildings.kbpalbpk/{z}/{x}/{y}.png',
+      {
+        attribution: '© Data <a href="http://openstreetmap.org/copyright/">OpenStreetMap</a> · © Map <a href="http://mapbox.com">Mapbox</a>'
+      }
+    );
+
+    osmb.addGeoJSONTiles('http://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
+    osmb.highlight(point.osm_id, '#f08000');
+    osmb.highlight(point.place_id, '#f08000');
+
+    });
+  }
+
+});
+
+});
+
 require.register("views/templates/app_layout.jade", function(exports, require, module) {
 var __templateData = function template(locals) {
 var buf = [];
@@ -751,6 +838,30 @@ jade_mixins["displayMessage"](id, message);
 
 buf.push("</ul>");
 }}.call(this,"messages" in locals_for_with?locals_for_with.messages:typeof messages!=="undefined"?messages:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
+;require.register("views/templates/mystones.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (address, natureLieu, nombrePieces, situationJuridiqueLieu) {
+buf.push("<div class=\"mapcontainer\"><div id=\"map\"></div></div><div class=\"well\">");
+if ( address)
+{
+buf.push("<div class=\"address\">" + (jade.escape(null == (jade_interp = address.street) ? "" : jade_interp)) + "&ensp;" + (jade.escape(null == (jade_interp = address.city) ? "" : jade_interp)) + "</div><div class=\"description\">" + (jade.escape(null == (jade_interp = natureLieu) ? "" : jade_interp)) + "&ensp;" + (jade.escape(null == (jade_interp = nombrePieces) ? "" : jade_interp)) + ",&ensp;" + (jade.escape(null == (jade_interp = situationJuridiqueLieu) ? "" : jade_interp)) + "</div>");
+}
+buf.push("</div>");}.call(this,"address" in locals_for_with?locals_for_with.address:typeof address!=="undefined"?address:undefined,"natureLieu" in locals_for_with?locals_for_with.natureLieu:typeof natureLieu!=="undefined"?natureLieu:undefined,"nombrePieces" in locals_for_with?locals_for_with.nombrePieces:typeof nombrePieces!=="undefined"?nombrePieces:undefined,"situationJuridiqueLieu" in locals_for_with?locals_for_with.situationJuridiqueLieu:typeof situationJuridiqueLieu!=="undefined"?situationJuridiqueLieu:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
