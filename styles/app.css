@@ -8,3 +8,8 @@
 [class*="iconicstroke-"]:before {
   font-family: 'IconicStroke', sans-serif;
 }
+
+/* avoid problems with cozy-bar */
+[role=application], body {
+  display: block;
+}

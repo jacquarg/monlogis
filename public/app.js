@@ -436,7 +436,8 @@ require.register("views/app_layout.js", function(exports, require, module) {
 
 const template = require('views/templates/app_layout');
 const MessageView = require('views/message');
-const InfosClientView = require('views/infos_client');
+
+const HouseitemDetailsEDFView = require('views/houseitems/details_edf');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -446,7 +447,7 @@ module.exports = Mn.View.extend({
 
   regions: {
     message: '.message',
-    infosClient: '.client',
+    houseitemDetails: '.houseitemdetails',
   },
 
   initialize: function () {
@@ -454,7 +455,7 @@ module.exports = Mn.View.extend({
 
   onRender: function () {
     this.showChildView('message', new MessageView());
-    this.showChildView('infosClient', new InfosClientView());
+    this.showChildView('houseitemDetails', new HouseitemDetailsEDFView());
   },
 });
 
@@ -525,6 +526,36 @@ module.exports = Mn.Behavior.extend({
   onRender: function () {
     this.onContract();
   },
+});
+
+});
+
+require.register("views/houseitems/details_edf.js", function(exports, require, module) {
+'use strict';
+
+const template = require('../templates/houseitems/details_edf');
+const Client = require('../../models/client');
+
+module.exports = Mn.View.extend({
+  template: template,
+
+  events: {
+  },
+
+  modelEvents: {
+    change: 'render',
+  },
+
+  initialize: function () {
+    this.model = new Client();
+    this.model.fetch();
+  },
+
+  // onRender: function () {
+
+  // },
+
+
 });
 
 });
@@ -625,7 +656,30 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<div class=\"container\"><main><h1>Mon Logis</h1><div class=\"infos\"><h2>Les infos de mon logis</h2><div class=\"client\"></div></div></main></div><div class=\"message\"></div>");;return buf.join("");
+buf.push("<main class=\"row\"><div class=\"col-xs-4 mystones\"><div class=\"well\">TODO : addresse</div></div><div class=\"col-xs-2 houseitems\"><div class=\"row networkoperators\"><div class=\"well\">TODO : Énergie - EDF</div></div><div class=\"row equipments\"><div class=\"well\">TODO : TV</div></div><div class=\"row objects\"><div class=\"well\">TODO : table</div></div></div><div class=\"col-xs-6 houseitemdetails\"></div></main><div class=\"message\"></div>");;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
+;require.register("views/templates/houseitems/details_edf.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (name) {
+buf.push("<h2>Énergie - EDF</h2>");
+if ( name)
+{
+buf.push("<h3>Titulaire du contrat</h3><div class=\"holder\">" + (jade.escape(null == (jade_interp = name.formated) ? "" : jade_interp)) + "</div>");
+}}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

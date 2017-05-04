@@ -2,7 +2,8 @@
 
 const template = require('views/templates/app_layout');
 const MessageView = require('views/message');
-const InfosClientView = require('views/infos_client');
+
+const HouseitemDetailsEDFView = require('views/houseitems/details_edf');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -12,7 +13,7 @@ module.exports = Mn.View.extend({
 
   regions: {
     message: '.message',
-    infosClient: '.client',
+    houseitemDetails: '.houseitemdetails',
   },
 
   initialize: function () {
@@ -20,6 +21,6 @@ module.exports = Mn.View.extend({
 
   onRender: function () {
     this.showChildView('message', new MessageView());
-    this.showChildView('infosClient', new InfosClientView());
+    this.showChildView('houseitemDetails', new HouseitemDetailsEDFView());
   },
 });
