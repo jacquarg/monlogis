@@ -19,51 +19,48 @@ module.exports = Mn.View.extend({
   },
 
   onBeforeRender: function () {
-
     console.log('here');
     console.log(this.model.toJSON());
   },
 
   geocode: function () {
     const address = this.model.get('address');
-    return $.get(`//nominatim.openstreetmap.org/search?format=json&q=${address.street}+${address.city}+${address.country}`).then((res) => {
-        console.log(res);
-        address.point = res[0];
-        return address.point;
-      });
+    address.formated = `${address.street}+${address.city}+${address.country}`;
+    return $.get(`//nominatim.openstreetmap.org/search?format=json&q=${address.formated}`)
+    .then((res) => {
+      console.log(res);
+      address.point = res[0];
+      return address.point;
+    });
   },
 
   onRender: function () {
     if (this.model.isNew()) { return; }
     this.geocode()
     .then((point) => {
+      const osmb = new OSMBuildings({
+        position: {
+          latitude: point.lat,
+          longitude: point.lon,
+        },
 
-        var osmb = new OSMBuildings({
-          position: {
-            latitude: point.lat,
-            longitude: point.lon,
-          },
+        zoom: 20,
+        disabled: true,
+        tilt: 180,
+        rotation: 0,
+        // fast: true,
+      });
 
-          zoom: 20,
-          disabled: true,
-          tilt: 180,
-          rotation: 0,
-          // fast: true,
+      osmb.appendTo('map');
+
+      osmb.addMapTiles('https://{s}.tiles.mapbox.com/v3/osmbuildings.kbpalbpk/{z}/{x}/{y}.png',
+        {
+          attribution: '© Data <a href="http://openstreetmap.org/copyright/">OpenStreetMap</a> · © Map <a href="http://mapbox.com">Mapbox</a>'
         });
 
-    osmb.appendTo('map');
-
-    osmb.addMapTiles(
-      'https://{s}.tiles.mapbox.com/v3/osmbuildings.kbpalbpk/{z}/{x}/{y}.png',
-      {
-        attribution: '© Data <a href="http://openstreetmap.org/copyright/">OpenStreetMap</a> · © Map <a href="http://mapbox.com">Mapbox</a>'
-      }
-    );
-
-    osmb.addGeoJSONTiles('http://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
-    osmb.highlight(point.osm_id, '#f08000');
-    osmb.highlight(point.place_id, '#f08000');
-
+      osmb.addGeoJSONTiles('http://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
+      osmb.highlight(point.osm_id, '#f08000');
+      osmb.highlight(point.place_id, '#f08000');
     });
   }
 
