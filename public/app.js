@@ -614,9 +614,9 @@ module.exports = CozySingleton.extend({
   docType: 'org.fing.mesinfos.paymentterms',
   getNextPaymentEDF: function () {
     // const paymentSchedules = this.get('paymentSchedules');
-    // for (x of paymentSchedules) {
-    //     return x.amount
-    // }
+    //
+    //     return paymentSchedules;
+
 
       //  console.log('this is ', paymentSchedules[0].amount);
   },
