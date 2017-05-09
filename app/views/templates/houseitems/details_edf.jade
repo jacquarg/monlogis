@@ -1,8 +1,9 @@
 h2
-   | Mon prochain paiment, xxx le &nbsp;
+   | Mon prochain paiment,&ensp;
+   = nextPaymentAmount
+    |  € le &nbsp;
    if nextBillDate
       = nextBillDate
-      = nextPaymentAmount
       |.
 
 .bills

@@ -617,14 +617,12 @@ const CozySingleton = require('../lib/backbone_cozysingleton');
 module.exports = CozySingleton.extend({
   docType: 'org.fing.mesinfos.paymentterms',
   getNextPaymentEDF: function () {
-    // const paymentSchedules = this.get('paymentSchedules');
-    //
-    //     return paymentSchedules;
+    const paymentSchedules = this.get('paymentSchedules');
 
-
-      //  console.log('this is ', paymentSchedules[0].amount);
+    if (paymentSchedules && paymentSchedules instanceof Array) {
+      return paymentSchedules[0].amount;
+    }
   },
-
 
 });
 
@@ -864,11 +862,6 @@ module.exports = Mn.View.extend({
 
   modelEvents: {
     change: 'render',
-  },
-  serializeData: function () {
-    let data = this.model.toJSON();
-    console.log(data);
-    return data;
   },
 });
 
@@ -1465,10 +1458,10 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (nextBillDate, nextPaymentAmount) {
-buf.push("<h2>Mon prochain paiment, xxx le &nbsp;");
+buf.push("<h2>Mon prochain paiment,&ensp;" + (jade.escape(null == (jade_interp = nextPaymentAmount) ? "" : jade_interp)) + "  € le &nbsp;");
 if ( nextBillDate)
 {
-buf.push((jade.escape(null == (jade_interp = nextBillDate) ? "" : jade_interp)) + (jade.escape(null == (jade_interp = nextPaymentAmount) ? "" : jade_interp)) + ".");
+buf.push((jade.escape(null == (jade_interp = nextBillDate) ? "" : jade_interp)) + ".");
 }
 buf.push("</h2><div class=\"bills\"></div>");}.call(this,"nextBillDate" in locals_for_with?locals_for_with.nextBillDate:typeof nextBillDate!=="undefined"?nextBillDate:undefined,"nextPaymentAmount" in locals_for_with?locals_for_with.nextPaymentAmount:typeof nextPaymentAmount!=="undefined"?nextPaymentAmount:undefined));;return buf.join("");
 };
