@@ -57,6 +57,10 @@
       "description": "TODO",
       "type": "org.fing.mesinfos.client"
     },
+    "org.fing.mesinfos.contract": {
+      "description": "TODO",
+      "type": "org.fing.mesinfos.contract"
+    },
     "org.fing.mesinfos.home": {
       "description": "TODO",
       "type": "org.fing.mesinfos.home"

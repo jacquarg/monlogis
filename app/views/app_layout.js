@@ -7,6 +7,8 @@ const HouseitemDetailsEDFView = require('views/houseitems/details_edf');
 const HouseitemDetailsVendorView = require('views/houseitems/details_vendor');
 const VendorsView = require('views/houseitems/vendors');
 const ObjectsView = require('views/houseitems/objects');
+const InfosClientView = require('views/infos_client');
+const ContractClientView = require('views/contract_client');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -20,6 +22,8 @@ module.exports = Mn.View.extend({
     vendors: '.vendors',
     equipments: '.equipments',
     objects: '.objects',
+    infosClient: '.client',
+    contractClient: '.contract',
   },
 
   initialize: function () {
@@ -53,5 +57,8 @@ module.exports = Mn.View.extend({
     }
 
     this.showChildView('houseitemDetails', new ViewClass({ model: houseItem }));
+    this.showChildView('houseitemDetails', new HouseitemDetailsEDFView());
+    this.showChildView('infosClient', new InfosClientView());
+    this.showChildView('contractClient', new ContractClientView());
   },
 });

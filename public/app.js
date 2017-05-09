@@ -550,6 +550,17 @@ module.exports = CozySingleton.extend({
 
 });
 
+require.register("models/contract.js", function(exports, require, module) {
+'use-strict';
+
+const CozySingleton = require('../lib/backbone_cozysingleton');
+
+module.exports = CozySingleton.extend({
+  docType: 'org.fing.mesinfos.contract',
+});
+
+});
+
 require.register("models/home.js", function(exports, require, module) {
 'use-strict';
 
@@ -624,9 +635,14 @@ const template = require('views/templates/app_layout');
 const MessageView = require('views/message');
 const MystonesView = require('views/mystones');
 const HouseitemDetailsEDFView = require('views/houseitems/details_edf');
+<<<<<<< 171f34bad175d58f601d233f8b56413df6e9b0cf
 const HouseitemDetailsVendorView = require('views/houseitems/details_vendor');
 const VendorsView = require('views/houseitems/vendors');
 const ObjectsView = require('views/houseitems/objects');
+=======
+const InfosClientView = require('views/infos_client');
+const ContractClientView = require('views/contract_client');
+>>>>>>> rechercher le contrat de client, counter
 
 module.exports = Mn.View.extend({
   template: template,
@@ -637,9 +653,14 @@ module.exports = Mn.View.extend({
     message: '.message',
     myStones: '.mystones',
     houseitemDetails: '.houseitemdetails',
+<<<<<<< 171f34bad175d58f601d233f8b56413df6e9b0cf
     vendors: '.vendors',
     equipments: '.equipments',
     objects: '.objects',
+=======
+    infosClient: '.client',
+    contractClient: '.contract',
+>>>>>>> rechercher le contrat de client, counter
   },
 
   initialize: function () {
@@ -649,6 +670,7 @@ module.exports = Mn.View.extend({
   onRender: function () {
     this.showChildView('message', new MessageView());
     this.showChildView('myStones', new MystonesView());
+<<<<<<< 171f34bad175d58f601d233f8b56413df6e9b0cf
     this.showChildView('vendors', new VendorsView({ collection: app.vendors }));
     this.showChildView('equipments', new ObjectsView({
       model: new Backbone.Model({ title: 'Mes équipements' }),
@@ -673,6 +695,11 @@ module.exports = Mn.View.extend({
     }
 
     this.showChildView('houseitemDetails', new ViewClass({ model: houseItem}));
+=======
+    this.showChildView('houseitemDetails', new HouseitemDetailsEDFView());
+    this.showChildView('infosClient', new InfosClientView());
+    this.showChildView('contractClient', new ContractClientView());
+>>>>>>> rechercher le contrat de client, counter
   },
 });
 
@@ -747,6 +774,7 @@ module.exports = Mn.Behavior.extend({
 
 });
 
+<<<<<<< 171f34bad175d58f601d233f8b56413df6e9b0cf
 require.register("views/houseitems/bill_item.js", function(exports, require, module) {
 'use-strict';
 
@@ -759,12 +787,25 @@ module.exports = Mn.View.extend({
   events: {
     //eslint-disable-next-line
     'click': 'showDetails',
+=======
+require.register("views/contract_client.js", function(exports, require, module) {
+'use strict';
+
+const template = require('./templates/contract_client');
+const Contract = require('../models/contract');
+
+module.exports = Mn.View.extend({
+  template: template,
+
+  events: {
+>>>>>>> rechercher le contrat de client, counter
   },
 
   modelEvents: {
     change: 'render',
   },
 
+<<<<<<< 171f34bad175d58f601d233f8b56413df6e9b0cf
 });
 
 });
@@ -798,6 +839,18 @@ module.exports = Mn.View.extend({
   onRender: function () {
     this.showChildView('collection', new BillsView({ collection: this.collection }));
   },
+=======
+  initialize: function () {
+    this.model = new Contract();
+    this.model.fetch();
+  },
+
+  // onRender: function () {
+  //
+  // },
+
+
+>>>>>>> rechercher le contrat de client, counter
 });
 
 });
@@ -1164,7 +1217,11 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
+<<<<<<< 171f34bad175d58f601d233f8b56413df6e9b0cf
 buf.push("<main class=\"row\"><div class=\"col-xs-4 mystones\"><div class=\"well\">TODO : addresse</div></div><div class=\"col-xs-2 houseitems\"><div class=\"row vendors\"><div class=\"well\">TODO : Énergie - EDF</div></div><div class=\"row equipments\"><div class=\"well\">TODO : TV</div></div><div class=\"row objects\"><div class=\"well\">TODO : table</div></div></div><div class=\"col-xs-6 houseitemdetails\"></div></main><div class=\"message\"></div>");;return buf.join("");
+=======
+buf.push("<main class=\"row\"><div class=\"col-xs-4 mystones\"><div class=\"well\">TODO : addresse</div></div><div class=\"col-xs-2 houseitems\"><div class=\"row networkoperators\"><div class=\"well\">TODO : Énergie - EDF</div></div><div class=\"row equipments\"><div class=\"well\">TODO : TV</div></div><div class=\"row objects\"><div class=\"well\">TODO : table</div></div></div><div class=\"col-xs-6 houseitemdetails\"></div></main><div class=\"container\"><main><div class=\"client\"></div><div class=\"contract\"></div></main></div><div class=\"message\"></div>");;return buf.join("");
+>>>>>>> rechercher le contrat de client, counter
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -1177,11 +1234,16 @@ if (typeof define === 'function' && define.amd) {
 }
 });
 
+<<<<<<< 171f34bad175d58f601d233f8b56413df6e9b0cf
 ;require.register("views/templates/houseitems/bill_item.jade", function(exports, require, module) {
+=======
+;require.register("views/templates/contract_client.jade", function(exports, require, module) {
+>>>>>>> rechercher le contrat de client, counter
 var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
+<<<<<<< 171f34bad175d58f601d233f8b56413df6e9b0cf
 ;var locals_for_with = (locals || {});(function (amount, date, vendor) {
 buf.push("<div class=\"billitem\">" + (jade.escape(null == (jade_interp = vendor) ? "" : jade_interp)) + "&nbsp;" + (jade.escape(null == (jade_interp = date) ? "" : jade_interp)) + "&nbsp;" + (jade.escape(null == (jade_interp = amount) ? "" : jade_interp)) + "</div>");}.call(this,"amount" in locals_for_with?locals_for_with.amount:typeof amount!=="undefined"?amount:undefined,"date" in locals_for_with?locals_for_with.date:typeof date!=="undefined"?date:undefined,"vendor" in locals_for_with?locals_for_with.vendor:typeof vendor!=="undefined"?vendor:undefined));;return buf.join("");
 };
@@ -1203,6 +1265,13 @@ var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (title) {
 buf.push("<h2>" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + "</h2><ul></ul>");}.call(this,"title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
+=======
+;var locals_for_with = (locals || {});(function (counter) {
+if ( counter)
+{
+buf.push("<h3>Contrat de client: A: Counter</h3><div class=\"counter\">" + (jade.escape(null == (jade_interp = counter.comptage) ? "" : jade_interp)) + "</div>");
+}}.call(this,"counter" in locals_for_with?locals_for_with.counter:typeof counter!=="undefined"?counter:undefined));;return buf.join("");
+>>>>>>> rechercher le contrat de client, counter
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
