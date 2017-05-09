@@ -10,7 +10,11 @@ const VendorsView = require('views/houseitems/vendors');
 const ObjectsView = require('views/houseitems/objects');
 =======
 const HouseConsomationEDFView = require('views/houseitems/consomation_edf');
+<<<<<<< d20e2f3eeabb075d21039ef541559abcad79c152
 >>>>>>> chercher les data contrat et consomation edf
+=======
+const HouseFactureEDFView = require('views/houseitems/facture_edf');
+>>>>>>> chercher des donner facture edf
 const InfosClientView = require('views/infos_client');
 const ContractClientView = require('views/contract_client');
 
@@ -29,7 +33,11 @@ module.exports = Mn.View.extend({
     objects: '.objects',
 =======
     houseConsomation: '.consomation',
+<<<<<<< d20e2f3eeabb075d21039ef541559abcad79c152
 >>>>>>> chercher les data contrat et consomation edf
+=======
+    houseFacture: '.facture',
+>>>>>>> chercher des donner facture edf
     infosClient: '.client',
     contractClient: '.contract',
   },
@@ -69,5 +77,6 @@ module.exports = Mn.View.extend({
     this.showChildView('infosClient', new InfosClientView());
     this.showChildView('contractClient', new ContractClientView());
     this.showChildView('houseConsomation', new HouseConsomationEDFView());
+    this.showChildView('houseFacture', new HouseFactureEDFView());
   },
 });

@@ -1,8 +1,20 @@
-h4
- | Mon contrant Tarif Bleu EDF est,&nbsp;
+h4.payment
+ | Mon contrant &nbsp
+ if name
+    = name
+ | &nbsp EDF
+
+ |, &nbsp
+
+ if contractSubcategory1
+        = contractSubcategory1
+         |, &nbsp
+
  if power
     = power
-  
+     |.
+
+
 
 
 
