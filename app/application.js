@@ -6,6 +6,11 @@ const Router = require('router');
 const AppLayout = require('views/app_layout');
 const Properties = require('models/properties');
 
+const VendorsCollection = require('collections/vendors');
+const EquipmentsCollection = require('collections/equipments');
+const ObjectsCollection = require('collections/objects');
+
+
 require('views/behaviors');
 
 const Application = Mn.Application.extend({
@@ -21,6 +26,46 @@ const Application = Mn.Application.extend({
     cozy.bar.init({ appName: 'Mon Logis' });
 
     this.properties = Properties;
+
+    this.vendors = new VendorsCollection([ // TODO: fetch
+      {
+        name: 'EDF',
+        slug: 'edf',
+        domain: 'energy',
+        konnectorAccount: null,
+        folderPath: 'administration/EDF/',
+      },
+      {
+        name: 'Maif',
+        slug: 'maif',
+        domain: 'insurance',
+        konnectorAccount: null,
+        folderPath: 'administration/Maif/',
+      },
+    ]);
+
+    this.equipments = new EquipmentsCollection([
+      {
+        name: 'Chauffe Eau',
+        slug: 'waterheater',
+        type: 'equipment',
+        folderPath: '',
+      },
+      {
+        name: 'Réfrigérateur',
+        slug: 'fridge',
+        type: 'equipment',
+        folderPath: '',
+      },
+    ]); // TODO: fetch
+    this.objects = new ObjectsCollection([
+      {
+        name: 'Macbook',
+        slug: 'laptop',
+        type: 'object',
+        folderPath: '',
+      },
+    ]); // TODO: fetch
 
     return this.properties.fetch()
     .then(() => this._defineViews());

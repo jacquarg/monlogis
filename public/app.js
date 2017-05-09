@@ -156,6 +156,11 @@ const Router = require('router');
 const AppLayout = require('views/app_layout');
 const Properties = require('models/properties');
 
+const VendorsCollection = require('collections/vendors');
+const EquipmentsCollection = require('collections/equipments');
+const ObjectsCollection = require('collections/objects');
+
+
 require('views/behaviors');
 
 const Application = Mn.Application.extend({
@@ -171,6 +176,45 @@ const Application = Mn.Application.extend({
     cozy.bar.init({ appName: 'Mon Logis' });
 
     this.properties = Properties;
+
+    this.vendors = new VendorsCollection([ // TODO: fetch
+      {
+        name: 'EDF',
+        slug: 'edf',
+        domain: 'energy',
+        konnectorAccount: null,
+        folderPath: 'administration/EDF/',
+      },
+      {
+        name: 'Maif',
+        slug: 'maif',
+        domain: 'insurance',
+        konnectorAccount: null,
+        folderPath: 'administration/Maif/',
+      },
+    ]);
+
+    this.equipments = new EquipmentsCollection([{
+        name: 'Chauffe Eau',
+        slug: 'waterheater',
+        type: 'equipment',
+        folderPath: '',
+      },
+      {
+        name: 'Réfrigérateur',
+        slug: 'fridge',
+        type: 'equipment',
+        folderPath: '',
+      },
+    ]); // TODO: fetch
+    this.objects = new ObjectsCollection([
+      {
+        name: 'Macbook',
+        slug: 'laptop',
+        type: 'object',
+        folderPath: '',
+      },
+    ]); // TODO: fetch
 
     return this.properties.fetch()
     .then(() => this._defineViews());
@@ -237,6 +281,36 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+
+});
+
+require.register("collections/equipments.js", function(exports, require, module) {
+'use-strict';
+
+const CozyCollection = require('../lib/backbone_cozycollection');
+const AnObject = require('models/object');
+
+module.exports = CozyCollection.extend({
+  model: AnObject,
+
+  getFetchIndex: () => ['type'],
+  getFetchQuery: () => ({ selector: { 'type': 'equipment' } }),
+});
+
+});
+
+require.register("collections/objects.js", function(exports, require, module) {
+'use-strict';
+
+const CozyCollection = require('../lib/backbone_cozycollection');
+const AnObject = require('models/object');
+
+module.exports = CozyCollection.extend({
+  model: AnObject,
+
+  getFetchIndex: () => ['type'],
+  getFetchQuery: () => ({ selector: { 'type': { ne: 'equipment' } } }),
+});
 
 });
 
@@ -322,7 +396,7 @@ module.exports = Backbone.Collection.extend({
 
   getFetchQuery: () => ({ selector: { _id: { $gt: null } } }),
 
-  sync: function(method, collection, options) {
+  sync: function (method, collection, options) {
     if (method !== 'read') {
       console.error('Only read is available on this collection.');
       if (options.error) {
@@ -331,12 +405,11 @@ module.exports = Backbone.Collection.extend({
       return;
     }
 
+    //eslint-disable-next-line
     const docType = new this.model().docType.toLowerCase();
 
     cozy.client.data.defineIndex(docType, this.getFetchIndex())
-    .then(function(index) {
-      return cozy.client.data.query(index, this.getFetchQuery());
-    })
+    .then(index => cozy.client.data.query(index, this.getFetchQuery()))
     .then(options.success, options.error);
   },
 
@@ -449,6 +522,17 @@ module.exports = CozySingleton.extend({
 
 });
 
+require.register("models/object.js", function(exports, require, module) {
+'use-strict';
+
+const CozyModel = require('../lib/backbone_cozymodel');
+
+module.exports = CozyModel.extend({
+  docType: 'org.fing.mesinfos.object',
+});
+
+});
+
 require.register("models/properties.js", function(exports, require, module) {
 'use-strict';
 
@@ -502,6 +586,7 @@ const MessageView = require('views/message');
 const MystonesView = require('views/mystones');
 const HouseitemDetailsEDFView = require('views/houseitems/details_edf');
 const VendorsView = require('views/houseitems/vendors');
+const ObjectsView = require('views/houseitems/objects');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -513,6 +598,8 @@ module.exports = Mn.View.extend({
     myStones: '.mystones',
     houseitemDetails: '.houseitemdetails',
     vendors: '.vendors',
+    equipments: '.equipments',
+    objects: '.objects',
   },
 
   initialize: function () {
@@ -522,20 +609,28 @@ module.exports = Mn.View.extend({
   onRender: function () {
     this.showChildView('message', new MessageView());
     this.showChildView('myStones', new MystonesView());
-    this.showChildView('vendors', new VendorsView());
+    this.showChildView('vendors', new VendorsView({ collection: app.vendors }));
+    this.showChildView('equipments', new ObjectsView({
+      model: new Backbone.Model({ title: "Mes équipements" }),
+      collection: app.equipments,
+    }));
+    this.showChildView('objects', new ObjectsView({
+      model: new Backbone.Model({ title: "Mes objets" }),
+      collection: app.objects,
+    }));
   },
 
   showHouseItemDetails: function (houseItem) {
     const slug = houseItem.get('slug');
-    let viewClass = null;
-    if (slug == 'edf') {
-      viewClass = HouseitemDetailsEDFView;
+    let ViewClass = null;
+    if (slug === 'edf') {
+      ViewClass = HouseitemDetailsEDFView;
     } else if (slug === 'maif') {
       console.log('todo');
-      //viewClass = HouseitemDetailsMaifView;
+      // viewClass = HouseitemDetailsMaifView;
     }
 
-    this.showChildView('houseitemDetails', new viewClass());
+    this.showChildView('houseitemDetails', new ViewClass());
   },
 });
 
@@ -640,6 +735,74 @@ module.exports = Mn.View.extend({
 
 });
 
+require.register("views/houseitems/object_item.js", function(exports, require, module) {
+'use-strict';
+
+const template = require('../templates/houseitems/vendor_item');
+
+module.exports = Mn.View.extend({
+  template: template,
+  tagName: 'li',
+
+  ui: {
+    icon: 'img',
+  },
+
+  events: {
+    //eslint-disable-next-line
+    'click': 'showDetails',
+  },
+
+  modelEvents: {
+    change: 'render',
+  },
+
+  onRender: function () {
+    this.ui.icon.on('error', (ev) => {
+      ev.target.src = 'assets/img/gift_icon.png';
+    });
+  },
+
+  showDetails: function () {
+    app.trigger('houseitemdetails:show', this.model);
+  },
+
+});
+
+});
+
+require.register("views/houseitems/objects.js", function(exports, require, module) {
+'use strict';
+
+const ObjectItemView = require('./object_item');
+const template = require('../templates/houseitems/objects');
+
+const ObjectsView = Mn.CollectionView.extend({
+  tagName: 'ul',
+  // className: 'movielibrary',
+  childView: ObjectItemView,
+});
+
+module.exports = Mn.View.extend({
+  // className: 'mymovies',
+  template: template,
+
+  regions: {
+    collection: {
+      el: 'ul',
+      replaceElement: true,
+    },
+  },
+
+  initialize: function () {},
+
+  onRender: function () {
+    this.showChildView('collection', new ObjectsView({ collection: this.collection }));
+  },
+});
+
+});
+
 require.register("views/houseitems/vendor_item.js", function(exports, require, module) {
 'use-strict';
 
@@ -672,7 +835,6 @@ require.register("views/houseitems/vendors.js", function(exports, require, modul
 const VendorItemView = require('./vendor_item');
 const template = require('../templates/houseitems/vendors');
 
-const VendorsCollection = require('collections/vendors');
 
 const VendorsView = Mn.CollectionView.extend({
   tagName: 'ul',
@@ -681,7 +843,7 @@ const VendorsView = Mn.CollectionView.extend({
 });
 
 module.exports = Mn.View.extend({
-  //className: 'mymovies',
+  // className: 'mymovies',
   template: template,
 
   regions: {
@@ -692,22 +854,6 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
-    this.collection = new VendorsCollection([
-    {
-      name: 'EDF',
-      slug: 'edf',
-      doamin: 'energy',
-      konnectorAccount: null,
-      folderPath: 'administration/EDF/',
-    },
-      {
-      name: 'Maif',
-      slug: 'maif',
-      domain: 'insurance',
-      konnectorAccount: null,
-      folderPath: 'administration/Maif/',
-    },
-    ]);
   },
 
   onRender: function () {
@@ -829,51 +975,48 @@ module.exports = Mn.View.extend({
   },
 
   onBeforeRender: function () {
-
     console.log('here');
     console.log(this.model.toJSON());
   },
 
   geocode: function () {
     const address = this.model.get('address');
-    return $.get(`//nominatim.openstreetmap.org/search?format=json&q=${address.street}+${address.city}+${address.country}`).then((res) => {
-        console.log(res);
-        address.point = res[0];
-        return address.point;
-      });
+    address.formated = `${address.street}+${address.city}+${address.country}`;
+    return $.get(`//nominatim.openstreetmap.org/search?format=json&q=${address.formated}`)
+    .then((res) => {
+      console.log(res);
+      address.point = res[0];
+      return address.point;
+    });
   },
 
   onRender: function () {
     if (this.model.isNew()) { return; }
     this.geocode()
     .then((point) => {
+      const osmb = new OSMBuildings({
+        position: {
+          latitude: point.lat,
+          longitude: point.lon,
+        },
 
-        var osmb = new OSMBuildings({
-          position: {
-            latitude: point.lat,
-            longitude: point.lon,
-          },
+        zoom: 20,
+        disabled: true,
+        tilt: 180,
+        rotation: 0,
+        // fast: true,
+      });
 
-          zoom: 20,
-          disabled: true,
-          tilt: 180,
-          rotation: 0,
-          // fast: true,
+      osmb.appendTo('map');
+
+      osmb.addMapTiles('https://{s}.tiles.mapbox.com/v3/osmbuildings.kbpalbpk/{z}/{x}/{y}.png',
+        {
+          attribution: '© Data <a href="http://openstreetmap.org/copyright/">OpenStreetMap</a> · © Map <a href="http://mapbox.com">Mapbox</a>'
         });
 
-    osmb.appendTo('map');
-
-    osmb.addMapTiles(
-      'https://{s}.tiles.mapbox.com/v3/osmbuildings.kbpalbpk/{z}/{x}/{y}.png',
-      {
-        attribution: '© Data <a href="http://openstreetmap.org/copyright/">OpenStreetMap</a> · © Map <a href="http://mapbox.com">Mapbox</a>'
-      }
-    );
-
-    osmb.addGeoJSONTiles('http://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
-    osmb.highlight(point.osm_id, '#f08000');
-    osmb.highlight(point.place_id, '#f08000');
-
+      osmb.addGeoJSONTiles('http://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
+      osmb.highlight(point.osm_id, '#f08000');
+      osmb.highlight(point.place_id, '#f08000');
     });
   }
 
@@ -923,13 +1066,51 @@ if (typeof define === 'function' && define.amd) {
 }
 });
 
-;require.register("views/templates/houseitems/vendor_item.jade", function(exports, require, module) {
+;require.register("views/templates/houseitems/object_item.jade", function(exports, require, module) {
 var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (name, slug) {
 buf.push("<div class=\"houseitem vendoritem\"><img" + (jade.attr("src", "assets/img/" + (slug) + "_logo_big.png", true, false)) + (jade.attr("title", name, true, false)) + "/></div>");}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"slug" in locals_for_with?locals_for_with.slug:typeof slug!=="undefined"?slug:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
+;require.register("views/templates/houseitems/objects.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (title) {
+buf.push("<h2>" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + "</h2><ul></ul>");}.call(this,"title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
+;require.register("views/templates/houseitems/vendor_item.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (name, slug) {
+buf.push("<div class=\"houseitem objectitem\"><img" + (jade.attr("src", "assets/img/" + (slug) + "_logo_big.png", true, false)) + (jade.attr("title", name, true, false)) + "/></div>");}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"slug" in locals_for_with?locals_for_with.slug:typeof slug!=="undefined"?slug:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

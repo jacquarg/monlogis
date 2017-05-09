@@ -5,6 +5,7 @@ const MessageView = require('views/message');
 const MystonesView = require('views/mystones');
 const HouseitemDetailsEDFView = require('views/houseitems/details_edf');
 const VendorsView = require('views/houseitems/vendors');
+const ObjectsView = require('views/houseitems/objects');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -16,6 +17,8 @@ module.exports = Mn.View.extend({
     myStones: '.mystones',
     houseitemDetails: '.houseitemdetails',
     vendors: '.vendors',
+    equipments: '.equipments',
+    objects: '.objects',
   },
 
   initialize: function () {
@@ -25,7 +28,15 @@ module.exports = Mn.View.extend({
   onRender: function () {
     this.showChildView('message', new MessageView());
     this.showChildView('myStones', new MystonesView());
-    this.showChildView('vendors', new VendorsView());
+    this.showChildView('vendors', new VendorsView({ collection: app.vendors }));
+    this.showChildView('equipments', new ObjectsView({
+      model: new Backbone.Model({ title: 'Mes équipements' }),
+      collection: app.equipments,
+    }));
+    this.showChildView('objects', new ObjectsView({
+      model: new Backbone.Model({ title: 'Mes objets' }),
+      collection: app.objects,
+    }));
   },
 
   showHouseItemDetails: function (houseItem) {

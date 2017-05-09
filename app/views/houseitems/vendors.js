@@ -3,7 +3,6 @@
 const VendorItemView = require('./vendor_item');
 const template = require('../templates/houseitems/vendors');
 
-const VendorsCollection = require('collections/vendors');
 
 const VendorsView = Mn.CollectionView.extend({
   tagName: 'ul',
@@ -23,22 +22,6 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
-    this.collection = new VendorsCollection([
-      {
-        name: 'EDF',
-        slug: 'edf',
-        doamin: 'energy',
-        konnectorAccount: null,
-        folderPath: 'administration/EDF/',
-      },
-      {
-        name: 'Maif',
-        slug: 'maif',
-        domain: 'insurance',
-        konnectorAccount: null,
-        folderPath: 'administration/Maif/',
-      },
-    ]);
   },
 
   onRender: function () {
