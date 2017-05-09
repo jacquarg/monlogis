@@ -10,7 +10,9 @@ module.exports = CozyCollection.extend({
     this.vendor = options.vendor;
   },
 
-  getFetchIndex: () => ['vendor'],
-  getFetchQuery: () => ({ selector: { vendor: this.vendor } }),
+  getFetchIndex: function () { return ['vendor']; },
+  getFetchQuery: function () {
+    return { selector: { vendor: this.vendor } };
+  },
 
 });

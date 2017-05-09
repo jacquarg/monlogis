@@ -305,8 +305,10 @@ module.exports = CozyCollection.extend({
     this.vendor = options.vendor;
   },
 
-  getFetchIndex: () => ['vendor'],
-  getFetchQuery: () => ({ selector: { vendor: this.vendor } }),
+  getFetchIndex: function () { return ['vendor']; },
+  getFetchQuery: function () {
+    return { selector: { vendor: this.vendor } };
+  },
 
 });
 
@@ -418,11 +420,13 @@ module.exports.backbone2Promise = function (obj, method, options) {
 });
 
 require.register("lib/backbone_cozycollection.js", function(exports, require, module) {
+'use-strict';
+
 module.exports = Backbone.Collection.extend({
 
-  getFetchIndex: () => ['_id'],
+  getFetchIndex: function () { return ['_id']; },
 
-  getFetchQuery: () => ({ selector: { _id: { $gt: null } } }),
+  getFetchQuery: function () { return { selector: { _id: { $gt: null } } }; },
 
   sync: function (method, collection, options) {
     if (method !== 'read') {
@@ -861,7 +865,11 @@ module.exports = Mn.View.extend({
   modelEvents: {
     change: 'render',
   },
-
+  serializeData: function () {
+    let data = this.model.toJSON();
+    console.log(data);
+    return data;
+  },
 });
 
 });
@@ -1389,13 +1397,8 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (amount, date) {
-buf.push("<div class=\"billitem\"><h3>Mes factures:<br/></h3><h4>Mon dernier facture était&nbsp;");
-if ( amount)
-{
-buf.push((jade.escape(null == (jade_interp = amount) ? "" : jade_interp)) + "€ le&nbsp");
-}
-buf.push((jade.escape(null == (jade_interp = date) ? "" : jade_interp)) + ".</h4><h4></h4></div>");}.call(this,"amount" in locals_for_with?locals_for_with.amount:typeof amount!=="undefined"?amount:undefined,"date" in locals_for_with?locals_for_with.date:typeof date!=="undefined"?date:undefined));;return buf.join("");
+;var locals_for_with = (locals || {});(function (amount, date, vendor) {
+buf.push("<div class=\"billitem\">" + (jade.escape(null == (jade_interp = vendor) ? "" : jade_interp)) + "&nbsp;" + (jade.escape(null == (jade_interp = date) ? "" : jade_interp)) + "&nbsp;" + (jade.escape(null == (jade_interp = amount) ? "" : jade_interp)) + "</div>");}.call(this,"amount" in locals_for_with?locals_for_with.amount:typeof amount!=="undefined"?amount:undefined,"date" in locals_for_with?locals_for_with.date:typeof date!=="undefined"?date:undefined,"vendor" in locals_for_with?locals_for_with.vendor:typeof vendor!=="undefined"?vendor:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -1414,7 +1417,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (title) {
-buf.push("<h2>" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + " toto</h2><ul></ul>");}.call(this,"title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
+buf.push("<h2>" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + "</h2><ul></ul>");}.call(this,"title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
