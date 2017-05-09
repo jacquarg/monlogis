@@ -4,6 +4,7 @@ const template = require('views/templates/app_layout');
 const MessageView = require('views/message');
 const MystonesView = require('views/mystones');
 const HouseitemDetailsEDFView = require('views/houseitems/details_edf');
+const HouseitemDetailsVendorView = require('views/houseitems/details_vendor');
 const VendorsView = require('views/houseitems/vendors');
 const ObjectsView = require('views/houseitems/objects');
 
@@ -47,8 +48,10 @@ module.exports = Mn.View.extend({
     } else if (slug === 'maif') {
       console.log('todo');
       // viewClass = HouseitemDetailsMaifView;
+    } else {
+      ViewClass = HouseitemDetailsVendorView;
     }
 
-    this.showChildView('houseitemDetails', new ViewClass());
+    this.showChildView('houseitemDetails', new ViewClass({ model: houseItem }));
   },
 });

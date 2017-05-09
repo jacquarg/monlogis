@@ -42,6 +42,13 @@ const Application = Mn.Application.extend({
         konnectorAccount: null,
         folderPath: 'administration/Maif/',
       },
+      {
+        name: 'Free',
+        slug: 'free',
+        domain: 'telecom',
+        konnectorAccount: null,
+        folderPath: 'administration/Free/',
+      },
     ]);
 
     this.equipments = new EquipmentsCollection([
