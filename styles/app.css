@@ -26,7 +26,6 @@
  width: 100%;
  height: 100%;
 }
-<<<<<<< d20e2f3eeabb075d21039ef541559abcad79c152
 
 .houseitems ul {
   list-style: none;
@@ -39,10 +38,9 @@
 
 .houseitem img {
   max-height: 50px;
-=======
+}
 .facture{
   display: flex;
   justify-content: center;
   margin-top: 20%;
->>>>>>> chercher des donner facture edf
 }

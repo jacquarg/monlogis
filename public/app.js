@@ -934,9 +934,15 @@ require.register("views/houseitems/details_edf.js", function(exports, require, m
 
 const template = require('../templates/houseitems/details_edf');
 const Paiment = require('../../models/paiment');
+const BillsView = require('./bills');
+const BillsCollection = require('collections/bills');
 
 module.exports = Mn.View.extend({
   template: template,
+
+  regions: {
+    bills: '.bills',
+  },
 
   events: {
   },
@@ -948,6 +954,9 @@ module.exports = Mn.View.extend({
   initialize: function () {
     this.model = new Paiment();
     this.model.fetch();
+
+    this.bills = new BillsCollection({ vendor: 'EDF' });
+    this.bills.fetch();
   },
 
   serializeData: function () {
@@ -955,11 +964,14 @@ module.exports = Mn.View.extend({
     data.nextPaymentAmount = this.model.getNextPaymentEDF();
     return data;
   },
-  //.holder= dernierReglement.type
+  // .holder= dernierReglement.type
 
-  // onRender: function () {
-
-  // },
+  onRender: function () {
+    this.showChildView('bills', new BillsView({
+      model: new Backbone.Model({ slug: 'EDF' }),
+      collection: this.bills,
+    }));
+  },
 });
 
 });
@@ -1377,8 +1389,13 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (amount, date, vendor) {
-buf.push("<div class=\"billitem\">" + (jade.escape(null == (jade_interp = vendor) ? "" : jade_interp)) + "&nbsp;" + (jade.escape(null == (jade_interp = date) ? "" : jade_interp)) + "&nbsp;" + (jade.escape(null == (jade_interp = amount) ? "" : jade_interp)) + "</div>");}.call(this,"amount" in locals_for_with?locals_for_with.amount:typeof amount!=="undefined"?amount:undefined,"date" in locals_for_with?locals_for_with.date:typeof date!=="undefined"?date:undefined,"vendor" in locals_for_with?locals_for_with.vendor:typeof vendor!=="undefined"?vendor:undefined));;return buf.join("");
+;var locals_for_with = (locals || {});(function (amount, date) {
+buf.push("<div class=\"billitem\"><h3>Mes factures:<br/></h3><h4>Mon dernier facture était&nbsp;");
+if ( amount)
+{
+buf.push((jade.escape(null == (jade_interp = amount) ? "" : jade_interp)) + "€ le&nbsp");
+}
+buf.push((jade.escape(null == (jade_interp = date) ? "" : jade_interp)) + ".</h4><h4></h4></div>");}.call(this,"amount" in locals_for_with?locals_for_with.amount:typeof amount!=="undefined"?amount:undefined,"date" in locals_for_with?locals_for_with.date:typeof date!=="undefined"?date:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -1397,7 +1414,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (title) {
-buf.push("<h2>" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + "</h2><ul></ul>");}.call(this,"title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
+buf.push("<h2>" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + " toto</h2><ul></ul>");}.call(this,"title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -1415,13 +1432,18 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (value) {
+;var locals_for_with = (locals || {});(function (period, value) {
 buf.push("<h4>J'ai consomé &nbsp;");
 if ( value)
 {
 buf.push(jade.escape(null == (jade_interp = value) ? "" : jade_interp));
 }
-buf.push("&nbsp kWh &nbsp; la derniere fois.<br/><br/></h4><h5>Pour plus d'info:<br/><br/>Service client EDF: 09 69 32 15 15.</h5>");}.call(this,"value" in locals_for_with?locals_for_with.value:typeof value!=="undefined"?value:undefined));;return buf.join("");
+buf.push("&nbsp kWh &nbsp; en periode du\n&nbsp");
+if ( period)
+{
+buf.push(jade.escape(null == (jade_interp = period) ? "" : jade_interp));
+}
+buf.push(".<br/><br/></h4><h5>Pour plus d'info:<br/><br/>Service client EDF: 09 69 32 15 15.</h5>");}.call(this,"period" in locals_for_with?locals_for_with.period:typeof period!=="undefined"?period:undefined,"value" in locals_for_with?locals_for_with.value:typeof value!=="undefined"?value:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -1445,7 +1467,7 @@ if ( nextBillDate)
 {
 buf.push((jade.escape(null == (jade_interp = nextBillDate) ? "" : jade_interp)) + (jade.escape(null == (jade_interp = nextPaymentAmount) ? "" : jade_interp)) + ".");
 }
-buf.push("</h2>");}.call(this,"nextBillDate" in locals_for_with?locals_for_with.nextBillDate:typeof nextBillDate!=="undefined"?nextBillDate:undefined,"nextPaymentAmount" in locals_for_with?locals_for_with.nextPaymentAmount:typeof nextPaymentAmount!=="undefined"?nextPaymentAmount:undefined));;return buf.join("");
+buf.push("</h2><div class=\"bills\"></div>");}.call(this,"nextBillDate" in locals_for_with?locals_for_with.nextBillDate:typeof nextBillDate!=="undefined"?nextBillDate:undefined,"nextPaymentAmount" in locals_for_with?locals_for_with.nextPaymentAmount:typeof nextPaymentAmount!=="undefined"?nextPaymentAmount:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -1488,7 +1510,7 @@ if ( amount)
 {
 buf.push((jade.escape(null == (jade_interp = amount) ? "" : jade_interp)) + "€ le&nbsp");
 }
-buf.push((jade.escape(null == (jade_interp = date) ? "" : jade_interp)) + ".</h4>");}.call(this,"amount" in locals_for_with?locals_for_with.amount:typeof amount!=="undefined"?amount:undefined,"date" in locals_for_with?locals_for_with.date:typeof date!=="undefined"?date:undefined));;return buf.join("");
+buf.push((jade.escape(null == (jade_interp = date) ? "" : jade_interp)) + ".</h4><h4></h4>");}.call(this,"amount" in locals_for_with?locals_for_with.amount:typeof amount!=="undefined"?amount:undefined,"date" in locals_for_with?locals_for_with.date:typeof date!=="undefined"?date:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

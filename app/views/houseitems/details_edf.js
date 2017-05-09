@@ -2,9 +2,15 @@
 
 const template = require('../templates/houseitems/details_edf');
 const Paiment = require('../../models/paiment');
+const BillsView = require('./bills');
+const BillsCollection = require('collections/bills');
 
 module.exports = Mn.View.extend({
   template: template,
+
+  regions: {
+    bills: '.bills',
+  },
 
   events: {
   },
@@ -16,6 +22,9 @@ module.exports = Mn.View.extend({
   initialize: function () {
     this.model = new Paiment();
     this.model.fetch();
+
+    this.bills = new BillsCollection({ vendor: 'EDF' });
+    this.bills.fetch();
   },
 
   serializeData: function () {
@@ -23,9 +32,12 @@ module.exports = Mn.View.extend({
     data.nextPaymentAmount = this.model.getNextPaymentEDF();
     return data;
   },
-  //.holder= dernierReglement.type
+  // .holder= dernierReglement.type
 
-  // onRender: function () {
-
-  // },
+  onRender: function () {
+    this.showChildView('bills', new BillsView({
+      model: new Backbone.Model({ slug: 'EDF' }),
+      collection: this.bills,
+    }));
+  },
 });
