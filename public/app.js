@@ -601,6 +601,9 @@ const CozyModel = require('../lib/backbone_cozymodel');
 
 module.exports = CozyModel.extend({
   docType: 'org.fing.mesinfos.object',
+});
+
+});
 
 require.register("models/paiment.js", function(exports, require, module) {
 'use-strict';
@@ -617,6 +620,7 @@ module.exports = CozySingleton.extend({
 
       //  console.log('this is ', paymentSchedules[0].amount);
   },
+
 
 });
 
@@ -730,7 +734,7 @@ module.exports = Mn.View.extend({
       ViewClass = HouseitemDetailsVendorView;
     }
 
-    this.showChildView('houseitemDetails', new ViewClass({ model: houseItem}));
+    this.showChildView('houseitemDetails', new ViewClass({ model: houseItem }));
     this.showChildView('houseitemDetails', new HouseitemDetailsEDFView());
     this.showChildView('infosClient', new InfosClientView());
     this.showChildView('contractClient', new ContractClientView());
@@ -810,6 +814,36 @@ module.exports = Mn.Behavior.extend({
 
 });
 
+require.register("views/contract_client.js", function(exports, require, module) {
+'use strict';
+
+const template = require('./templates/contract_client');
+const Contract = require('../models/contract');
+
+module.exports = Mn.View.extend({
+  template: template,
+
+  events: {
+  },
+
+  modelEvents: {
+    change: 'render',
+  },
+
+  initialize: function () {
+    this.model = new Contract();
+    this.model.fetch();
+  },
+
+  // onRender: function () {
+  //
+  // },
+
+
+});
+
+});
+
 require.register("views/houseitems/bill_item.js", function(exports, require, module) {
 'use-strict';
 
@@ -822,16 +856,6 @@ module.exports = Mn.View.extend({
   events: {
     //eslint-disable-next-line
     'click': 'showDetails',
-require.register("views/contract_client.js", function(exports, require, module) {
-'use strict';
-
-const template = require('./templates/contract_client');
-const Contract = require('../models/contract');
-
-module.exports = Mn.View.extend({
-  template: template,
-
-  events: {
   },
 
   modelEvents: {
@@ -871,16 +895,6 @@ module.exports = Mn.View.extend({
   onRender: function () {
     this.showChildView('collection', new BillsView({ collection: this.collection }));
   },
-
-  initialize: function () {
-    this.model = new Contract();
-    this.model.fetch();
-  },
-
-  // onRender: function () {
-  //
-  // },
-
 });
 
 });
@@ -950,20 +964,12 @@ module.exports = Mn.View.extend({
 
 });
 
-<<<<<<< d20e2f3eeabb075d21039ef541559abcad79c152
 require.register("views/houseitems/details_vendor.js", function(exports, require, module) {
 'use strict';
 
 const template = require('../templates/houseitems/details_vendor');
 const BillsView = require('./bills');
 const BillsCollection = require('collections/bills');
-=======
-require.register("views/houseitems/facture_edf.js", function(exports, require, module) {
-'use strict';
-
-const template = require('../templates/houseitems/facture_edf');
-const Facture = require('../../models/facture');
->>>>>>> chercher des donner facture edf
 
 module.exports = Mn.View.extend({
   template: template,
@@ -975,7 +981,6 @@ module.exports = Mn.View.extend({
     change: 'render',
   },
 
-<<<<<<< d20e2f3eeabb075d21039ef541559abcad79c152
   regions: {
     bills: '.bills',
   },
@@ -991,6 +996,36 @@ module.exports = Mn.View.extend({
       collection: this.collection,
     }));
   },
+
+});
+
+});
+
+require.register("views/houseitems/facture_edf.js", function(exports, require, module) {
+'use strict';
+
+const template = require('../templates/houseitems/facture_edf');
+const Facture = require('../../models/facture');
+
+module.exports = Mn.View.extend({
+  template: template,
+
+  events: {
+  },
+
+  modelEvents: {
+    change: 'render',
+  },
+
+  initialize: function () {
+    this.model = new Facture();
+    this.model.fetch();
+  },
+
+  // onRender: function () {
+  //
+  // },
+
 
 });
 
@@ -1120,18 +1155,6 @@ module.exports = Mn.View.extend({
   onRender: function () {
     this.showChildView('collection', new VendorsView({ collection: this.collection }));
   },
-=======
-  initialize: function () {
-    this.model = new Facture();
-    this.model.fetch();
-  },
-
-  // onRender: function () {
-  //
-  // },
-
-
->>>>>>> chercher des donner facture edf
 });
 
 });
@@ -1303,16 +1326,40 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-<<<<<<< d20e2f3eeabb075d21039ef541559abcad79c152
-<<<<<<< 76c0bbd75d6e1427f5a133f0c0bd1449aeaa86e2
-buf.push("<main class=\"row\"><div class=\"col-xs-4 mystones\"><div class=\"well\">TODO : addresse</div></div><div class=\"col-xs-2 houseitems\"><div class=\"row vendors\"><div class=\"well\">TODO : Énergie - EDF</div></div><div class=\"row equipments\"><div class=\"well\">TODO : TV</div></div><div class=\"row objects\"><div class=\"well\">TODO : table</div></div></div><div class=\"col-xs-6 houseitemdetails\"></div></main><div class=\"message\"></div>");;return buf.join("");
-buf.push("<main class=\"row\"><div class=\"col-xs-4 mystones\"><div class=\"well\">TODO : addresse</div></div><div class=\"col-xs-2 houseitems\"><div class=\"row networkoperators\"><div class=\"well\">TODO : Énergie - EDF</div></div><div class=\"row equipments\"><div class=\"well\">TODO : TV</div></div><div class=\"row objects\"><div class=\"well\">TODO : table</div></div></div><div class=\"col-xs-6 houseitemdetails\"></div></main><div class=\"container\"><main><div class=\"client\"></div><div class=\"contract\"></div></main></div><div class=\"message\"></div>");;return buf.join("");
-=======
-buf.push("<main class=\"row\"><div class=\"col-xs-4 mystones\"><div class=\"well\">TODO : addresse</div></div><div class=\"col-xs-2 houseitems\"><div class=\"row networkoperators\"><div class=\"well\">TODO : Énergie - EDF</div></div><div class=\"row equipments\"><div class=\"well\">TODO : TV</div></div><div class=\"row objects\"><div class=\"well\">TODO : table</div></div></div><div class=\"col-xs-6 houseitemdetails\"></div><div class=\"col-xs-6 contract\"></div><div class=\"col-xs-6 consomation\"></div></main><div class=\"container\"><main><div class=\"client\"></div></main></div><div class=\"message\"></div>");;return buf.join("");
->>>>>>> chercher les data contrat et consomation edf
-=======
-buf.push("<main class=\"row\"><div class=\"col-xs-4 mystones\"><div class=\"well\">TODO : addresse</div></div><div class=\"col-xs-2 houseitems\"><div class=\"row networkoperators\"><div class=\"well\">TODO : Énergie - EDF</div></div><div class=\"row equipments\"><div class=\"well\">TODO : TV</div></div><div class=\"row objects\"><div class=\"well\">TODO : table</div></div></div><div class=\"col-xs-6 houseitemdetails\"></div><div class=\"col-xs-6 contract\"></div><div class=\"col-xs-6 consomation\"></div><div class=\"col-xs-6 facture\"></div></main><div class=\"container\"><main><div class=\"client\"></div></main></div><div class=\"message\"></div>");;return buf.join("");
->>>>>>> chercher des donner facture edf
+buf.push("<main class=\"row\"><div class=\"col-xs-4 mystones\"><div class=\"well\">TODO : addresse</div></div><div class=\"col-xs-2 houseitems\"><div class=\"row vendors\"><div class=\"well\">TODO : Énergie - EDF</div></div><div class=\"row equipments\"><div class=\"well\">TODO : TV</div></div><div class=\"row objects\"><div class=\"well\">TODO : table</div></div></div><div class=\"col-xs-6 houseitemdetails\"></div><div class=\"col-xs-6 contract\"></div><div class=\"col-xs-6 consomation\"></div><div class=\"col-xs-6 facture\"></div></main><div class=\"container\"><main><div class=\"client\"></div></main></div><div class=\"message\"></div>");;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
+;require.register("views/templates/contract_client.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (contractSubcategory1, name, power) {
+buf.push("<h4 class=\"payment\">Mon contrant &nbsp");
+if ( name)
+{
+buf.push(jade.escape(null == (jade_interp = name) ? "" : jade_interp));
+}
+buf.push("&nbsp EDF\n, &nbsp");
+if ( contractSubcategory1)
+{
+buf.push((jade.escape(null == (jade_interp = contractSubcategory1) ? "" : jade_interp)) + ", &nbsp");
+}
+if ( power)
+{
+buf.push((jade.escape(null == (jade_interp = power) ? "" : jade_interp)) + ".");
+}
+buf.push("</h4><!--.containerh1.contrat-edf Contrat-edf\np.contrat-edf-detail\n  | Comtage: &nbsp;\n  if counter\n    = counter.comptage\n    br\n    br\n  | Dernier indice: &nbsp;\n  if counter\n    = counter.dernierIndex\n    br\n    br\n  | Nombre roues: &nbsp;\n  if counter\n    = counter.nombreRoues\n    br\n    br\n  | Type: &nbsp;\n  if counter\n    = counter.type\n    br\n    br\n  | Prochain date fermeteur: &nbsp;\n  if statement\n    = statement.prochaineDateFermetureReelle\n    br\n    br\n  | Prochaine Relevé: &nbsp;\n  if statement\n    = statement.prochaineReleve-->");}.call(this,"contractSubcategory1" in locals_for_with?locals_for_with.contractSubcategory1:typeof contractSubcategory1!=="undefined"?contractSubcategory1:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"power" in locals_for_with?locals_for_with.power:typeof power!=="undefined"?power:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -1326,13 +1373,10 @@ if (typeof define === 'function' && define.amd) {
 });
 
 ;require.register("views/templates/houseitems/bill_item.jade", function(exports, require, module) {
-;require.register("views/templates/contract_client.jade", function(exports, require, module) {
 var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-<<<<<<< d20e2f3eeabb075d21039ef541559abcad79c152
-<<<<<<< 76c0bbd75d6e1427f5a133f0c0bd1449aeaa86e2
 ;var locals_for_with = (locals || {});(function (amount, date, vendor) {
 buf.push("<div class=\"billitem\">" + (jade.escape(null == (jade_interp = vendor) ? "" : jade_interp)) + "&nbsp;" + (jade.escape(null == (jade_interp = date) ? "" : jade_interp)) + "&nbsp;" + (jade.escape(null == (jade_interp = amount) ? "" : jade_interp)) + "</div>");}.call(this,"amount" in locals_for_with?locals_for_with.amount:typeof amount!=="undefined"?amount:undefined,"date" in locals_for_with?locals_for_with.date:typeof date!=="undefined"?date:undefined,"vendor" in locals_for_with?locals_for_with.vendor:typeof vendor!=="undefined"?vendor:undefined));;return buf.join("");
 };
@@ -1354,43 +1398,6 @@ var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (title) {
 buf.push("<h2>" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + "</h2><ul></ul>");}.call(this,"title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
-;var locals_for_with = (locals || {});(function (counter) {
-if ( counter)
-{
-buf.push("<h3>Contrat de client: A: Counter</h3><div class=\"counter\">" + (jade.escape(null == (jade_interp = counter.comptage) ? "" : jade_interp)) + "</div>");
-}}.call(this,"counter" in locals_for_with?locals_for_with.counter:typeof counter!=="undefined"?counter:undefined));;return buf.join("");
-
-buf.push((jade.escape(null == (jade_interp = counter.comptage) ? "" : jade_interp)) + "<br/><br/>");
-}
-buf.push("Dernier indice: &nbsp;");
-if ( counter)
-{
-buf.push((jade.escape(null == (jade_interp = counter.dernierIndex) ? "" : jade_interp)) + "<br/><br/>");
-}
-buf.push("Nombre roues: &nbsp;");
-if ( counter)
-=======
-;var locals_for_with = (locals || {});(function (power) {
-buf.push("<h4>Mon contrant Tarif Bleu EDF est,&nbsp;");
-=======
-;var locals_for_with = (locals || {});(function (contractSubcategory1, name, power) {
-buf.push("<h4 class=\"payment\">Mon contrant &nbsp");
-if ( name)
-{
-buf.push(jade.escape(null == (jade_interp = name) ? "" : jade_interp));
-}
-buf.push("&nbsp EDF\n, &nbsp");
-if ( contractSubcategory1)
-{
-buf.push((jade.escape(null == (jade_interp = contractSubcategory1) ? "" : jade_interp)) + ", &nbsp");
-}
->>>>>>> chercher des donner facture edf
-if ( power)
->>>>>>> chercher les data contrat et consomation edf
-{
-buf.push((jade.escape(null == (jade_interp = power) ? "" : jade_interp)) + ".");
-}
-buf.push("</h4><!--.containerh1.contrat-edf Contrat-edf\np.contrat-edf-detail\n  | Comtage: &nbsp;\n  if counter\n    = counter.comptage\n    br\n    br\n  | Dernier indice: &nbsp;\n  if counter\n    = counter.dernierIndex\n    br\n    br\n  | Nombre roues: &nbsp;\n  if counter\n    = counter.nombreRoues\n    br\n    br\n  | Type: &nbsp;\n  if counter\n    = counter.type\n    br\n    br\n  | Prochain date fermeteur: &nbsp;\n  if statement\n    = statement.prochaineDateFermetureReelle\n    br\n    br\n  | Prochaine Relevé: &nbsp;\n  if statement\n    = statement.prochaineReleve-->");}.call(this,"contractSubcategory1" in locals_for_with?locals_for_with.contractSubcategory1:typeof contractSubcategory1!=="undefined"?contractSubcategory1:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"power" in locals_for_with?locals_for_with.power:typeof power!=="undefined"?power:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -1414,16 +1421,7 @@ if ( value)
 {
 buf.push(jade.escape(null == (jade_interp = value) ? "" : jade_interp));
 }
-<<<<<<< d20e2f3eeabb075d21039ef541559abcad79c152
-<<<<<<< 76c0bbd75d6e1427f5a133f0c0bd1449aeaa86e2
-buf.push("</p></div>");}.call(this,"counter" in locals_for_with?locals_for_with.counter:typeof counter!=="undefined"?counter:undefined,"statement" in locals_for_with?locals_for_with.statement:typeof statement!=="undefined"?statement:undefined));;return buf.join("");
-
-=======
-buf.push("€ &nbsp; la derniere fois.<br/><br/></h4><h5>Pour plus d'info contactez le service client EDF: 09 69 32 15 15</h5>");}.call(this,"cost" in locals_for_with?locals_for_with.cost:typeof cost!=="undefined"?cost:undefined));;return buf.join("");
->>>>>>> chercher les data contrat et consomation edf
-=======
 buf.push("&nbsp kWh &nbsp; la derniere fois.<br/><br/></h4><h5>Pour plus d'info:<br/><br/>Service client EDF: 09 69 32 15 15.</h5>");}.call(this,"value" in locals_for_with?locals_for_with.value:typeof value!=="undefined"?value:undefined));;return buf.join("");
->>>>>>> chercher des donner facture edf
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -1460,18 +1458,37 @@ if (typeof define === 'function' && define.amd) {
 }
 });
 
-<<<<<<< d20e2f3eeabb075d21039ef541559abcad79c152
 ;require.register("views/templates/houseitems/details_vendor.jade", function(exports, require, module) {
-=======
-;require.register("views/templates/houseitems/facture_edf.jade", function(exports, require, module) {
->>>>>>> chercher des donner facture edf
 var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-<<<<<<< d20e2f3eeabb075d21039ef541559abcad79c152
 ;var locals_for_with = (locals || {});(function (name) {
 buf.push("<h2>" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "</h2><div class=\"bills\"></div>");}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
+;require.register("views/templates/houseitems/facture_edf.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (amount, date) {
+buf.push("<h3>Mes factures:<br/></h3><h4>Mon dernier facture était&nbsp;");
+if ( amount)
+{
+buf.push((jade.escape(null == (jade_interp = amount) ? "" : jade_interp)) + "€ le&nbsp");
+}
+buf.push((jade.escape(null == (jade_interp = date) ? "" : jade_interp)) + ".</h4>");}.call(this,"amount" in locals_for_with?locals_for_with.amount:typeof amount!=="undefined"?amount:undefined,"date" in locals_for_with?locals_for_with.date:typeof date!=="undefined"?date:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -1548,15 +1565,6 @@ var jade_mixins = {};
 var jade_interp;
 
 buf.push("<h2>Mes fournisseurs</h2><ul></ul>");;return buf.join("");
-=======
-;var locals_for_with = (locals || {});(function (amount, date) {
-buf.push("<h3>Mes factures:<br/></h3><h4>Mon dernier facture était&nbsp;");
-if ( amount)
-{
-buf.push((jade.escape(null == (jade_interp = amount) ? "" : jade_interp)) + "€ le&nbsp");
-}
-buf.push((jade.escape(null == (jade_interp = date) ? "" : jade_interp)) + ".</h4>");}.call(this,"amount" in locals_for_with?locals_for_with.amount:typeof amount!=="undefined"?amount:undefined,"date" in locals_for_with?locals_for_with.date:typeof date!=="undefined"?date:undefined));;return buf.join("");
->>>>>>> chercher des donner facture edf
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -1665,7 +1673,7 @@ if (typeof define === 'function' && define.amd) {
 });
 
 ;require.register("___globals___", function(exports, require, module) {
-
+  
 });})();require('___globals___');
 
 

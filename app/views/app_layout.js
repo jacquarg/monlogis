@@ -4,17 +4,11 @@ const template = require('views/templates/app_layout');
 const MessageView = require('views/message');
 const MystonesView = require('views/mystones');
 const HouseitemDetailsEDFView = require('views/houseitems/details_edf');
-<<<<<<< 76c0bbd75d6e1427f5a133f0c0bd1449aeaa86e2
 const HouseitemDetailsVendorView = require('views/houseitems/details_vendor');
 const VendorsView = require('views/houseitems/vendors');
 const ObjectsView = require('views/houseitems/objects');
-=======
 const HouseConsomationEDFView = require('views/houseitems/consomation_edf');
-<<<<<<< d20e2f3eeabb075d21039ef541559abcad79c152
->>>>>>> chercher les data contrat et consomation edf
-=======
 const HouseFactureEDFView = require('views/houseitems/facture_edf');
->>>>>>> chercher des donner facture edf
 const InfosClientView = require('views/infos_client');
 const ContractClientView = require('views/contract_client');
 
@@ -27,17 +21,11 @@ module.exports = Mn.View.extend({
     message: '.message',
     myStones: '.mystones',
     houseitemDetails: '.houseitemdetails',
-<<<<<<< 76c0bbd75d6e1427f5a133f0c0bd1449aeaa86e2
     vendors: '.vendors',
     equipments: '.equipments',
     objects: '.objects',
-=======
     houseConsomation: '.consomation',
-<<<<<<< d20e2f3eeabb075d21039ef541559abcad79c152
->>>>>>> chercher les data contrat et consomation edf
-=======
     houseFacture: '.facture',
->>>>>>> chercher des donner facture edf
     infosClient: '.client',
     contractClient: '.contract',
   },
