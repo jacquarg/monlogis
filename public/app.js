@@ -550,6 +550,17 @@ module.exports = CozySingleton.extend({
 
 });
 
+require.register("models/consomation.js", function(exports, require, module) {
+'use-strict';
+
+const CozySingleton = require('../lib/backbone_cozysingleton');
+
+module.exports = CozySingleton.extend({
+  docType: 'org.fing.mesinfos.consumptionstatement',
+});
+
+});
+
 require.register("models/contract.js", function(exports, require, module) {
 'use-strict';
 
@@ -579,6 +590,25 @@ const CozyModel = require('../lib/backbone_cozymodel');
 
 module.exports = CozyModel.extend({
   docType: 'org.fing.mesinfos.object',
+
+require.register("models/paiment.js", function(exports, require, module) {
+'use-strict';
+
+const CozySingleton = require('../lib/backbone_cozysingleton');
+
+module.exports = CozySingleton.extend({
+  docType: 'org.fing.mesinfos.paymentterms',
+
+  getNextPaymentEDF: function () {
+    const paymentSchedules = this.get('paymentSchedules');
+    console.log(paymentSchedules);
+    console.log(paymentSchedules[0]);
+    console.log(paymentSchedules[0].amount);
+      //  console.log('this is ', paymentSchedules[0].amount);
+    return paymentSchedules[0].amount;
+  },
+
+
 });
 
 });
@@ -638,6 +668,7 @@ const HouseitemDetailsEDFView = require('views/houseitems/details_edf');
 const HouseitemDetailsVendorView = require('views/houseitems/details_vendor');
 const VendorsView = require('views/houseitems/vendors');
 const ObjectsView = require('views/houseitems/objects');
+const HouseConsomationEDFView = require('views/houseitems/consomation_edf');
 const InfosClientView = require('views/infos_client');
 const ContractClientView = require('views/contract_client');
 
@@ -653,6 +684,7 @@ module.exports = Mn.View.extend({
     vendors: '.vendors',
     equipments: '.equipments',
     objects: '.objects',
+    houseConsomation: '.consomation',
     infosClient: '.client',
     contractClient: '.contract',
   },
@@ -691,6 +723,7 @@ module.exports = Mn.View.extend({
     this.showChildView('houseitemDetails', new HouseitemDetailsEDFView());
     this.showChildView('infosClient', new InfosClientView());
     this.showChildView('contractClient', new ContractClientView());
+    this.showChildView('houseConsomation', new HouseConsomationEDFView());
   },
 });
 
@@ -840,11 +873,11 @@ module.exports = Mn.View.extend({
 
 });
 
-require.register("views/houseitems/details_edf.js", function(exports, require, module) {
+require.register("views/houseitems/consomation_edf.js", function(exports, require, module) {
 'use strict';
 
-const template = require('../templates/houseitems/details_edf');
-const Client = require('../../models/client');
+const template = require('../templates/houseitems/consomation_edf');
+const Consomation = require('../../models/consomation');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -857,15 +890,50 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
-    this.model = new Client();
+    this.model = new Consomation();
     this.model.fetch();
   },
 
   // onRender: function () {
-
+  //
   // },
 
 
+});
+
+});
+
+require.register("views/houseitems/details_edf.js", function(exports, require, module) {
+'use strict';
+
+const template = require('../templates/houseitems/details_edf');
+const Paiment = require('../../models/paiment');
+
+module.exports = Mn.View.extend({
+  template: template,
+
+  events: {
+  },
+
+  modelEvents: {
+    change: 'render',
+  },
+
+  initialize: function () {
+    this.model = new Paiment();
+    this.model.fetch();
+  },
+
+  serializeData: function () {
+    const data = this.model.toJSON();
+    data.nextPaymentAmount = this.model.getNextPaymentEDF();
+    return data;
+  },
+  //.holder= dernierReglement.type
+
+  // onRender: function () {
+
+  // },
 });
 
 });
@@ -1202,8 +1270,12 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
+<<<<<<< 76c0bbd75d6e1427f5a133f0c0bd1449aeaa86e2
 buf.push("<main class=\"row\"><div class=\"col-xs-4 mystones\"><div class=\"well\">TODO : addresse</div></div><div class=\"col-xs-2 houseitems\"><div class=\"row vendors\"><div class=\"well\">TODO : Énergie - EDF</div></div><div class=\"row equipments\"><div class=\"well\">TODO : TV</div></div><div class=\"row objects\"><div class=\"well\">TODO : table</div></div></div><div class=\"col-xs-6 houseitemdetails\"></div></main><div class=\"message\"></div>");;return buf.join("");
 buf.push("<main class=\"row\"><div class=\"col-xs-4 mystones\"><div class=\"well\">TODO : addresse</div></div><div class=\"col-xs-2 houseitems\"><div class=\"row networkoperators\"><div class=\"well\">TODO : Énergie - EDF</div></div><div class=\"row equipments\"><div class=\"well\">TODO : TV</div></div><div class=\"row objects\"><div class=\"well\">TODO : table</div></div></div><div class=\"col-xs-6 houseitemdetails\"></div></main><div class=\"container\"><main><div class=\"client\"></div><div class=\"contract\"></div></main></div><div class=\"message\"></div>");;return buf.join("");
+=======
+buf.push("<main class=\"row\"><div class=\"col-xs-4 mystones\"><div class=\"well\">TODO : addresse</div></div><div class=\"col-xs-2 houseitems\"><div class=\"row networkoperators\"><div class=\"well\">TODO : Énergie - EDF</div></div><div class=\"row equipments\"><div class=\"well\">TODO : TV</div></div><div class=\"row objects\"><div class=\"well\">TODO : table</div></div></div><div class=\"col-xs-6 houseitemdetails\"></div><div class=\"col-xs-6 contract\"></div><div class=\"col-xs-6 consomation\"></div></main><div class=\"container\"><main><div class=\"client\"></div></main></div><div class=\"message\"></div>");;return buf.join("");
+>>>>>>> chercher les data contrat et consomation edf
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -1222,6 +1294,7 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
+<<<<<<< 76c0bbd75d6e1427f5a133f0c0bd1449aeaa86e2
 ;var locals_for_with = (locals || {});(function (amount, date, vendor) {
 buf.push("<div class=\"billitem\">" + (jade.escape(null == (jade_interp = vendor) ? "" : jade_interp)) + "&nbsp;" + (jade.escape(null == (jade_interp = date) ? "" : jade_interp)) + "&nbsp;" + (jade.escape(null == (jade_interp = amount) ? "" : jade_interp)) + "</div>");}.call(this,"amount" in locals_for_with?locals_for_with.amount:typeof amount!=="undefined"?amount:undefined,"date" in locals_for_with?locals_for_with.date:typeof date!=="undefined"?date:undefined,"vendor" in locals_for_with?locals_for_with.vendor:typeof vendor!=="undefined"?vendor:undefined));;return buf.join("");
 };
@@ -1258,26 +1331,44 @@ buf.push((jade.escape(null == (jade_interp = counter.dernierIndex) ? "" : jade_i
 }
 buf.push("Nombre roues: &nbsp;");
 if ( counter)
+=======
+;var locals_for_with = (locals || {});(function (power) {
+buf.push("<h4>Mon contrant Tarif Bleu EDF est,&nbsp;");
+if ( power)
+>>>>>>> chercher les data contrat et consomation edf
 {
-buf.push((jade.escape(null == (jade_interp = counter.nombreRoues) ? "" : jade_interp)) + "<br/><br/>");
+buf.push(jade.escape(null == (jade_interp = power) ? "" : jade_interp));
 }
-buf.push("Type: &nbsp;");
-if ( counter)
+buf.push("</h4><!--.containerh1.contrat-edf Contrat-edf\np.contrat-edf-detail\n  | Comtage: &nbsp;\n  if counter\n    = counter.comptage\n    br\n    br\n  | Dernier indice: &nbsp;\n  if counter\n    = counter.dernierIndex\n    br\n    br\n  | Nombre roues: &nbsp;\n  if counter\n    = counter.nombreRoues\n    br\n    br\n  | Type: &nbsp;\n  if counter\n    = counter.type\n    br\n    br\n  | Prochain date fermeteur: &nbsp;\n  if statement\n    = statement.prochaineDateFermetureReelle\n    br\n    br\n  | Prochaine Relevé: &nbsp;\n  if statement\n    = statement.prochaineReleve-->");}.call(this,"power" in locals_for_with?locals_for_with.power:typeof power!=="undefined"?power:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
+;require.register("views/templates/houseitems/consomation_edf.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (cost) {
+buf.push("<h4>J'ai consomé &nbsp;");
+if ( cost)
 {
-buf.push((jade.escape(null == (jade_interp = counter.type) ? "" : jade_interp)) + "<br/><br/>");
+buf.push(jade.escape(null == (jade_interp = cost) ? "" : jade_interp));
 }
-buf.push("Prochain date fermeteur: &nbsp;");
-if ( statement)
-{
-buf.push((jade.escape(null == (jade_interp = statement.prochaineDateFermetureReelle) ? "" : jade_interp)) + "<br/><br/>");
-}
-buf.push("Prochaine Relevé: &nbsp;");
-if ( statement)
-{
-buf.push(jade.escape(null == (jade_interp = statement.prochaineReleve) ? "" : jade_interp));
-}
+<<<<<<< 76c0bbd75d6e1427f5a133f0c0bd1449aeaa86e2
 buf.push("</p></div>");}.call(this,"counter" in locals_for_with?locals_for_with.counter:typeof counter!=="undefined"?counter:undefined,"statement" in locals_for_with?locals_for_with.statement:typeof statement!=="undefined"?statement:undefined));;return buf.join("");
 
+=======
+buf.push("€ &nbsp; la derniere fois.<br/><br/></h4><h5>Pour plus d'info contactez le service client EDF: 09 69 32 15 15</h5>");}.call(this,"cost" in locals_for_with?locals_for_with.cost:typeof cost!=="undefined"?cost:undefined));;return buf.join("");
+>>>>>>> chercher les data contrat et consomation edf
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -1295,12 +1386,13 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (name) {
-buf.push("<h2>Énergie - EDF</h2>");
-if ( name)
+;var locals_for_with = (locals || {});(function (nextBillDate, nextPaymentAmount) {
+buf.push("<h2>Mon prochain paiment, .... le &nbsp;");
+if ( nextBillDate)
 {
-buf.push("<h3>Titulaire du contrat</h3><div class=\"holder\">" + (jade.escape(null == (jade_interp = name.formated) ? "" : jade_interp)) + "</div>");
-}}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
+buf.push((jade.escape(null == (jade_interp = nextBillDate) ? "" : jade_interp)) + (jade.escape(null == (jade_interp = nextPaymentAmount) ? "" : jade_interp)));
+}
+buf.push("</h2>");}.call(this,"nextBillDate" in locals_for_with?locals_for_with.nextBillDate:typeof nextBillDate!=="undefined"?nextBillDate:undefined,"nextPaymentAmount" in locals_for_with?locals_for_with.nextPaymentAmount:typeof nextPaymentAmount!=="undefined"?nextPaymentAmount:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

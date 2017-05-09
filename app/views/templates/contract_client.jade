@@ -1,3 +1,39 @@
-if counter
-  h3 Contrat de client: A: Counter
-  .counter= counter.comptage
+h4
+ | Mon contrant Tarif Bleu EDF est,&nbsp;
+ if power
+    = power
+  
+
+
+
+//.container
+      h1.contrat-edf Contrat-edf
+      p.contrat-edf-detail
+        | Comtage: &nbsp;
+        if counter
+          = counter.comptage
+          br
+          br
+        | Dernier indice: &nbsp;
+        if counter
+          = counter.dernierIndex
+          br
+          br
+        | Nombre roues: &nbsp;
+        if counter
+          = counter.nombreRoues
+          br
+          br
+        | Type: &nbsp;
+        if counter
+          = counter.type
+          br
+          br
+        | Prochain date fermeteur: &nbsp;
+        if statement
+          = statement.prochaineDateFermetureReelle
+          br
+          br
+        | Prochaine Relevé: &nbsp;
+        if statement
+          = statement.prochaineReleve

@@ -1,5 +1,6 @@
-h2 Énergie - EDF
+h2
+   | Mon prochain paiment, .... le &nbsp;
+   if nextBillDate
+      = nextBillDate
 
-if name
-  h3 Titulaire du contrat
-  .holder= name.formated
+      = nextPaymentAmount
