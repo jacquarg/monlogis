@@ -169,8 +169,10 @@ const Application = Mn.Application.extend({
     this._splashMessages();
 
     const appElem = $('[role=application]')[0];
+
+    this.cozyDomain = appElem.dataset.cozyDomain;
     cozy.client.init({
-      cozyURL: `//${appElem.dataset.cozyDomain}`,
+      cozyURL: `//${this.cozyDomain}`,
       token: appElem.dataset.cozyToken,
     });
     cozy.bar.init({ appName: 'Mon Logis' });
@@ -183,21 +185,21 @@ const Application = Mn.Application.extend({
         slug: 'edf',
         domain: 'energy',
         konnectorAccount: null,
-        folderPath: 'administration/EDF/',
+        folderPath: '/Administration/EDF/',
       },
       {
         name: 'Maif',
         slug: 'maif',
         domain: 'insurance',
         konnectorAccount: null,
-        folderPath: 'administration/Maif/',
+        folderPath: '/Administration/Maif/',
       },
       {
         name: 'Free',
         slug: 'free',
         domain: 'telecom',
         konnectorAccount: null,
-        folderPath: 'administration/Free/',
+        folderPath: '/folderPath',
       },
     ]);
 
@@ -323,6 +325,52 @@ module.exports = CozyCollection.extend({
 
   getFetchIndex: () => ['type'],
   getFetchQuery: () => ({ selector: { type: 'equipment' } }),
+});
+
+});
+
+require.register("collections/files.js", function(exports, require, module) {
+'use-strict';
+
+// const CozyCollection = require('../lib/backbone_cozycollection');
+const File = require('models/file');
+
+module.exports = Backbone.Collection.extend({
+  model: File ,
+
+  initialize: function (options) {
+    this.folderPath = options.folderPath;
+  },
+
+  sync: function (method, collection, options) {
+    if (method !== 'read') {
+      console.error('Only read is available on this collection.');
+      if (options.error) {
+        options.error('Only read is available on this collection.');
+      }
+      return;
+    }
+
+    cozy.client.files.statByPath(this.folderPath)
+    .then(dir => dir.relations('contents').map((file) => {
+      console.log(file);
+      console.log(file._id);
+      const data = file.attributes;
+      data.toto = 'truc';
+      data._id = file._id;
+      return data;
+    }))
+    .then((data) => {
+
+      console.log(data);
+      return data;
+    })
+    .then(options.success, options.error);
+
+
+
+    // .then(console.log.bind(console));
+  },
 });
 
 });
@@ -550,6 +598,23 @@ module.exports = CozySingleton.extend({
 
 });
 
+require.register("models/file.js", function(exports, require, module) {
+'use-strict';
+
+const CozyModel = require('../lib/backbone_cozymodel');
+
+module.exports = CozyModel.extend({
+  docType: 'io.cozy.file',
+
+  getFileUrl: function () {
+    return cozy.client.files.getDownloadLinkById(this.get('_id'))
+    .then(absolutePath => `//${app.cozyDomain}${absolutePath}`);
+  },
+
+});
+
+});
+
 require.register("models/home.js", function(exports, require, module) {
 'use-strict';
 
@@ -672,7 +737,7 @@ module.exports = Mn.View.extend({
       ViewClass = HouseitemDetailsVendorView;
     }
 
-    this.showChildView('houseitemDetails', new ViewClass({ model: houseItem}));
+    this.showChildView('houseitemDetails', new ViewClass({ model: houseItem }));
   },
 });
 
@@ -837,7 +902,9 @@ require.register("views/houseitems/details_vendor.js", function(exports, require
 
 const template = require('../templates/houseitems/details_vendor');
 const BillsView = require('./bills');
+const FilesView = require('./files');
 const BillsCollection = require('collections/bills');
+const FilesCollection = require('collections/files');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -851,20 +918,95 @@ module.exports = Mn.View.extend({
 
   regions: {
     bills: '.bills',
+    files: '.files',
   },
 
   initialize: function () {
-    this.collection = new BillsCollection({ vendor: this.model.get('slug') });
-    this.collection.fetch();
+    this.bills = new BillsCollection({ vendor: this.model.get('slug') });
+    this.bills.fetch();
+
+    this.files = new FilesCollection({ folderPath: this.model.get('folderPath') });
+    this.files.fetch();
   },
 
   onRender: function () {
     this.showChildView('bills', new BillsView({
       model: this.model,
-      collection: this.collection,
+      collection: this.bills,
+    }));
+
+    this.showChildView('files', new FilesView({
+      model: this.model,
+      collection: this.files,
     }));
   },
 
+});
+
+});
+
+require.register("views/houseitems/file_item.js", function(exports, require, module) {
+'use-strict';
+
+const template = require('../templates/houseitems/file_item');
+
+module.exports = Mn.View.extend({
+  template: template,
+  tagName: 'li',
+
+  events: {
+    'click': 'openFile',
+  },
+
+  modelEvents: {
+    change: 'render',
+  },
+
+  openFile: function () {
+    this.model.getFileUrl()
+    .then((url) => {
+      console.log(url);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = this.model.get('name');
+      document.body.appendChild(link);
+      link.click();
+    })
+  },
+
+});
+
+});
+
+require.register("views/houseitems/files.js", function(exports, require, module) {
+'use strict';
+
+const FileItemView = require('./file_item');
+const template = require('../templates/houseitems/files');
+
+const FilesView = Mn.CollectionView.extend({
+  tagName: 'ul',
+  // className: 'movielibrary',
+  childView: FileItemView,
+});
+
+module.exports = Mn.View.extend({
+  // className: 'mymovies',
+  template: template,
+
+  regions: {
+    collection: {
+      el: 'ul',
+      replaceElement: true,
+    },
+  },
+
+  initialize: function () {
+  },
+
+  onRender: function () {
+    this.showChildView('collection', new FilesView({ collection: this.collection }));
+  },
 });
 
 });
@@ -1244,7 +1386,45 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (name) {
-buf.push("<h2>" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "</h2><div class=\"bills\"></div>");}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
+buf.push("<h2>" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "</h2><div class=\"bills\"></div><div class=\"files\"></div>");}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
+;require.register("views/templates/houseitems/file_item.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (name) {
+buf.push(jade.escape(null == (jade_interp = name) ? "" : jade_interp));}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
+;require.register("views/templates/houseitems/files.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (title) {
+buf.push("<h2>" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + "</h2><ul></ul>");}.call(this,"title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
