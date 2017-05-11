@@ -39,8 +39,13 @@
 .houseitem img {
   max-height: 50px;
 }
-.facture{
+
+.bills{
   display: flex;
   justify-content: center;
   margin-top: 20%;
+}
+
+.title-facture{
+  margin-left: 19%;
 }

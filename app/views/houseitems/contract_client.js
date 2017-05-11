@@ -1,7 +1,7 @@
 'use strict';
 
-const template = require('../templates/houseitems/facture_edf');
-const Facture = require('../../models/facture');
+const template = require('../templates/houseitems/contract_client');
+const Contract = require('../../models/contract');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -14,7 +14,7 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
-    this.model = new Facture();
+    this.model = new Contract();
     this.model.fetch();
   },
 

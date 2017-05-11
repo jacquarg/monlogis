@@ -2,15 +2,16 @@ h4
    |J'ai consomé &nbsp;
    if value
       = value
-   |&nbsp kWh &nbsp; en periode du
+   |&nbsp kWh &nbsp; en periode de
    |&nbsp
    if period
      = period
-   |.
+   |&nbsp (entre &nbsp
+   if start
+     = start
+   |&nbsp et &nbsp
+   if end
+     = end
+   |).
    br
    br
-h5
-    | Pour plus d'info:
-    br
-    br
-    | Service client EDF: 09 69 32 15 15.

@@ -1,7 +1,7 @@
 'use strict';
 
-const template = require('./templates/contract_client');
-const Contract = require('../models/contract');
+const template = require('../templates/houseitems/phone_contact_edf');
+const PhoneContact = require('../../models/client');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -14,12 +14,12 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
-    this.model = new Contract();
+    this.model = new PhoneContact();
     this.model.fetch();
   },
 
   // onRender: function () {
-  //
+
   // },
 
 
