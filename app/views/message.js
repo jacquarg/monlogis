@@ -30,6 +30,7 @@ module.exports = Mn.View.extend({
       type: 'error',
       message: message,
     }, Math.ceil(Math.random() * 10000));
+    console.error(`Emsg: ${message}`);
   },
 
   onDisplay: function (message, id) {

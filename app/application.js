@@ -75,6 +75,7 @@ const Application = Mn.Application.extend({
         folderPath: '',
       },
     ]); // TODO: fetch
+    this.objects.fetch();
 
     return this.properties.fetch()
     .then(() => this._defineViews());

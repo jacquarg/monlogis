@@ -37,6 +37,14 @@
       "type": "io.cozy.apps",
       "verbs": ["GET"]
     },
+    "Vendors": {
+      "description": "Gérer la liste de ses fournisseurs.",
+      "type": "org.fing.mesinfos.vendor"
+    },
+    "Objects": {
+      "description": "Gérer la liste de ses objets.",
+      "type": "org.fing.mesinfos.object"
+    },
     "org.fing.mesinfos.foyer": {
       "description": "TODO",
       "type": "org.fing.mesinfos.foyer"

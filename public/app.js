@@ -225,6 +225,7 @@ const Application = Mn.Application.extend({
         folderPath: '',
       },
     ]); // TODO: fetch
+    this.objects.fetch();
 
     return this.properties.fetch()
     .then(() => this._defineViews());
@@ -332,11 +333,10 @@ module.exports = CozyCollection.extend({
 require.register("collections/files.js", function(exports, require, module) {
 'use-strict';
 
-// const CozyCollection = require('../lib/backbone_cozycollection');
 const File = require('models/file');
 
 module.exports = Backbone.Collection.extend({
-  model: File ,
+  model: File,
 
   initialize: function (options) {
     this.folderPath = options.folderPath;
@@ -353,23 +353,12 @@ module.exports = Backbone.Collection.extend({
 
     cozy.client.files.statByPath(this.folderPath)
     .then(dir => dir.relations('contents').map((file) => {
-      console.log(file);
-      console.log(file._id);
       const data = file.attributes;
       data.toto = 'truc';
       data._id = file._id;
       return data;
     }))
-    .then((data) => {
-
-      console.log(data);
-      return data;
-    })
     .then(options.success, options.error);
-
-
-
-    // .then(console.log.bind(console));
   },
 });
 
@@ -385,7 +374,7 @@ module.exports = CozyCollection.extend({
   model: AnObject,
 
   getFetchIndex: () => ['type'],
-  getFetchQuery: () => ({ selector: { type: { ne: 'equipment' } } }),
+  getFetchQuery: () => ({ selector: { type: { $gt: 'equipment' } } }),
 });
 
 });
@@ -405,7 +394,7 @@ module.exports = CozyCollection.extend({
 require.register("lib/appname_version.js", function(exports, require, module) {
 'use-strict';
 
-const name = 'lamusiquedemesfilms';
+const name = 'monlogis';
 // use brunch-version plugin to populate these.
 const version = '0.0.1';
 
@@ -533,6 +522,10 @@ module.exports = Backbone.Model.extend({
       return cozy.client.find(this.docType, model.attributes._id);
     }
   },
+
+  getDocType: function () {
+    return Object.getPrototypeOf(this).docType;
+  }
 });
 
 });
@@ -631,8 +624,23 @@ require.register("models/object.js", function(exports, require, module) {
 
 const CozyModel = require('../lib/backbone_cozymodel');
 
+const BASE_DIR = '/Administration/objets/';
+
 module.exports = CozyModel.extend({
   docType: 'org.fing.mesinfos.object',
+
+  getFolderPath: function () {
+    return `${BASE_DIR}${this.get('name')}`;
+  },
+  createDir: function () {
+    if (this.has('dirID')) {
+      return Promise.resolve();
+    }
+
+    return cozy.client.files.createDirectoryByPath(this.getFolderPath())
+    .then(dir => this.set('dirID', dir._id));
+  },
+
 });
 
 });
@@ -690,6 +698,7 @@ const MessageView = require('views/message');
 const MystonesView = require('views/mystones');
 const HouseitemDetailsEDFView = require('views/houseitems/details_edf');
 const HouseitemDetailsVendorView = require('views/houseitems/details_vendor');
+const HouseitemDetailsObjectView = require('views/houseitems/details_object');
 const VendorsView = require('views/houseitems/vendors');
 const ObjectsView = require('views/houseitems/objects');
 
@@ -705,6 +714,7 @@ module.exports = Mn.View.extend({
     vendors: '.vendors',
     equipments: '.equipments',
     objects: '.objects',
+    uploadFiles: '.upload',
   },
 
   initialize: function () {
@@ -726,15 +736,25 @@ module.exports = Mn.View.extend({
   },
 
   showHouseItemDetails: function (houseItem) {
+    const docType = houseItem.getDocType();
     const slug = houseItem.get('slug');
     let ViewClass = null;
-    if (slug === 'edf') {
-      ViewClass = HouseitemDetailsEDFView;
-    } else if (slug === 'maif') {
-      console.log('todo');
-      // viewClass = HouseitemDetailsMaifView;
+    if (docType === 'org.fing.mesinfos.vendor') {
+      if (slug === 'edf') {
+        ViewClass = HouseitemDetailsEDFView;
+      } else if (slug === 'maif') {
+        console.log('todo');
+        // viewClass = HouseitemDetailsMaifView;
+      } else {
+        ViewClass = HouseitemDetailsVendorView;
+      }
+    } else if (docType === 'org.fing.mesinfos.object') {
+      const type = houseItem.get('type');
+      if (type === 'object') {
+        ViewClass = HouseitemDetailsObjectView;
+      }
     } else {
-      ViewClass = HouseitemDetailsVendorView;
+      ViewClass = HouseitemDetailsObjectView;
     }
 
     this.showChildView('houseitemDetails', new ViewClass({ model: houseItem }));
@@ -897,6 +917,66 @@ module.exports = Mn.View.extend({
 
 });
 
+require.register("views/houseitems/details_object.js", function(exports, require, module) {
+'use strict';
+
+const template = require('../templates/houseitems/details_object');
+const FilesView = require('./files');
+const FilesCollection = require('collections/files');
+const UploadFile = require('./upload_file');
+
+module.exports = Mn.View.extend({
+  template: template,
+
+  ui: {
+    inputName: 'input[name="name"]',
+    inputDescription: 'textarea[name="description"]',
+  },
+
+  events: {
+    'change @ui.inputName': 'onFormChange', // TODO : update FolderPath on name change.
+    'change @ui.inputDescription': 'onFormChange',
+  },
+
+  modelEvents: {
+    change: 'render',
+  },
+
+  regions: {
+    files: '.files',
+    addFile: '.addfile',
+  },
+
+  initialize: function () {
+    this.files = new FilesCollection({ folderPath: this.model.getFolderPath() });
+    this.files.fetch();
+  },
+
+  serializeData: function () {
+    const data = this.model.toJSON();
+    data.iconUrl = '/assets/img/gift_icon.png';
+    return data;
+  },
+
+  onRender: function () {
+    this.showChildView('files', new FilesView({
+      model: this.model,
+      collection: this.files,
+    }));
+    this.showChildView('addFile', new UploadFile({ model: this.model }));
+  },
+
+  onFormChange: function () {
+    this.model.save({
+      name: this.ui.inputName.val(),
+      description: this.ui.inputDescription.val(),
+    });
+  },
+
+});
+
+});
+
 require.register("views/houseitems/details_vendor.js", function(exports, require, module) {
 'use strict';
 
@@ -955,7 +1035,7 @@ module.exports = Mn.View.extend({
   tagName: 'li',
 
   events: {
-    'click': 'openFile',
+    click: 'openFile',
   },
 
   modelEvents: {
@@ -965,13 +1045,12 @@ module.exports = Mn.View.extend({
   openFile: function () {
     this.model.getFileUrl()
     .then((url) => {
-      console.log(url);
       const link = document.createElement('a');
       link.href = url;
       link.download = this.model.get('name');
       document.body.appendChild(link);
       link.click();
-    })
+    });
   },
 
 });
@@ -1074,6 +1153,59 @@ module.exports = Mn.View.extend({
 
   onRender: function () {
     this.showChildView('collection', new ObjectsView({ collection: this.collection }));
+  },
+});
+
+});
+
+require.register("views/houseitems/upload_file.js", function(exports, require, module) {
+'use-strict';
+
+const template = require('../templates/houseitems/upload_file');
+const get = require('../../lib/walktree_utils').get;
+
+module.exports = Mn.View.extend({
+  template: template,
+
+  ui: {
+    inputFile: 'input[type="file"]',
+    inputFileName: 'input[name="filename"]',
+  },
+
+  events: {
+    'change @ui.inputFile': 'setDefaultName',
+    'click button[name="addfile"]': 'uploadFile',
+  },
+
+  initialize: function () {
+    // this.insights ...
+  },
+
+  setDefaultName: function () {
+    if (!this.ui.inputFileName.val()) {
+      const name = get(this.ui.inputFile, 0, 'files', 0, 'name');
+      this.ui.inputFileName.val(name);
+    }
+  },
+
+  uploadFile: function () {
+    const file = get(this.ui.inputFile, 0, 'files', 0);
+    const name = this.ui.inputFileName.val();
+
+    if (file && name !== null) {
+      app.trigger('message:display', 'Création du répertoire en cours ...', 'upload_file');
+      this.model.createDir()
+      .then(() => app.trigger('message:display', 'Téléversement du fichier en cours ...', 'upload_file'))
+      .then(() => cozy.client.files.create(file, { name: name, dirID: this.model.get('dirID') }))
+      .then(() => app.trigger('message:hide', 'upload_file'))
+      .catch((err) => {
+        app.trigger('message:hide', 'upload_file');
+        app.trigger('message:error', 'Erreur lors du téléversement du fichier.');
+        console.error(err);
+      });
+    } else {
+      app.trigger('message:error', 'Fichier invalide, ou nom incomplet.');
+    }
   },
 });
 
@@ -1202,6 +1334,7 @@ module.exports = Mn.View.extend({
       type: 'error',
       message: message,
     }, Math.ceil(Math.random() * 10000));
+    console.error(`Emsg: ${message}`);
   },
 
   onDisplay: function (message, id) {
@@ -1380,6 +1513,25 @@ if (typeof define === 'function' && define.amd) {
 }
 });
 
+;require.register("views/templates/houseitems/details_object.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (description, iconUrl, name) {
+buf.push("<div class=\"row\"><div class=\"col-md-4\"><img" + (jade.attr("src", iconUrl, true, false)) + " class=\"img-circle\"/><button type=\"button\" class=\"btn btn-default btn-xs\">modifier</button></div><div class=\"col-md-8\"><input name=\"name\" type=\"text\" placeholder=\"Nom de l'objet\"" + (jade.attr("value", name, true, false)) + " class=\"form-control\"/><textarea name=\"description\" rows=\"3\" placeholder=\"Description\" class=\"form-control\">" + (jade.escape(null == (jade_interp = description) ? "" : jade_interp)) + "</textarea></div></div><div class=\"row\"><div class=\"col-md-6 addfile\"></div><div class=\"col-md-6 files\"></div></div>");}.call(this,"description" in locals_for_with?locals_for_with.description:typeof description!=="undefined"?description:undefined,"iconUrl" in locals_for_with?locals_for_with.iconUrl:typeof iconUrl!=="undefined"?iconUrl:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
 ;require.register("views/templates/houseitems/details_vendor.jade", function(exports, require, module) {
 var __templateData = function template(locals) {
 var buf = [];
@@ -1423,8 +1575,8 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (title) {
-buf.push("<h2>" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + "</h2><ul></ul>");}.call(this,"title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
+
+buf.push("<h3>Documents associés</h3><ul></ul>");;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -1463,6 +1615,25 @@ var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (title) {
 buf.push("<h2>" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + "</h2><ul></ul>");}.call(this,"title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
+;require.register("views/templates/houseitems/upload_file.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+
+buf.push("<h3>Ajouter un document</h3><ol><li>Choisissez un fihcier sur votre terminal :<input type=\"file\"/></li><li>Donnez un nom clair à ce fichier :<input name=\"filename\" type=\"text\" placeholder=\"notice.pdf\" class=\"form-control\"/></li><li>Vous n'avez plus qu'à l'ajouter à votre Cozy :<button name=\"addfile\" type=\"button\" class=\"btn btn-primary\">ajouter</button></li></ol>");;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

@@ -39,3 +39,8 @@
 .houseitem img {
   max-height: 50px;
 }
+
+.houseitemdetails img {  
+  max-width: 100%;
+  max-height: 100%;
+}

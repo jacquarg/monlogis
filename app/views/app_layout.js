@@ -5,6 +5,7 @@ const MessageView = require('views/message');
 const MystonesView = require('views/mystones');
 const HouseitemDetailsEDFView = require('views/houseitems/details_edf');
 const HouseitemDetailsVendorView = require('views/houseitems/details_vendor');
+const HouseitemDetailsObjectView = require('views/houseitems/details_object');
 const VendorsView = require('views/houseitems/vendors');
 const ObjectsView = require('views/houseitems/objects');
 
@@ -20,6 +21,7 @@ module.exports = Mn.View.extend({
     vendors: '.vendors',
     equipments: '.equipments',
     objects: '.objects',
+    uploadFiles: '.upload',
   },
 
   initialize: function () {
@@ -41,15 +43,25 @@ module.exports = Mn.View.extend({
   },
 
   showHouseItemDetails: function (houseItem) {
+    const docType = houseItem.getDocType();
     const slug = houseItem.get('slug');
     let ViewClass = null;
-    if (slug === 'edf') {
-      ViewClass = HouseitemDetailsEDFView;
-    } else if (slug === 'maif') {
-      console.log('todo');
-      // viewClass = HouseitemDetailsMaifView;
+    if (docType === 'org.fing.mesinfos.vendor') {
+      if (slug === 'edf') {
+        ViewClass = HouseitemDetailsEDFView;
+      } else if (slug === 'maif') {
+        console.log('todo');
+        // viewClass = HouseitemDetailsMaifView;
+      } else {
+        ViewClass = HouseitemDetailsVendorView;
+      }
+    } else if (docType === 'org.fing.mesinfos.object') {
+      const type = houseItem.get('type');
+      if (type === 'object') {
+        ViewClass = HouseitemDetailsObjectView;
+      }
     } else {
-      ViewClass = HouseitemDetailsVendorView;
+      ViewClass = HouseitemDetailsObjectView;
     }
 
     this.showChildView('houseitemDetails', new ViewClass({ model: houseItem }));
