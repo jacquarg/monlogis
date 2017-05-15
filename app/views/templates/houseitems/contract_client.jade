@@ -1,0 +1,48 @@
+h4.payment
+ | Mon contrant &nbsp
+ if name
+    = name
+ | &nbsp EDF
+
+ |, &nbsp
+
+ if contractSubcategory1
+        = contractSubcategory1
+         |, &nbsp
+
+ if power
+    = power
+     |.
+
+
+//.container
+      h1.contrat-edf Contrat-edf
+      p.contrat-edf-detail
+        | Comtage: &nbsp;
+        if counter
+          = counter.comptage
+          br
+          br
+        | Dernier indice: &nbsp;
+        if counter
+          = counter.dernierIndex
+          br
+          br
+        | Nombre roues: &nbsp;
+        if counter
+          = counter.nombreRoues
+          br
+          br
+        | Type: &nbsp;
+        if counter
+          = counter.type
+          br
+          br
+        | Prochain date fermeteur: &nbsp;
+        if statement
+          = statement.prochaineDateFermetureReelle
+          br
+          br
+        | Prochaine Relevé: &nbsp;
+        if statement
+          = statement.prochaineReleve

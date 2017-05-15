@@ -14,5 +14,4 @@ module.exports = Mn.View.extend({
   modelEvents: {
     change: 'render',
   },
-
 });

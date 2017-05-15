@@ -1,8 +1,10 @@
+'use-strict';
+
 module.exports = Backbone.Collection.extend({
 
-  getFetchIndex: () => ['_id'],
+  getFetchIndex: function () { return ['_id']; },
 
-  getFetchQuery: () => ({ selector: { _id: { $gt: null } } }),
+  getFetchQuery: function () { return { selector: { _id: { $gt: null } } }; },
 
   sync: function (method, collection, options) {
     if (method !== 'read') {
