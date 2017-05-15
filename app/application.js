@@ -19,8 +19,10 @@ const Application = Mn.Application.extend({
     this._splashMessages();
 
     const appElem = $('[role=application]')[0];
+
+    this.cozyDomain = appElem.dataset.cozyDomain;
     cozy.client.init({
-      cozyURL: `//${appElem.dataset.cozyDomain}`,
+      cozyURL: `//${this.cozyDomain}`,
       token: appElem.dataset.cozyToken,
     });
     cozy.bar.init({ appName: 'Mon Logis' });
@@ -33,21 +35,21 @@ const Application = Mn.Application.extend({
         slug: 'edf',
         domain: 'energy',
         konnectorAccount: null,
-        folderPath: 'administration/EDF/',
+        folderPath: '/Administration/EDF/',
       },
       {
         name: 'Maif',
         slug: 'maif',
         domain: 'insurance',
         konnectorAccount: null,
-        folderPath: 'administration/Maif/',
+        folderPath: '/Administration/Maif/',
       },
       {
         name: 'Free',
         slug: 'free',
         domain: 'telecom',
         konnectorAccount: null,
-        folderPath: 'administration/Free/',
+        folderPath: '/folderPath',
       },
     ]);
 
@@ -73,6 +75,7 @@ const Application = Mn.Application.extend({
         folderPath: '',
       },
     ]); // TODO: fetch
+    this.objects.fetch();
 
     return this.properties.fetch()
     .then(() => this._defineViews());

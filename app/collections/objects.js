@@ -7,5 +7,5 @@ module.exports = CozyCollection.extend({
   model: AnObject,
 
   getFetchIndex: () => ['type'],
-  getFetchQuery: () => ({ selector: { type: { ne: 'equipment' } } }),
+  getFetchQuery: () => ({ selector: { type: { $gt: 'equipment' } } }),
 });

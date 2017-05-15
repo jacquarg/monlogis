@@ -37,4 +37,8 @@ module.exports = Backbone.Model.extend({
       return cozy.client.find(this.docType, model.attributes._id);
     }
   },
+
+  getDocType: function () {
+    return Object.getPrototypeOf(this).docType;
+  }
 });

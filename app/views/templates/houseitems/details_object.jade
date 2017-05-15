@@ -1,0 +1,15 @@
+.row
+  .col-md-4
+    img.objecticon.img-circle(src=iconUrl)
+
+    button#changeicon.btn.btn-default.btn-xs(type="button") modifier
+
+  .col-md-8
+    input.form-control(name="name", type="text", placeholder="Nom de l'objet", value=name)
+    textarea.form-control(name="description", rows=3, placeholder="Description")
+      = description
+
+.row
+  .col-md-6.addfile
+
+  .col-md-6.files

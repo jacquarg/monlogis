@@ -48,4 +48,8 @@
 
 .title-facture{
   margin-left: 19%;
+
+.houseitemdetails img {  
+  max-width: 100%;
+  max-height: 100%;
 }
