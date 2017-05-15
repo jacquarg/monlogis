@@ -9,6 +9,8 @@ module.exports = Mn.View.extend({
   template: template,
 
   ui: {
+    icon: 'img.objecticon',
+    changeIcon: 'input#changeicon',
     inputName: 'input[name="name"]',
     inputDescription: 'textarea[name="description"]',
   },
@@ -16,10 +18,12 @@ module.exports = Mn.View.extend({
   events: {
     'change @ui.inputName': 'onFormChange', // TODO : update FolderPath on name change.
     'change @ui.inputDescription': 'onFormChange',
+    'click @ui.changeIcon': 'changeIcon',
   },
 
   modelEvents: {
     change: 'render',
+    newFile: 'updateFilesCollection',
   },
 
   regions: {
@@ -30,6 +34,8 @@ module.exports = Mn.View.extend({
   initialize: function () {
     this.files = new FilesCollection({ folderPath: this.model.getFolderPath() });
     this.files.fetch();
+
+    console.log(this.files);
   },
 
   serializeData: function () {
@@ -53,4 +59,28 @@ module.exports = Mn.View.extend({
     });
   },
 
+  updateFilesCollection: function (file) {
+    this.files.add(file);
+  },
+
+  displayIcon: function (iconFile) {
+    iconFile.getFileUrl().then((url) => {
+      this.iconUrl = url;
+      this.ui.objecticon.attr('src', url);
+    });
+  },
+
+  changeIcon: function () {
+    const imgFiles = this.files.filter(file => file.has('attributes') && file.get('attributes')['class'] === 'image');
+
+    let iconFile = imgFiles.get(this.model.get('iconFileId'));
+    let index = imgFiles.indexOf(iconFile);
+    index = index + 1 % imgFiles.size();
+
+    iconFile = imgFiles.at(index);
+
+    this.model.save('iconFileId', iconFile.get('_id'));
+
+    displayIcon();
+  },
 });

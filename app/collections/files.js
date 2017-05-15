@@ -19,12 +19,7 @@ module.exports = Backbone.Collection.extend({
     }
 
     cozy.client.files.statByPath(this.folderPath)
-    .then(dir => dir.relations('contents').map((file) => {
-      const data = file.attributes;
-      data.toto = 'truc';
-      data._id = file._id;
-      return data;
-    }))
+    .then(dir => dir.relations('contents'))
     .then(options.success, options.error);
   },
 });

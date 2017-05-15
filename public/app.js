@@ -352,12 +352,7 @@ module.exports = Backbone.Collection.extend({
     }
 
     cozy.client.files.statByPath(this.folderPath)
-    .then(dir => dir.relations('contents').map((file) => {
-      const data = file.attributes;
-      data.toto = 'truc';
-      data._id = file._id;
-      return data;
-    }))
+    .then(dir => dir.relations('contents'))
     .then(options.success, options.error);
   },
 });
@@ -929,6 +924,8 @@ module.exports = Mn.View.extend({
   template: template,
 
   ui: {
+    icon: 'img.objecticon',
+    changeIcon: 'input#changeicon',
     inputName: 'input[name="name"]',
     inputDescription: 'textarea[name="description"]',
   },
@@ -936,10 +933,12 @@ module.exports = Mn.View.extend({
   events: {
     'change @ui.inputName': 'onFormChange', // TODO : update FolderPath on name change.
     'change @ui.inputDescription': 'onFormChange',
+    'click @ui.changeIcon': 'changeIcon',
   },
 
   modelEvents: {
     change: 'render',
+    newFile: 'updateFilesCollection',
   },
 
   regions: {
@@ -950,6 +949,8 @@ module.exports = Mn.View.extend({
   initialize: function () {
     this.files = new FilesCollection({ folderPath: this.model.getFolderPath() });
     this.files.fetch();
+
+    console.log(this.files);
   },
 
   serializeData: function () {
@@ -973,6 +974,30 @@ module.exports = Mn.View.extend({
     });
   },
 
+  updateFilesCollection: function (file) {
+    this.files.add(file);
+  },
+
+  displayIcon: function (iconFile) {
+    iconFile.getFileUrl().then((url) => {
+      this.iconUrl = url;
+      this.ui.objecticon.attr('src', url);
+    });
+  },
+
+  changeIcon: function () {
+    const imgFiles = this.files.filter(file => file.has('attributes') && file.get('attributes')['class'] === 'image');
+
+    let iconFile = imgFiles.get(this.model.get('iconFileId'));
+    let index = imgFiles.indexOf(iconFile);
+    index = index + 1 % imgFiles.size();
+
+    iconFile = imgFiles.at(index);
+
+    this.model.save('iconFileId', iconFile.get('_id'));
+
+    displayIcon();
+  },
 });
 
 });
@@ -1197,7 +1222,11 @@ module.exports = Mn.View.extend({
       this.model.createDir()
       .then(() => app.trigger('message:display', 'Téléversement du fichier en cours ...', 'upload_file'))
       .then(() => cozy.client.files.create(file, { name: name, dirID: this.model.get('dirID') }))
-      .then(() => app.trigger('message:hide', 'upload_file'))
+      .then((file) => {
+        console.log("helllo");
+        app.trigger('message:hide', 'upload_file');
+        this.model.trigger('newFile', file);
+      })
       .catch((err) => {
         app.trigger('message:hide', 'upload_file');
         app.trigger('message:error', 'Erreur lors du téléversement du fichier.');
@@ -1519,7 +1548,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (description, iconUrl, name) {
-buf.push("<div class=\"row\"><div class=\"col-md-4\"><img" + (jade.attr("src", iconUrl, true, false)) + " class=\"img-circle\"/><button type=\"button\" class=\"btn btn-default btn-xs\">modifier</button></div><div class=\"col-md-8\"><input name=\"name\" type=\"text\" placeholder=\"Nom de l'objet\"" + (jade.attr("value", name, true, false)) + " class=\"form-control\"/><textarea name=\"description\" rows=\"3\" placeholder=\"Description\" class=\"form-control\">" + (jade.escape(null == (jade_interp = description) ? "" : jade_interp)) + "</textarea></div></div><div class=\"row\"><div class=\"col-md-6 addfile\"></div><div class=\"col-md-6 files\"></div></div>");}.call(this,"description" in locals_for_with?locals_for_with.description:typeof description!=="undefined"?description:undefined,"iconUrl" in locals_for_with?locals_for_with.iconUrl:typeof iconUrl!=="undefined"?iconUrl:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
+buf.push("<div class=\"row\"><div class=\"col-md-4\"><img" + (jade.attr("src", iconUrl, true, false)) + " class=\"objecticon img-circle\"/><button id=\"changeicon\" type=\"button\" class=\"btn btn-default btn-xs\">modifier</button></div><div class=\"col-md-8\"><input name=\"name\" type=\"text\" placeholder=\"Nom de l'objet\"" + (jade.attr("value", name, true, false)) + " class=\"form-control\"/><textarea name=\"description\" rows=\"3\" placeholder=\"Description\" class=\"form-control\">" + (jade.escape(null == (jade_interp = description) ? "" : jade_interp)) + "</textarea></div></div><div class=\"row\"><div class=\"col-md-6 addfile\"></div><div class=\"col-md-6 files\"></div></div>");}.call(this,"description" in locals_for_with?locals_for_with.description:typeof description!=="undefined"?description:undefined,"iconUrl" in locals_for_with?locals_for_with.iconUrl:typeof iconUrl!=="undefined"?iconUrl:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -1556,8 +1585,11 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (name) {
-buf.push(jade.escape(null == (jade_interp = name) ? "" : jade_interp));}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
+;var locals_for_with = (locals || {});(function (attributes) {
+if ( attributes)
+{
+buf.push(jade.escape(null == (jade_interp = attributes.name) ? "" : jade_interp));
+}}.call(this,"attributes" in locals_for_with?locals_for_with.attributes:typeof attributes!=="undefined"?attributes:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
