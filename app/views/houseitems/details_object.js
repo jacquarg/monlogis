@@ -71,11 +71,12 @@ module.exports = Mn.View.extend({
   },
 
   changeIcon: function () {
+    //eslint-disable-next-line
     const imgFiles = this.files.filter(file => file.has('attributes') && file.get('attributes')['class'] === 'image');
 
     let iconFile = imgFiles.get(this.model.get('iconFileId'));
     let index = imgFiles.indexOf(iconFile);
-    index = index + 1 % imgFiles.size();
+    index = (index + 1) % imgFiles.size();
 
     iconFile = imgFiles.at(index);
 

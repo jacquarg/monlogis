@@ -8,7 +8,7 @@ const HouseitemDetailsVendorView = require('views/houseitems/details_vendor');
 const HouseitemDetailsObjectView = require('views/houseitems/details_object');
 const VendorsView = require('views/houseitems/vendors');
 const ObjectsView = require('views/houseitems/objects');
-const InfosClientView = require('views/infos_client');
+
 
 module.exports = Mn.View.extend({
   template: template,
@@ -66,7 +66,5 @@ module.exports = Mn.View.extend({
     }
 
     this.showChildView('houseitemDetails', new ViewClass({ model: houseItem }));
-    this.showChildView('houseitemDetails', new HouseitemDetailsEDFView());
-    this.showChildView('infosClient', new InfosClientView());
   },
 });

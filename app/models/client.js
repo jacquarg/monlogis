@@ -1,7 +1,18 @@
 'use-strict';
 
-const CozySingleton = require('../lib/backbone_cozysingleton');
+const CozyModel = require('../lib/backbone_cozymodel');
 
-module.exports = CozySingleton.extend({
+module.exports = CozyModel.extend({
   docType: 'org.fing.mesinfos.client',
+
+  fetchEDF: function () {
+    // TODO : check that data are coherent against one contract !
+    return this.fetch({ indexName: 'EDF', index: ['vendor'], selector: { vendor: 'EDF' } });
+  },
+
+  fetchMaif: function () {
+    // TODO : check that data are coherent against one contract !
+    return this.fetch({ indexName: 'Maif', index: ['vendor'], selector: { vendor: 'Maif' } });
+  },
+
 });

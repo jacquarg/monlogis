@@ -37,7 +37,6 @@ module.exports = Mn.View.extend({
       .then(() => app.trigger('message:display', 'Téléversement du fichier en cours ...', 'upload_file'))
       .then(() => cozy.client.files.create(file, { name: name, dirID: this.model.get('dirID') }))
       .then((file) => {
-        console.log("helllo");
         app.trigger('message:hide', 'upload_file');
         this.model.trigger('newFile', file);
       })

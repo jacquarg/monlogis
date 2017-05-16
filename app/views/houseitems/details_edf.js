@@ -1,7 +1,7 @@
 'use strict';
 
 const template = require('../templates/houseitems/details_edf');
-const Paiment = require('../../models/paiment');
+const Paiment = require('../../models/paymentterms');
 const ContractView = require('./contract_client');
 const ConsomationView = require('./consomation_edf');
 const PhoneDepannageView = require('./phone_depannage_edf');
@@ -29,7 +29,7 @@ module.exports = Mn.View.extend({
 
   initialize: function () {
     this.model = new Paiment();
-    this.model.fetch();
+    this.model.fetchEDF();
     this.bills = new BillsCollection({ vendor: 'EDF' });
     this.bills.fetch();
   },

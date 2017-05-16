@@ -1,9 +1,20 @@
 'use-strict';
 
-const CozySingleton = require('../lib/backbone_cozysingleton');
+const CozyModel = require('../lib/backbone_cozymodel');
 
-module.exports = CozySingleton.extend({
+module.exports = CozyModel.extend({
   docType: 'org.fing.mesinfos.paymentterms',
+
+  fetchEDF: function () {
+    // TODO : check that data are coherent against one contract !
+    return this.fetch({ indexName: 'EDF', index: ['vendor'], selector: { vendor: 'EDF' } });
+  },
+
+  fetchMaif: function () {
+    // TODO : check that data are coherent against one contract !
+    return this.fetch({ indexName: 'Maif', index: ['vendor'], selector: { vendor: 'Maif' } });
+  },
+
   getNextPaymentEDF: function () {
     const paymentSchedules = this.get('paymentSchedules');
     if (paymentSchedules && paymentSchedules instanceof Array) {
@@ -14,6 +25,7 @@ module.exports = CozySingleton.extend({
       }
     }
   },
+
   getLastPaymentEDF: function () {
     const paymentSchedules = this.get('paymentSchedules');
     if (paymentSchedules && paymentSchedules instanceof Array) {

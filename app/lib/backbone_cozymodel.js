@@ -21,8 +21,7 @@ module.exports = Backbone.Model.extend({
     });
   },
 
-  syncPromise: function (method, model) {
-    console.log(model);
+  syncPromise: function (method, model, options) {
     if (method === 'create') {
       return cozy.client.data.create(this.docType, model.attributes);
     } else if (method === 'update') {
@@ -34,8 +33,22 @@ module.exports = Backbone.Model.extend({
     } else if (method === 'delete') {
       return cozy.client.data.delete(this.docType, model.attributes);
     } else if (method === 'read') {
+      if (options.indexName && options.indexName !== '') {
+        return this._fetchFirstWithSelector(options.indexName, options.index, options.selector);
+      }
+
       return cozy.client.find(this.docType, model.attributes._id);
     }
+  },
+
+
+  _fetchFirstWithSelector: function (name, index, selector) {
+    const propName = `index${name}`;
+    this[propName] = this[propName] || cozy.client.data.defineIndex(this.getDocType(), index);
+
+    return this[propName]
+      .then(index => cozy.client.data.query(index, { selector: selector, limit: 1 }))
+      .then(res => ((res && res.length !== 0) ? res[0] : {}));
   },
 
   getDocType: function () {

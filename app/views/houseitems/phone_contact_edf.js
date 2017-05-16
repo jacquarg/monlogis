@@ -15,7 +15,7 @@ module.exports = Mn.View.extend({
 
   initialize: function () {
     this.model = new PhoneContact();
-    this.model.fetch();
+    this.model.fetchEDF();
   },
 
   // onRender: function () {
