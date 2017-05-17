@@ -623,7 +623,7 @@ module.exports = CozyModel.extend({
 
   fetchMaif: function () {
     // TODO : check that data are coherent against one contract !
-    return this.fetch({ indexName: 'Maif', index: ['vendor'], selector: { vendor: 'Maif' } });
+    return this.fetch({ indexName: 'Maif', index: ['vendor'], selector: { vendor: 'maif' } });
   },
 
 });
@@ -679,6 +679,17 @@ module.exports = CozyModel.extend({
 
 });
 
+require.register("models/foyer.js", function(exports, require, module) {
+'use-strict';
+
+const CozySingleton = require('../lib/backbone_cozysingleton');
+
+module.exports = CozySingleton.extend({
+  docType: 'org.fing.mesinfos.foyer',
+});
+
+});
+
 require.register("models/home.js", function(exports, require, module) {
 'use-strict';
 
@@ -686,7 +697,6 @@ const CozySingleton = require('../lib/backbone_cozysingleton');
 
 module.exports = CozySingleton.extend({
   docType: 'org.fing.mesinfos.home',
-
 
 });
 
@@ -820,6 +830,21 @@ module.exports = new Properties();
 
 });
 
+require.register("models/sinistre.js", function(exports, require, module) {
+'use-strict';
+
+const CozySingleton = require('../lib/backbone_cozysingleton');
+
+module.exports = CozySingleton.extend({
+  docType: 'org.fing.mesinfos.insuranceclaim',
+  fetchMaif: function () {
+    // TODO : check that data are coherent against one contract !
+    return this.fetch({ indexName: 'Maif', index: ['type'], selector: { type: 'Habitation' } });
+  },
+});
+
+});
+
 require.register("models/vendor.js", function(exports, require, module) {
 'use-strict';
 
@@ -849,6 +874,7 @@ const template = require('views/templates/app_layout');
 const MessageView = require('views/message');
 const MystonesView = require('views/mystones');
 const HouseitemDetailsEDFView = require('views/houseitems/details_edf');
+const HouseitemDetailsMaifView = require('views/houseitems/details_maif');
 const HouseitemDetailsVendorView = require('views/houseitems/details_vendor');
 const HouseitemDetailsObjectView = require('views/houseitems/details_object');
 const VendorsView = require('views/houseitems/vendors');
@@ -897,7 +923,7 @@ module.exports = Mn.View.extend({
         ViewClass = HouseitemDetailsEDFView;
       } else if (slug === 'maif') {
         console.log('todo');
-        // viewClass = HouseitemDetailsMaifView;
+        ViewClass = HouseitemDetailsMaifView;
       } else {
         ViewClass = HouseitemDetailsVendorView;
       }
@@ -1159,6 +1185,50 @@ module.exports = Mn.View.extend({
 
 });
 
+require.register("views/houseitems/details_maif.js", function(exports, require, module) {
+'use strict';
+
+const template = require('../templates/houseitems/details_maif');
+const ContractMaif = require('../../models/contract');
+const SinstreHabitatView = require('./sinistre_habitat');
+const SocietaireView = require('./societaire_maif');
+const FoyerView = require('./foyer_maif');
+const HomeView = require('./home_maif');
+
+module.exports = Mn.View.extend({
+  template: template,
+
+  regions: {
+    sinistreHabitat: '.sinistreHabitat',
+    homeMaif: '.homeMaif',
+    foyerMaif: '.foyerMaif',
+    societaireMaif: '.societaireMaif',
+  },
+
+  events: {
+  },
+
+  modelEvents: {
+    change: 'render',
+  },
+
+  initialize: function () {
+    this.model = new ContractMaif();
+    this.model.fetchMaif();
+  },
+
+  onRender: function () {
+    this.showChildView('sinistreHabitat', new SinstreHabitatView());
+    this.showChildView('homeMaif', new HomeView());
+    this.showChildView('foyerMaif', new FoyerView());
+    this.showChildView('societaireMaif', new SocietaireView());
+  },
+
+
+});
+
+});
+
 require.register("views/houseitems/details_object.js", function(exports, require, module) {
 'use strict';
 
@@ -1237,7 +1307,13 @@ module.exports = Mn.View.extend({
     //eslint-disable-next-line
     const imgFiles = this.files.filter(file => file.has('attributes') && file.get('attributes')['class'] === 'image');
 
+<<<<<<< 26b16e9f82098480d8acb4033c0836962cf74615
     if (imgFiles.length === 0) { return; }
+=======
+    let iconFile = imgFiles.get(this.model.get('iconFileId'));
+    let index = imgFiles.indexOf(iconFile);
+    index = (index + 1) % imgFiles.size();
+>>>>>>> chercher et afficher les donnees Maif
 
     const iconFileId = this.model.get('iconFileId');
     let iconFile = null;
@@ -1370,6 +1446,66 @@ module.exports = Mn.View.extend({
 
 });
 
+require.register("views/houseitems/foyer_maif.js", function(exports, require, module) {
+'use strict';
+
+const template = require('../templates/houseitems/foyer_maif');
+const FoyerMaif = require('../../models/foyer');
+
+module.exports = Mn.View.extend({
+  template: template,
+
+  events: {
+  },
+
+  modelEvents: {
+    change: 'render',
+  },
+
+  initialize: function () {
+    this.model = new FoyerMaif();
+    this.model.fetch();
+  },
+
+  // onRender: function () {
+  //
+  // },
+
+
+});
+
+});
+
+require.register("views/houseitems/home_maif.js", function(exports, require, module) {
+'use strict';
+
+const template = require('../templates/houseitems/home_maif');
+const HomeMaif = require('../../models/home');
+
+module.exports = Mn.View.extend({
+  template: template,
+
+  events: {
+  },
+
+  modelEvents: {
+    change: 'render',
+  },
+
+  initialize: function () {
+    this.model = new HomeMaif();
+    this.model.fetch();
+  },
+
+  // onRender: function () {
+  //
+  // },
+
+
+});
+
+});
+
 require.register("views/houseitems/object_item.js", function(exports, require, module) {
 'use-strict';
 
@@ -1491,6 +1627,66 @@ module.exports = Mn.View.extend({
   initialize: function () {
     this.model = new PhoneDeppanage();
     this.model.fetchEDF();
+  },
+
+  // onRender: function () {
+  //
+  // },
+
+
+});
+
+});
+
+require.register("views/houseitems/sinistre_habitat.js", function(exports, require, module) {
+'use strict';
+
+const template = require('../templates/houseitems/sinistre_habitat');
+const SinistreMaif = require('../../models/sinistre');
+
+module.exports = Mn.View.extend({
+  template: template,
+
+  events: {
+  },
+
+  modelEvents: {
+    change: 'render',
+  },
+
+  initialize: function () {
+    this.model = new SinistreMaif();
+    this.model.fetch();
+  },
+
+  // onRender: function () {
+  //
+  // },
+
+
+});
+
+});
+
+require.register("views/houseitems/societaire_maif.js", function(exports, require, module) {
+'use strict';
+
+const template = require('../templates/houseitems/societaire_maif');
+const SocietaireMaif = require('../../models/client');
+
+module.exports = Mn.View.extend({
+  template: template,
+
+  events: {
+  },
+
+  modelEvents: {
+    change: 'render',
+  },
+
+  initialize: function () {
+    this.model = new SocietaireMaif();
+    this.model.fetchMaif();
   },
 
   // onRender: function () {
@@ -1896,7 +2092,7 @@ if ( power)
 {
 buf.push((jade.escape(null == (jade_interp = power) ? "" : jade_interp)) + ".");
 }
-buf.push("</h4><!--.containerh1.contrat-edf Contrat-edf\np.contrat-edf-detail\n  | Comtage: &nbsp;\n  if counter\n    = counter.comptage\n    br\n    br\n  | Dernier indice: &nbsp;\n  if counter\n    = counter.dernierIndex\n    br\n    br\n  | Nombre roues: &nbsp;\n  if counter\n    = counter.nombreRoues\n    br\n    br\n  | Type: &nbsp;\n  if counter\n    = counter.type\n    br\n    br\n  | Prochain date fermeteur: &nbsp;\n  if statement\n    = statement.prochaineDateFermetureReelle\n    br\n    br\n  | Prochaine Relevé: &nbsp;\n  if statement\n    = statement.prochaineReleve-->");}.call(this,"contractSubcategory1" in locals_for_with?locals_for_with.contractSubcategory1:typeof contractSubcategory1!=="undefined"?contractSubcategory1:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"power" in locals_for_with?locals_for_with.power:typeof power!=="undefined"?power:undefined));;return buf.join("");
+buf.push("</h4>");}.call(this,"contractSubcategory1" in locals_for_with?locals_for_with.contractSubcategory1:typeof contractSubcategory1!=="undefined"?contractSubcategory1:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"power" in locals_for_with?locals_for_with.power:typeof power!=="undefined"?power:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -1916,6 +2112,40 @@ var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (lastPaymentAmount, nextPaymentAmount) {
 buf.push("<h3>Mon prochain paiment,&ensp;" + (jade.escape(null == (jade_interp = nextPaymentAmount) ? "" : jade_interp)) + ".<br/></h3><h3>Mon dernier paiment,&ensp;" + (jade.escape(null == (jade_interp = lastPaymentAmount) ? "" : jade_interp)) + ".<br/><br/></h3><div class=\"contract\"></div><div class=\"consomation\"></div><br/><div class=\"phoneDepannage\"></div><div class=\"phoneContact\"></div><div class=\"bills\"></div>");}.call(this,"lastPaymentAmount" in locals_for_with?locals_for_with.lastPaymentAmount:typeof lastPaymentAmount!=="undefined"?lastPaymentAmount:undefined,"nextPaymentAmount" in locals_for_with?locals_for_with.nextPaymentAmount:typeof nextPaymentAmount!=="undefined"?nextPaymentAmount:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
+;require.register("views/templates/houseitems/details_maif.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (societaire, startDate, vendor) {
+buf.push("<h3>J'ai eu mon contrat &nbsp");
+if ( vendor)
+{
+buf.push(jade.escape(null == (jade_interp = vendor) ? "" : jade_interp));
+}
+buf.push("&nbsp le &nbsp");
+if ( startDate)
+{
+buf.push(jade.escape(null == (jade_interp = startDate) ? "" : jade_interp));
+}
+buf.push("&nbsp sous le numéro de &nbsp");
+if ( societaire)
+{
+buf.push(jade.escape(null == (jade_interp = societaire) ? "" : jade_interp));
+}
+buf.push(".<br/></h3><div class=\"homeMaif\"></div><div class=\"foyerMaif\"></div><div class=\"sinistreHabitat\"></div><div class=\"societaireMaif\"></div><div class=\"col-md-6\"></div><p>Service client maif<br/></p><div class=\"col-md-6\"></div><p>&nbsp Tel:&nbsp 09 72 72 15 15</p>");}.call(this,"societaire" in locals_for_with?locals_for_with.societaire:typeof societaire!=="undefined"?societaire:undefined,"startDate" in locals_for_with?locals_for_with.startDate:typeof startDate!=="undefined"?startDate:undefined,"vendor" in locals_for_with?locals_for_with.vendor:typeof vendor!=="undefined"?vendor:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2007,6 +2237,69 @@ if (typeof define === 'function' && define.amd) {
 }
 });
 
+;require.register("views/templates/houseitems/foyer_maif.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (address) {
+buf.push("<h3>Membres de mon foyer:</h3><li>Adresse: &nbsp");
+if ( address)
+{
+buf.push(jade.escape(null == (jade_interp = address.city) ? "" : jade_interp));
+}
+buf.push(",&nbsp");
+if ( address)
+{
+buf.push(jade.escape(null == (jade_interp = address.country) ? "" : jade_interp));
+}
+buf.push("</li>");}.call(this,"address" in locals_for_with?locals_for_with.address:typeof address!=="undefined"?address:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
+;require.register("views/templates/houseitems/home_maif.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (natureLieu, nombrePieces, situationJuridiqueLieu) {
+buf.push("<h3>Mon habitat assuré:</h3><li>");
+if ( natureLieu)
+{
+buf.push(jade.escape(null == (jade_interp = natureLieu) ? "" : jade_interp));
+}
+buf.push("<br/></li><li>");
+if ( nombrePieces)
+{
+buf.push(jade.escape(null == (jade_interp = nombrePieces) ? "" : jade_interp));
+}
+buf.push("</li><li>");
+if ( situationJuridiqueLieu)
+{
+buf.push(jade.escape(null == (jade_interp = situationJuridiqueLieu) ? "" : jade_interp));
+}
+buf.push("<br/></li>");}.call(this,"natureLieu" in locals_for_with?locals_for_with.natureLieu:typeof natureLieu!=="undefined"?natureLieu:undefined,"nombrePieces" in locals_for_with?locals_for_with.nombrePieces:typeof nombrePieces!=="undefined"?nombrePieces:undefined,"situationJuridiqueLieu" in locals_for_with?locals_for_with.situationJuridiqueLieu:typeof situationJuridiqueLieu!=="undefined"?situationJuridiqueLieu:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
 ;require.register("views/templates/houseitems/object_item.jade", function(exports, require, module) {
 var __templateData = function template(locals) {
 var buf = [];
@@ -2081,6 +2374,84 @@ if ( troubleshootingPhone)
 buf.push(jade.escape(null == (jade_interp = troubleshootingPhone) ? "" : jade_interp));
 }
 buf.push("</h4>");}.call(this,"troubleshootingPhone" in locals_for_with?locals_for_with.troubleshootingPhone:typeof troubleshootingPhone!=="undefined"?troubleshootingPhone:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
+;require.register("views/templates/houseitems/sinistre_habitat.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (ref, timestamp, type) {
+buf.push("<br/><button>Sinistre d'habitation</button><br/><br/><li>Type: &nbsp");
+if ( type)
+{
+buf.push(jade.escape(null == (jade_interp = type) ? "" : jade_interp));
+}
+buf.push("</li><li>Date: &nbsp");
+if ( timestamp)
+{
+buf.push(jade.escape(null == (jade_interp = timestamp) ? "" : jade_interp));
+}
+buf.push("</li><li>Référence: &nbsp");
+if ( ref)
+{
+buf.push(jade.escape(null == (jade_interp = ref) ? "" : jade_interp));
+}
+buf.push("</li>");}.call(this,"ref" in locals_for_with?locals_for_with.ref:typeof ref!=="undefined"?ref:undefined,"timestamp" in locals_for_with?locals_for_with.timestamp:typeof timestamp!=="undefined"?timestamp:undefined,"type" in locals_for_with?locals_for_with.type:typeof type!=="undefined"?type:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
+;require.register("views/templates/houseitems/societaire_maif.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (email, name, profession, telMobile) {
+buf.push("<br/><button>Societaire</button><br/><br/><li>Nom: &nbsp");
+if ( name)
+{
+buf.push(jade.escape(null == (jade_interp = name.family) ? "" : jade_interp));
+}
+buf.push("&nbsp");
+if ( name)
+{
+buf.push(jade.escape(null == (jade_interp = name.given) ? "" : jade_interp));
+}
+buf.push("</li><li>Profession: &nbsp");
+if ( profession)
+{
+buf.push(jade.escape(null == (jade_interp = profession) ? "" : jade_interp));
+}
+buf.push("</li><li>Téléphone: &nbsp");
+if ( telMobile)
+{
+buf.push(jade.escape(null == (jade_interp = telMobile) ? "" : jade_interp));
+}
+buf.push("</li><li>Email: &nbsp");
+if ( email)
+{
+buf.push(jade.escape(null == (jade_interp = email) ? "" : jade_interp));
+}
+buf.push("</li>");}.call(this,"email" in locals_for_with?locals_for_with.email:typeof email!=="undefined"?email:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"profession" in locals_for_with?locals_for_with.profession:typeof profession!=="undefined"?profession:undefined,"telMobile" in locals_for_with?locals_for_with.telMobile:typeof telMobile!=="undefined"?telMobile:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
