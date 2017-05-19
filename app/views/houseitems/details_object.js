@@ -10,7 +10,7 @@ module.exports = Mn.View.extend({
 
   ui: {
     icon: 'img.objecticon',
-    changeIcon: 'input#changeicon',
+    changeIcon: 'button#changeicon',
     inputName: 'input[name="name"]',
     inputDescription: 'textarea[name="description"]',
   },
@@ -23,6 +23,7 @@ module.exports = Mn.View.extend({
 
   modelEvents: {
     change: 'render',
+    newIconUrl: 'render',
     newFile: 'updateFilesCollection',
   },
 
@@ -40,7 +41,7 @@ module.exports = Mn.View.extend({
 
   serializeData: function () {
     const data = this.model.toJSON();
-    data.iconUrl = '/assets/img/gift_icon.png';
+    data.iconUrl = this.model.getIconUrl();
     return data;
   },
 
@@ -63,25 +64,31 @@ module.exports = Mn.View.extend({
     this.files.add(file);
   },
 
-  displayIcon: function (iconFile) {
-    iconFile.getFileUrl().then((url) => {
-      this.iconUrl = url;
-      this.ui.objecticon.attr('src', url);
-    });
-  },
+  // displayIcon: function (iconFile) {
+  //   iconFile.getFileUrl().then((url) => {
+  //     this.iconUrl = url;
+  //     this.ui.icon.attr('src', url);
+  //   });
+  // },
 
   changeIcon: function () {
     //eslint-disable-next-line
     const imgFiles = this.files.filter(file => file.has('attributes') && file.get('attributes')['class'] === 'image');
 
-    let iconFile = imgFiles.get(this.model.get('iconFileId'));
-    let index = imgFiles.indexOf(iconFile);
-    index = (index + 1) % imgFiles.size();
+    if (imgFiles.length === 0) { return; }
 
-    iconFile = imgFiles.at(index);
+    const iconFileId = this.model.get('iconFileId');
+    let iconFile = null;
+    let index = 0;
+    if (iconFileId) {
+      iconFile = this.files.get(iconFileId);
+      index = imgFiles.indexOf(iconFile);
+      index = (index + 1) % imgFiles.length;
+    }
 
-    this.model.save('iconFileId', iconFile.get('_id'));
+    iconFile = imgFiles[index];
 
-    displayIcon();
+    this.model.setIconFileId(iconFile.get('_id'));
+    this.model.save();
   },
 });

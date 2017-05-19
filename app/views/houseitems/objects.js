@@ -13,16 +13,20 @@ module.exports = Mn.View.extend({
   // className: 'mymovies',
   template: template,
 
+
   regions: {
     collection: {
       el: 'ul',
       replaceElement: true,
     },
+    // newItem: '.newItem',
   },
 
-  initialize: function () {},
+  initialize: function () {
+  },
 
   onRender: function () {
     this.showChildView('collection', new ObjectsView({ collection: this.collection }));
+    // this.showChildView('newItem', new ObjectItemView({ model: new this.collection.model()}))
   },
 });

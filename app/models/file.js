@@ -3,7 +3,7 @@
 const CozyModel = require('../lib/backbone_cozymodel');
 
 module.exports = CozyModel.extend({
-  docType: 'io.cozy.file',
+  docType: 'io.cozy.files',
 
   getFileUrl: function () {
     return cozy.client.files.getDownloadLinkById(this.get('_id'))

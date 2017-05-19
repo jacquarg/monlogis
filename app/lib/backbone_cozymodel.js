@@ -37,7 +37,7 @@ module.exports = Backbone.Model.extend({
         return this._fetchFirstWithSelector(options.indexName, options.index, options.selector);
       }
 
-      return cozy.client.find(this.docType, model.attributes._id);
+      return cozy.client.data.find(this.docType, model.attributes._id);
     }
   },
 

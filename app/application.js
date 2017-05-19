@@ -44,13 +44,13 @@ const Application = Mn.Application.extend({
         konnectorAccount: null,
         folderPath: '/Administration/Maif/',
       },
-      {
-        name: 'Free',
-        slug: 'free',
-        domain: 'telecom',
-        konnectorAccount: null,
-        folderPath: '/folderPath',
-      },
+      // {
+      //   name: 'Free',
+      //   slug: 'free',
+      //   domain: 'telecom',
+      //   konnectorAccount: null,
+      //   folderPath: '/folderPath',
+      // },
     ]);
 
     this.equipments = new EquipmentsCollection([
@@ -74,7 +74,7 @@ const Application = Mn.Application.extend({
         type: 'object',
         folderPath: '',
       },
-    ]); // TODO: fetch
+    ]);
     this.objects.fetch();
 
     return this.properties.fetch()

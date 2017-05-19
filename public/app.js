@@ -194,13 +194,13 @@ const Application = Mn.Application.extend({
         konnectorAccount: null,
         folderPath: '/Administration/Maif/',
       },
-      {
-        name: 'Free',
-        slug: 'free',
-        domain: 'telecom',
-        konnectorAccount: null,
-        folderPath: '/folderPath',
-      },
+      // {
+      //   name: 'Free',
+      //   slug: 'free',
+      //   domain: 'telecom',
+      //   konnectorAccount: null,
+      //   folderPath: '/folderPath',
+      // },
     ]);
 
     this.equipments = new EquipmentsCollection([
@@ -224,7 +224,7 @@ const Application = Mn.Application.extend({
         type: 'object',
         folderPath: '',
       },
-    ]); // TODO: fetch
+    ]);
     this.objects.fetch();
 
     return this.properties.fetch()
@@ -320,14 +320,18 @@ module.exports = CozyCollection.extend({
 require.register("collections/equipments.js", function(exports, require, module) {
 'use-strict';
 
-const CozyCollection = require('../lib/backbone_cozycollection');
-const AnObject = require('models/object');
+const ObjetsCollection = require('./objects');
 
-module.exports = CozyCollection.extend({
-  model: AnObject,
+module.exports = ObjetsCollection.extend({
 
-  getFetchIndex: () => ['type'],
   getFetchQuery: () => ({ selector: { type: 'equipment' } }),
+
+  getDummyItemAttrs: () => ({
+      name: 'Mon objet',
+      slug: 'newOjbect',
+      type: 'object',
+      folderPath: '',
+  }),
 });
 
 });
@@ -369,6 +373,24 @@ const AnObject = require('models/object');
 
 module.exports = CozyCollection.extend({
   model: AnObject,
+
+  initialize: function () {
+    this.addDummyItem();
+    this.listenTo(this, 'all', this.addDummyItem);
+  },
+
+  getDummyItemAttrs: () => ({
+      name: 'Mon objet',
+      slug: 'newOjbect',
+      type: 'object',
+      folderPath: '',
+  }),
+
+  addDummyItem: function () {
+    if (this.some(el => el.isNew())) { return; }
+
+    this.add(new AnObject(this.getDummyItemAttrs()));
+  },
 
   getFetchIndex: () => ['type'],
   getFetchQuery: () => ({ selector: { type: { $gt: 'equipment' } } }),
@@ -521,7 +543,7 @@ module.exports = Backbone.Model.extend({
         return this._fetchFirstWithSelector(options.indexName, options.index, options.selector);
       }
 
-      return cozy.client.find(this.docType, model.attributes._id);
+      return cozy.client.data.find(this.docType, model.attributes._id);
     }
   },
 
@@ -646,7 +668,7 @@ require.register("models/file.js", function(exports, require, module) {
 const CozyModel = require('../lib/backbone_cozymodel');
 
 module.exports = CozyModel.extend({
-  docType: 'io.cozy.file',
+  docType: 'io.cozy.files',
 
   getFileUrl: function () {
     return cozy.client.files.getDownloadLinkById(this.get('_id'))
@@ -674,7 +696,7 @@ require.register("models/object.js", function(exports, require, module) {
 'use-strict';
 
 const CozyModel = require('../lib/backbone_cozymodel');
-
+const FileModel = require('./file');
 const BASE_DIR = '/Administration/objets/';
 
 module.exports = CozyModel.extend({
@@ -692,6 +714,40 @@ module.exports = CozyModel.extend({
     .then(dir => this.set('dirID', dir._id));
   },
 
+  setIconFileId: function (iconFileId) {
+    this.set('iconFileId', iconFileId);
+    this.iconFile = null;
+    this.iconUrl = null;
+  },
+
+  getIconUrl: function () {
+    if (this.iconUrl) {
+      return this.iconUrl;
+    }
+
+    let defaultUrl = '/assets/img/gift_icon.png';
+
+    this._fetchIcon()
+    .catch((err) => {
+      this.unset('iconFileId');
+    });
+
+    return defaultUrl;
+  },
+
+  _fetchIcon: function () {
+    const iconId = this.get('iconFileId');
+
+    if (!iconId) { return Promise.reject(); }
+
+    this.iconFile = new FileModel({ _id: iconId });
+    return this.iconFile.fetch()
+    .then(() => this.iconFile.getFileUrl())
+    .then((fileUrl) => {
+      this.iconUrl = fileUrl;
+      this.trigger('newIconUrl');
+    });
+  },
 });
 
 });
@@ -797,7 +853,7 @@ const HouseitemDetailsVendorView = require('views/houseitems/details_vendor');
 const HouseitemDetailsObjectView = require('views/houseitems/details_object');
 const VendorsView = require('views/houseitems/vendors');
 const ObjectsView = require('views/houseitems/objects');
-const InfosClientView = require('views/infos_client');
+
 
 module.exports = Mn.View.extend({
   template: template,
@@ -855,8 +911,6 @@ module.exports = Mn.View.extend({
     }
 
     this.showChildView('houseitemDetails', new ViewClass({ model: houseItem }));
-  //   this.showChildView('houseitemDetails', new HouseitemDetailsEDFView());
-  //   this.showChildView('infosClient', new InfosClientView());
   },
 });
 
@@ -1118,7 +1172,7 @@ module.exports = Mn.View.extend({
 
   ui: {
     icon: 'img.objecticon',
-    changeIcon: 'input#changeicon',
+    changeIcon: 'button#changeicon',
     inputName: 'input[name="name"]',
     inputDescription: 'textarea[name="description"]',
   },
@@ -1131,6 +1185,7 @@ module.exports = Mn.View.extend({
 
   modelEvents: {
     change: 'render',
+    newIconUrl: 'render',
     newFile: 'updateFilesCollection',
   },
 
@@ -1148,7 +1203,7 @@ module.exports = Mn.View.extend({
 
   serializeData: function () {
     const data = this.model.toJSON();
-    data.iconUrl = '/assets/img/gift_icon.png';
+    data.iconUrl = this.model.getIconUrl();
     return data;
   },
 
@@ -1171,25 +1226,32 @@ module.exports = Mn.View.extend({
     this.files.add(file);
   },
 
-  displayIcon: function (iconFile) {
-    iconFile.getFileUrl().then((url) => {
-      this.iconUrl = url;
-      this.ui.objecticon.attr('src', url);
-    });
-  },
+  // displayIcon: function (iconFile) {
+  //   iconFile.getFileUrl().then((url) => {
+  //     this.iconUrl = url;
+  //     this.ui.icon.attr('src', url);
+  //   });
+  // },
 
   changeIcon: function () {
+    //eslint-disable-next-line
     const imgFiles = this.files.filter(file => file.has('attributes') && file.get('attributes')['class'] === 'image');
 
-    let iconFile = imgFiles.get(this.model.get('iconFileId'));
-    let index = imgFiles.indexOf(iconFile);
-    index = index + 1 % imgFiles.size();
+    if (imgFiles.length === 0) { return; }
 
-    iconFile = imgFiles.at(index);
+    const iconFileId = this.model.get('iconFileId');
+    let iconFile = null;
+    let index = 0;
+    if (iconFileId) {
+      iconFile = this.files.get(iconFileId);
+      index = imgFiles.indexOf(iconFile);
+      index = (index + 1) % imgFiles.length;
+    }
 
-    this.model.save('iconFileId', iconFile.get('_id'));
+    iconFile = imgFiles[index];
 
-    displayIcon();
+    this.model.setIconFileId(iconFile.get('_id'));
+    this.model.save();
   },
 });
 
@@ -1360,17 +1422,21 @@ module.exports = Mn.View.extend({
   // className: 'mymovies',
   template: template,
 
+
   regions: {
     collection: {
       el: 'ul',
       replaceElement: true,
     },
+    // newItem: '.newItem',
   },
 
-  initialize: function () {},
+  initialize: function () {
+  },
 
   onRender: function () {
     this.showChildView('collection', new ObjectsView({ collection: this.collection }));
+    // this.showChildView('newItem', new ObjectItemView({ model: new this.collection.model()}))
   },
 });
 
@@ -1476,7 +1542,6 @@ module.exports = Mn.View.extend({
       .then(() => app.trigger('message:display', 'Téléversement du fichier en cours ...', 'upload_file'))
       .then(() => cozy.client.files.create(file, { name: name, dirID: this.model.get('dirID') }))
       .then((file) => {
-        console.log("helllo");
         app.trigger('message:hide', 'upload_file');
         this.model.trigger('newFile', file);
       })

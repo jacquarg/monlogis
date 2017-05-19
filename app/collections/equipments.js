@@ -1,11 +1,15 @@
 'use-strict';
 
-const CozyCollection = require('../lib/backbone_cozycollection');
-const AnObject = require('models/object');
+const ObjetsCollection = require('./objects');
 
-module.exports = CozyCollection.extend({
-  model: AnObject,
+module.exports = ObjetsCollection.extend({
 
-  getFetchIndex: () => ['type'],
   getFetchQuery: () => ({ selector: { type: 'equipment' } }),
+
+  getDummyItemAttrs: () => ({
+      name: 'Mon objet',
+      slug: 'newOjbect',
+      type: 'object',
+      folderPath: '',
+  }),
 });
