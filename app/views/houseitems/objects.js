@@ -29,4 +29,5 @@ module.exports = Mn.View.extend({
     this.showChildView('collection', new ObjectsView({ collection: this.collection }));
     // this.showChildView('newItem', new ObjectItemView({ model: new this.collection.model()}))
   },
+
 });

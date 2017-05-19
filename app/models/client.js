@@ -12,7 +12,7 @@ module.exports = CozyModel.extend({
 
   fetchMaif: function () {
     // TODO : check that data are coherent against one contract !
-    return this.fetch({ indexName: 'Maif', index: ['vendor'], selector: { vendor: 'Maif' } });
+    return this.fetch({ indexName: 'Maif', index: ['vendor'], selector: { vendor: 'maif' } });
   },
 
 });

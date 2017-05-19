@@ -1,7 +1,7 @@
 'use strict';
 
-const template = require('../templates/houseitems/consomation_edf');
-const Consomation = require('../../models/consomation');
+const template = require('../templates/houseitems/home_maif');
+const HomeMaif = require('../../models/home');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -14,7 +14,7 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
-    this.model = new Consomation();
+    this.model = new HomeMaif();
     this.model.fetch();
   },
 

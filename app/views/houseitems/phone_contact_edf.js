@@ -18,9 +18,4 @@ module.exports = Mn.View.extend({
     this.model.fetchEDF();
   },
 
-  // onRender: function () {
-
-  // },
-
-
 });

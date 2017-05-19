@@ -91,4 +91,5 @@ module.exports = Mn.View.extend({
     this.model.setIconFileId(iconFile.get('_id'));
     this.model.save();
   },
+
 });

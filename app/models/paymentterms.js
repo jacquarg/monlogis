@@ -12,15 +12,16 @@ module.exports = CozyModel.extend({
 
   fetchMaif: function () {
     // TODO : check that data are coherent against one contract !
-    return this.fetch({ indexName: 'Maif', index: ['vendor'], selector: { vendor: 'Maif' } });
+    return this.fetch({ indexName: 'Maif', index: ['vendor'], selector: { vendor: 'maif' } });
   },
 
   getNextPaymentEDF: function () {
     const paymentSchedules = this.get('paymentSchedules');
     if (paymentSchedules && paymentSchedules instanceof Array) {
+      //eslint-disable-next-line
       for (const value of paymentSchedules) {
         if (value.paid === false) {
-          return value.amount + '€' + ' ' + 'le' + ' ' + value.scheduleDate;
+          return `${value.amount}€ le ${value.scheduleDate}`;
         }
       }
     }
@@ -30,11 +31,12 @@ module.exports = CozyModel.extend({
     const paymentSchedules = this.get('paymentSchedules');
     if (paymentSchedules && paymentSchedules instanceof Array) {
       let prec;
+      //eslint-disable-next-line
       for (const value of paymentSchedules) {
         if (value.paid === false) {
           return prec;
         }
-        prec = value.amount + '€' + ' ' + 'le' + ' ' + value.scheduleDate;
+        prec = `${value.amount}€ le ${value.scheduleDate}`;
       }
     }
   },

@@ -1,0 +1,13 @@
+h3 Membres de foyer:
+ul
+  li
+     | Nom: &nbsp
+     if foyerMaif
+        = foyerMaif
+  li
+     | Adresse: &nbsp
+     if address
+        = address.city
+     |,&nbsp
+     if address
+        = address.country
