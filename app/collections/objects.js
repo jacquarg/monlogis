@@ -12,10 +12,10 @@ module.exports = CozyCollection.extend({
   },
 
   getDummyItemAttrs: () => ({
-      name: 'Mon objet',
-      slug: 'newOjbect',
-      type: 'object',
-      folderPath: '',
+    name: 'Mon objet',
+    slug: 'newOjbect',
+    type: 'object',
+    folderPath: '',
   }),
 
   addDummyItem: function () {

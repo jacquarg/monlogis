@@ -2,6 +2,7 @@
 
 const CozyModel = require('../lib/backbone_cozymodel');
 const FileModel = require('./file');
+
 const BASE_DIR = '/Administration/objets/';
 
 module.exports = CozyModel.extend({
@@ -30,10 +31,12 @@ module.exports = CozyModel.extend({
       return this.iconUrl;
     }
 
-    let defaultUrl = '/assets/img/gift_icon.png';
+    const defaultUrl = '/assets/img/gift_icon.png';
 
     this._fetchIcon()
     .catch((err) => {
+      console.error(err);
+
       this.unset('iconFileId');
     });
 

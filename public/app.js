@@ -157,7 +157,7 @@ const AppLayout = require('views/app_layout');
 const Properties = require('models/properties');
 
 const VendorsCollection = require('collections/vendors');
-const EquipmentsCollection = require('collections/equipments');
+// const EquipmentsCollection = require('collections/equipments');
 const ObjectsCollection = require('collections/objects');
 
 
@@ -203,20 +203,20 @@ const Application = Mn.Application.extend({
       // },
     ]);
 
-    this.equipments = new EquipmentsCollection([
-      {
-        name: 'Chauffe Eau',
-        slug: 'waterheater',
-        type: 'equipment',
-        folderPath: '',
-      },
-      {
-        name: 'Réfrigérateur',
-        slug: 'fridge',
-        type: 'equipment',
-        folderPath: '',
-      },
-    ]); // TODO: fetch
+    // this.equipments = new EquipmentsCollection([
+    //   {
+    //     name: 'Chauffe Eau',
+    //     slug: 'waterheater',
+    //     type: 'equipment',
+    //     folderPath: '',
+    //   },
+    //   {
+    //     name: 'Réfrigérateur',
+    //     slug: 'fridge',
+    //     type: 'equipment',
+    //     folderPath: '',
+    //   },
+    // ]); // TODO: fetch
     this.objects = new ObjectsCollection([
       {
         name: 'Macbook',
@@ -327,10 +327,10 @@ module.exports = ObjetsCollection.extend({
   getFetchQuery: () => ({ selector: { type: 'equipment' } }),
 
   getDummyItemAttrs: () => ({
-      name: 'Mon objet',
-      slug: 'newOjbect',
-      type: 'object',
-      folderPath: '',
+    name: 'Mon objet',
+    slug: 'newOjbect',
+    type: 'object',
+    folderPath: '',
   }),
 });
 
@@ -380,10 +380,10 @@ module.exports = CozyCollection.extend({
   },
 
   getDummyItemAttrs: () => ({
-      name: 'Mon objet',
-      slug: 'newOjbect',
-      type: 'object',
-      folderPath: '',
+    name: 'Mon objet',
+    slug: 'newOjbect',
+    type: 'object',
+    folderPath: '',
   }),
 
   addDummyItem: function () {
@@ -740,6 +740,7 @@ require.register("models/object.js", function(exports, require, module) {
 
 const CozyModel = require('../lib/backbone_cozymodel');
 const FileModel = require('./file');
+
 const BASE_DIR = '/Administration/objets/';
 
 module.exports = CozyModel.extend({
@@ -768,10 +769,12 @@ module.exports = CozyModel.extend({
       return this.iconUrl;
     }
 
-    let defaultUrl = '/assets/img/gift_icon.png';
+    const defaultUrl = '/assets/img/gift_icon.png';
 
     this._fetchIcon()
     .catch((err) => {
+      console.error(err);
+
       this.unset('iconFileId');
     });
 
@@ -935,10 +938,10 @@ module.exports = Mn.View.extend({
     this.showChildView('message', new MessageView());
     this.showChildView('myStones', new MystonesView());
     this.showChildView('vendors', new VendorsView({ collection: app.vendors }));
-    this.showChildView('equipments', new ObjectsView({
-      model: new Backbone.Model({ title: 'Mes équipements' }),
-      collection: app.equipments,
-    }));
+    // this.showChildView('equipments', new ObjectsView({
+    //   model: new Backbone.Model({ title: 'Mes équipements' }),
+    //   collection: app.equipments,
+    // }));
     this.showChildView('objects', new ObjectsView({
       model: new Backbone.Model({ title: 'Mes objets' }),
       collection: app.objects,

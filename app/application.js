@@ -7,7 +7,7 @@ const AppLayout = require('views/app_layout');
 const Properties = require('models/properties');
 
 const VendorsCollection = require('collections/vendors');
-const EquipmentsCollection = require('collections/equipments');
+// const EquipmentsCollection = require('collections/equipments');
 const ObjectsCollection = require('collections/objects');
 
 
@@ -53,20 +53,20 @@ const Application = Mn.Application.extend({
       // },
     ]);
 
-    this.equipments = new EquipmentsCollection([
-      {
-        name: 'Chauffe Eau',
-        slug: 'waterheater',
-        type: 'equipment',
-        folderPath: '',
-      },
-      {
-        name: 'Réfrigérateur',
-        slug: 'fridge',
-        type: 'equipment',
-        folderPath: '',
-      },
-    ]); // TODO: fetch
+    // this.equipments = new EquipmentsCollection([
+    //   {
+    //     name: 'Chauffe Eau',
+    //     slug: 'waterheater',
+    //     type: 'equipment',
+    //     folderPath: '',
+    //   },
+    //   {
+    //     name: 'Réfrigérateur',
+    //     slug: 'fridge',
+    //     type: 'equipment',
+    //     folderPath: '',
+    //   },
+    // ]); // TODO: fetch
     this.objects = new ObjectsCollection([
       {
         name: 'Macbook',

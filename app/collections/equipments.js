@@ -7,9 +7,9 @@ module.exports = ObjetsCollection.extend({
   getFetchQuery: () => ({ selector: { type: 'equipment' } }),
 
   getDummyItemAttrs: () => ({
-      name: 'Mon objet',
-      slug: 'newOjbect',
-      type: 'object',
-      folderPath: '',
+    name: 'Mon objet',
+    slug: 'newOjbect',
+    type: 'object',
+    folderPath: '',
   }),
 });

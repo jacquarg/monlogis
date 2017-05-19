@@ -34,10 +34,10 @@ module.exports = Mn.View.extend({
     this.showChildView('message', new MessageView());
     this.showChildView('myStones', new MystonesView());
     this.showChildView('vendors', new VendorsView({ collection: app.vendors }));
-    this.showChildView('equipments', new ObjectsView({
-      model: new Backbone.Model({ title: 'Mes équipements' }),
-      collection: app.equipments,
-    }));
+    // this.showChildView('equipments', new ObjectsView({
+    //   model: new Backbone.Model({ title: 'Mes équipements' }),
+    //   collection: app.equipments,
+    // }));
     this.showChildView('objects', new ObjectsView({
       model: new Backbone.Model({ title: 'Mes objets' }),
       collection: app.objects,
