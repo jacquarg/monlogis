@@ -27,8 +27,14 @@
  height: 100%;
 }
 
+.houseitems {
+  background: #00B1DA;
+  color: white;
+}
+
 .houseitems ul {
   list-style: none;
+  padding: 0;
 }
 
 .houseitem {
@@ -37,7 +43,8 @@
 }
 
 .houseitem img {
-  max-height: 50px;
+  max-height: 80px;
+  padding: 10px;
 }
 
 .bills{
@@ -48,8 +55,14 @@
 
 .title-facture{
   margin-left: 19%;
+}
 
 .houseitemdetails img {
   max-width: 100%;
-  max-height: 100%;
+  /*! max-height: 100%; */
+}
+
+img.objecticon {
+  max-width: 100%;
+  max-height: 250px;
 }

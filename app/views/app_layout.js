@@ -67,5 +67,15 @@ module.exports = Mn.View.extend({
     }
 
     this.showChildView('houseitemDetails', new ViewClass({ model: houseItem }));
+
+    // TODO : something cleaner !
+    this.$('.mystones').hide();
+    this.$('.houseitems').toggleClass('col-xs-8', false);
+    this.$('.houseitems').toggleClass('col-xs-4', true);
+
+    this.$('.houseitemdetails').toggleClass('col-xs-8', true);
   },
+
+  // closeHouseItemDetails: function () {
+    // this.regions.houseitemDetails.reset();
 });

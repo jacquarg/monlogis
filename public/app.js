@@ -968,7 +968,17 @@ module.exports = Mn.View.extend({
     }
 
     this.showChildView('houseitemDetails', new ViewClass({ model: houseItem }));
+
+    // TODO : something cleaner !
+    this.$('.mystones').hide();
+    this.$('.houseitems').toggleClass('col-xs-8', false);
+    this.$('.houseitems').toggleClass('col-xs-4', true);
+
+    this.$('.houseitemdetails').toggleClass('col-xs-8', true);
   },
+
+  // closeHouseItemDetails: function () {
+    // this.regions.houseitemDetails.reset();
 });
 
 });
@@ -1536,7 +1546,7 @@ module.exports = Mn.View.extend({
 require.register("views/houseitems/object_item.js", function(exports, require, module) {
 'use-strict';
 
-const template = require('../templates/houseitems/vendor_item');
+const template = require('../templates/houseitems/object_item');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -1553,12 +1563,19 @@ module.exports = Mn.View.extend({
 
   modelEvents: {
     change: 'render',
+    newIconUrl: 'render',
+  },
+
+  serializeData: function () {
+    const data = this.model.toJSON();
+    data.iconUrl = this.model.getIconUrl();
+    return data;
   },
 
   onRender: function () {
-    this.ui.icon.on('error', (ev) => {
-      ev.target.src = 'assets/img/gift_icon.png';
-    });
+    // this.ui.icon.on('error', (ev) => {
+    //   ev.target.src = 'assets/img/gift_icon.png';
+    // });
   },
 
   showDetails: function () {
@@ -2065,7 +2082,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<main class=\"row\"><div class=\"col-xs-4 mystones\"><div class=\"well\">TODO : addresse</div></div><div class=\"col-xs-2 houseitems\"><div class=\"row vendors\"><div class=\"well\">TODO : Énergie - EDF</div></div><div class=\"row equipments\"><div class=\"well\">TODO : TV</div></div><div class=\"row objects\"><div class=\"well\">TODO : table</div></div></div><div class=\"col-xs-6 houseitemdetails\"></div></main><div class=\"container\"><main><div class=\"client\"></div></main></div><div class=\"message\"></div>");;return buf.join("");
+buf.push("<main class=\"row\"><div class=\"col-xs-4 mystones\"><div class=\"well\">TODO : addresse</div></div><div class=\"col-xs-8 houseitems\"><div class=\"row vendors\"><div class=\"well\">TODO : Énergie - EDF</div></div><div class=\"row objects\"><div class=\"well\">TODO : table</div></div></div><div class=\"houseitemdetails\"></div></main><div class=\"message\"></div>");;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2252,7 +2269,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (description, iconUrl, name) {
-buf.push("<div class=\"row\"><div class=\"col-md-4\"><img" + (jade.attr("src", iconUrl, true, false)) + " class=\"objecticon img-circle\"/><button id=\"changeicon\" type=\"button\" class=\"btn btn-default btn-xs\">modifier</button></div><div class=\"col-md-8\"><input name=\"name\" type=\"text\" placeholder=\"Nom de l'objet\"" + (jade.attr("value", name, true, false)) + " class=\"form-control\"/><textarea name=\"description\" rows=\"3\" placeholder=\"Description\" class=\"form-control\">" + (jade.escape(null == (jade_interp = description) ? "" : jade_interp)) + "</textarea></div></div><div class=\"row\"><div class=\"col-md-6 addfile\"></div><div class=\"col-md-6 files\"></div></div>");}.call(this,"description" in locals_for_with?locals_for_with.description:typeof description!=="undefined"?description:undefined,"iconUrl" in locals_for_with?locals_for_with.iconUrl:typeof iconUrl!=="undefined"?iconUrl:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
+buf.push("<div class=\"row\"><div class=\"col-md-4\"><img" + (jade.attr("src", iconUrl, true, false)) + " class=\"objecticon img-thumbnail\"/><button id=\"changeicon\" type=\"button\" class=\"btn btn-default btn-xs\">modifier</button></div><div class=\"col-md-8\"><input name=\"name\" type=\"text\" placeholder=\"Nom de l'objet\"" + (jade.attr("value", name, true, false)) + " class=\"form-control\"/><textarea name=\"description\" rows=\"3\" placeholder=\"Description\" class=\"form-control\">" + (jade.escape(null == (jade_interp = description) ? "" : jade_interp)) + "</textarea></div></div><div class=\"row\"><div class=\"col-md-6 addfile\"></div><div class=\"col-md-6 files\"></div></div>");}.call(this,"description" in locals_for_with?locals_for_with.description:typeof description!=="undefined"?description:undefined,"iconUrl" in locals_for_with?locals_for_with.iconUrl:typeof iconUrl!=="undefined"?iconUrl:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2398,8 +2415,8 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (name, slug) {
-buf.push("<div class=\"houseitem vendoritem\"><img" + (jade.attr("src", "assets/img/" + (slug) + "_logo_big.png", true, false)) + (jade.attr("title", name, true, false)) + "/></div>");}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"slug" in locals_for_with?locals_for_with.slug:typeof slug!=="undefined"?slug:undefined));;return buf.join("");
+;var locals_for_with = (locals || {});(function (iconUrl, name) {
+buf.push("<div class=\"houseitem vendoritem\"><img" + (jade.attr("src", iconUrl, true, false)) + (jade.attr("title", name, true, false)) + " class=\"img-thumbnail\"/></div>");}.call(this,"iconUrl" in locals_for_with?locals_for_with.iconUrl:typeof iconUrl!=="undefined"?iconUrl:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2631,7 +2648,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (name, slug) {
-buf.push("<div class=\"houseitem objectitem\"><img" + (jade.attr("src", "assets/img/" + (slug) + "_logo_big.png", true, false)) + (jade.attr("title", name, true, false)) + "/></div>");}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"slug" in locals_for_with?locals_for_with.slug:typeof slug!=="undefined"?slug:undefined));;return buf.join("");
+buf.push("<div class=\"houseitem objectitem\"><img" + (jade.attr("src", "assets/img/" + (slug) + "_logo_big.png", true, false)) + (jade.attr("title", name, true, false)) + " class=\"img-thumbnail\"/></div>");}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"slug" in locals_for_with?locals_for_with.slug:typeof slug!=="undefined"?slug:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
