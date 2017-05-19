@@ -1,0 +1,19 @@
+if modePaiement
+  h3
+     | Je paye en mode de &ensp;
+     = modePaiement
+
+if nextPaymentAmount
+  h3
+     | Mon prochain paiment,&ensp;
+     = nextPaymentAmount
+      |.
+     br
+
+if lastPaymentAmount
+  h3
+     | Mon dernier paiment,&ensp;
+     = lastPaymentAmount
+     |.
+     br
+     br

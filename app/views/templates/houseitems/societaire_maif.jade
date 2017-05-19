@@ -3,22 +3,23 @@ button
    | Societaire
 br
 br
-li
-   | Nom: &nbsp
-   if name
-      = name.family
-   | &nbsp
-   if name
-      = name.given
-li
-   | Profession: &nbsp
-   if profession
-     = profession
-li
-   | Téléphone: &nbsp
-   if telMobile
-     = telMobile
-li
-   | Email: &nbsp
-   if email
-     = email
+ul
+  li
+     | Nom: &nbsp
+     if name
+        = name.family
+     | &nbsp
+     if name
+        = name.given
+  li
+     | Profession: &nbsp
+     if profession
+       = profession
+  li
+     | Téléphone: &nbsp
+     if telMobile
+       = telMobile
+  li
+     | Email: &nbsp
+     if email
+       = email

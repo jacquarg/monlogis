@@ -18,9 +18,4 @@ module.exports = Mn.View.extend({
     this.model.fetch();
   },
 
-  // onRender: function () {
-  //
-  // },
-
-
 });

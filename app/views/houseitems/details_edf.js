@@ -1,11 +1,11 @@
 'use strict';
 
 const template = require('../templates/houseitems/details_edf');
-const Paiment = require('../../models/paymentterms');
 const ContractView = require('./contract_client');
 const ConsomationView = require('./consomation_edf');
 const PhoneDepannageView = require('./phone_depannage_edf');
 const PhoneContactView = require('./phone_contact_edf');
+const PaymenttermsView = require('./paymentterms');
 const BillsView = require('./bills');
 const BillsCollection = require('collections/bills');
 
@@ -18,6 +18,7 @@ module.exports = Mn.View.extend({
     consomation: '.consomation',
     phoneDepannage: '.phoneDepannage',
     phoneContact: '.phoneContact',
+    paymentterms: '.paymentterms',
   },
 
   events: {
@@ -28,17 +29,8 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
-    this.model = new Paiment();
-    this.model.fetchEDF();
     this.bills = new BillsCollection({ vendor: 'EDF' });
     this.bills.fetch();
-  },
-
-  serializeData: function () {
-    const data = this.model.toJSON();
-    data.nextPaymentAmount = this.model.getNextPaymentEDF();
-    data.lastPaymentAmount = this.model.getLastPaymentEDF();
-    return data;
   },
 
   // .holder= dernierReglement.type
@@ -52,5 +44,7 @@ module.exports = Mn.View.extend({
     this.showChildView('consomation', new ConsomationView());
     this.showChildView('phoneDepannage', new PhoneDepannageView());
     this.showChildView('phoneContact', new PhoneContactView());
+    this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'EDF' }));
   },
+
 });

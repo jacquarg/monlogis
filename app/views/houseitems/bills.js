@@ -26,4 +26,5 @@ module.exports = Mn.View.extend({
   onRender: function () {
     this.showChildView('collection', new BillsView({ collection: this.collection }));
   },
+
 });

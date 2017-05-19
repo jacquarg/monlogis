@@ -18,9 +18,4 @@ module.exports = Mn.View.extend({
     this.model.fetchMaif();
   },
 
-  // onRender: function () {
-  //
-  // },
-
-
 });

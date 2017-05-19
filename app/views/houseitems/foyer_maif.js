@@ -18,9 +18,10 @@ module.exports = Mn.View.extend({
     this.model.fetch();
   },
 
-  // onRender: function () {
-  //
-  // },
-
+  serializeData: function () {
+    const data = this.model.toJSON();
+    data.foyerMaif = this.model.getFoyerMaif();
+    return data;
+  },
 
 });

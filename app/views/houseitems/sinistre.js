@@ -1,12 +1,12 @@
 'use strict';
 
-const FileItemView = require('./file_item');
-const template = require('../templates/houseitems/files');
+const SinistreItemView = require('./sinistre_item');
+const template = require('../templates/houseitems/sinistre');
 
-const FilesView = Mn.CollectionView.extend({
+const SinistreView = Mn.CollectionView.extend({
   tagName: 'ul',
   // className: 'movielibrary',
-  childView: FileItemView,
+  childView: SinistreItemView,
 });
 
 module.exports = Mn.View.extend({
@@ -24,7 +24,7 @@ module.exports = Mn.View.extend({
   },
 
   onRender: function () {
-    this.showChildView('collection', new FilesView({ collection: this.collection }));
+    this.showChildView('collection', new SinistreView({ collection: this.collection }));
   },
 
 });
