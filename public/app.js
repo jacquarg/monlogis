@@ -2868,5 +2868,3 @@ if (typeof define === 'function' && define.amd) {
   
 });})();require('___globals___');
 
-
-//# sourceMappingURL=app.js.map
