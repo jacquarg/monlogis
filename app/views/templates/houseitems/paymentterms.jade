@@ -4,15 +4,15 @@ if modePaiement
      = modePaiement
 
 if nextPaymentAmount
-  h3
-     | Mon prochain paiment,&ensp;
+  h4.payment4
+     | → Mon prochain paiment,&ensp;
      = nextPaymentAmount
       |.
      br
 
 if lastPaymentAmount
-  h3
-     | Mon dernier paiment,&ensp;
+  h4
+     | → Mon dernier paiment,&ensp;
      = lastPaymentAmount
      |.
      br

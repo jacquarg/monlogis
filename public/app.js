@@ -2233,7 +2233,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (end, period, start, value) {
-buf.push("<h4>J'ai consomé &nbsp;");
+buf.push("<h4>→ J'ai consomé &nbsp;");
 if ( value)
 {
 buf.push(jade.escape(null == (jade_interp = value) ? "" : jade_interp));
@@ -2272,7 +2272,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (contractSubcategory1, name, power) {
-buf.push("<h4 class=\"payment\">Mon contrant &nbsp");
+buf.push("<h4 class=\"payment\">→ Mon contrant &nbsp");
 if ( name)
 {
 buf.push(jade.escape(null == (jade_interp = name) ? "" : jade_interp));
@@ -2554,11 +2554,11 @@ buf.push("<h3>Je paye en mode de &ensp;" + (jade.escape(null == (jade_interp = m
 }
 if ( nextPaymentAmount)
 {
-buf.push("<h3>Mon prochain paiment,&ensp;" + (jade.escape(null == (jade_interp = nextPaymentAmount) ? "" : jade_interp)) + ".<br/></h3>");
+buf.push("<h4 class=\"payment4\">→ Mon prochain paiment,&ensp;" + (jade.escape(null == (jade_interp = nextPaymentAmount) ? "" : jade_interp)) + ".<br/></h4>");
 }
 if ( lastPaymentAmount)
 {
-buf.push("<h3>Mon dernier paiment,&ensp;" + (jade.escape(null == (jade_interp = lastPaymentAmount) ? "" : jade_interp)) + ".<br/><br/></h3>");
+buf.push("<h4>→ Mon dernier paiment,&ensp;" + (jade.escape(null == (jade_interp = lastPaymentAmount) ? "" : jade_interp)) + ".<br/><br/></h4>");
 }}.call(this,"lastPaymentAmount" in locals_for_with?locals_for_with.lastPaymentAmount:typeof lastPaymentAmount!=="undefined"?lastPaymentAmount:undefined,"modePaiement" in locals_for_with?locals_for_with.modePaiement:typeof modePaiement!=="undefined"?modePaiement:undefined,"nextPaymentAmount" in locals_for_with?locals_for_with.nextPaymentAmount:typeof nextPaymentAmount!=="undefined"?nextPaymentAmount:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
