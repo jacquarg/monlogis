@@ -30,6 +30,10 @@ module.exports = Mn.View.extend({
     change: 'render',
   },
 
+  triggers: {
+    'click .close': 'close',
+  },
+
   initialize: function () {
     this.model = new ContractMaif();
     this.model.fetchMaif();
@@ -48,5 +52,10 @@ module.exports = Mn.View.extend({
     this.showChildView('societaireMaif', new SocietaireView());
     this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'Maif', contract: this.model }));
   },
+
+  onClose: function () {
+    app.trigger('houseitemdetails:close');
+  },
+
 
 });

@@ -12,6 +12,10 @@ module.exports = Mn.View.extend({
   events: {
   },
 
+  triggers: {
+    'click .close': 'close',
+  },
+
   modelEvents: {
     change: 'render',
   },
@@ -39,6 +43,10 @@ module.exports = Mn.View.extend({
       model: this.model,
       collection: this.files,
     }));
+  },
+
+  onClose: function () {
+    app.trigger('houseitemdetails:close');
   },
 
 });

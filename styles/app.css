@@ -7,6 +7,9 @@
 @import url("./vendors/OSMBuildings.css");
 
 
+* {
+  box-sizing: "border-box";
+}
 /* iconicstroke */
 [class*="iconicstroke-"]:before {
   font-family: 'IconicStroke', sans-serif;
@@ -15,6 +18,11 @@
 /* avoid problems with cozy-bar */
 [role=application], body {
   display: block;
+  
+}
+
+[role=application] {
+  background: #F38630;
 }
 
 .mapcontainer > #map {
@@ -28,7 +36,7 @@
 }
 
 .houseitems {
-  background: #00B1DA;
+  background: #F38630;
   color: white;
 }
 
@@ -57,10 +65,38 @@
   margin-left: 19%;
 }
 
+.houseitemdetails {
+  background-color: white;
+  padding: 20px;
+  border: solid 3px #999;
+  
+}
+
 .houseitemdetails img {
   max-width: 100%;
   /*! max-height: 100%; */
 }
+.houseitemdetails .filestools {
+  margin-top: 40px;
+}
+
+.houseitemdetails .close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+}
+
+
+.addfile li {
+  margin-bottom: 15px;
+}
+
+/*
+.addfile li input,
+.addfile li button {
+  float: right;
+}
+*/
 
 img.objecticon {
   max-width: 100%;

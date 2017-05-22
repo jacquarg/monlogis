@@ -930,8 +930,10 @@ module.exports = Mn.View.extend({
     uploadFiles: '.upload',
   },
 
+
   initialize: function () {
-    this.listenTo(app, 'houseitemdetails:show', this.showHouseItemDetails);
+    this.listenTo(app, 'houseitemdetails:show', this.showHouseitemDetails);
+    this.listenTo(app, 'houseitemdetails:close', this.onHouseitemDetailsClose);
   },
 
   onRender: function () {
@@ -948,7 +950,7 @@ module.exports = Mn.View.extend({
     }));
   },
 
-  showHouseItemDetails: function (houseItem) {
+  showHouseitemDetails: function (houseItem) {
     const docType = houseItem.getDocType();
     const slug = houseItem.get('slug');
     let ViewClass = null;
@@ -980,8 +982,14 @@ module.exports = Mn.View.extend({
     this.$('.houseitemdetails').toggleClass('col-xs-8', true);
   },
 
-  // closeHouseItemDetails: function () {
-    // this.regions.houseitemDetails.reset();
+  onHouseitemDetailsClose: function () {
+    this.getRegion('houseitemDetails').empty();
+
+    this.$('.mystones').show();
+    this.$('.houseitems').toggleClass('col-xs-8', true);
+    this.$('.houseitems').toggleClass('col-xs-4', false);
+    this.$('.houseitemdetails').toggleClass('col-xs-8', false);
+  },
 });
 
 });
@@ -1188,6 +1196,10 @@ module.exports = Mn.View.extend({
   events: {
   },
 
+  triggers: {
+    'click .close': 'close',
+  },
+
   modelEvents: {
     change: 'render',
   },
@@ -1209,6 +1221,11 @@ module.exports = Mn.View.extend({
     this.showChildView('phoneDepannage', new PhoneDepannageView());
     this.showChildView('phoneContact', new PhoneContactView());
     this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'EDF' }));
+  },
+
+
+  onClose: function () {
+    app.trigger('houseitemdetails:close');
   },
 
 });
@@ -1248,6 +1265,10 @@ module.exports = Mn.View.extend({
     change: 'render',
   },
 
+  triggers: {
+    'click .close': 'close',
+  },
+
   initialize: function () {
     this.model = new ContractMaif();
     this.model.fetchMaif();
@@ -1266,6 +1287,11 @@ module.exports = Mn.View.extend({
     this.showChildView('societaireMaif', new SocietaireView());
     this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'Maif', contract: this.model }));
   },
+
+  onClose: function () {
+    app.trigger('houseitemdetails:close');
+  },
+
 
 });
 
@@ -1293,6 +1319,10 @@ module.exports = Mn.View.extend({
     'change @ui.inputName': 'onFormChange', // TODO : update FolderPath on name change.
     'change @ui.inputDescription': 'onFormChange',
     'click @ui.changeIcon': 'changeIcon',
+  },
+
+  triggers: {
+    'click .close': 'close',
   },
 
   modelEvents: {
@@ -1334,6 +1364,10 @@ module.exports = Mn.View.extend({
     });
   },
 
+  onClose: function () {
+    app.trigger('houseitemdetails:close');
+  },
+
   updateFilesCollection: function (file) {
     this.files.add(file);
   },
@@ -1349,13 +1383,7 @@ module.exports = Mn.View.extend({
     //eslint-disable-next-line
     const imgFiles = this.files.filter(file => file.has('attributes') && file.get('attributes')['class'] === 'image');
 
-<<<<<<< 26b16e9f82098480d8acb4033c0836962cf74615
     if (imgFiles.length === 0) { return; }
-=======
-    let iconFile = imgFiles.get(this.model.get('iconFileId'));
-    let index = imgFiles.indexOf(iconFile);
-    index = (index + 1) % imgFiles.size();
->>>>>>> chercher et afficher les donnees Maif
 
     const iconFileId = this.model.get('iconFileId');
     let iconFile = null;
@@ -1391,6 +1419,10 @@ module.exports = Mn.View.extend({
   events: {
   },
 
+  triggers: {
+    'click .close': 'close',
+  },
+
   modelEvents: {
     change: 'render',
   },
@@ -1418,6 +1450,10 @@ module.exports = Mn.View.extend({
       model: this.model,
       collection: this.files,
     }));
+  },
+
+  onClose: function () {
+    app.trigger('houseitemdetails:close');
   },
 
 });
@@ -2214,7 +2250,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<div class=\"paymentterms\"></div><div class=\"contract\"></div><div class=\"consomation\"></div><br/><div class=\"phoneDepannage\"></div><div class=\"phoneContact\"></div><div class=\"bills\"></div>");;return buf.join("");
+buf.push("<div class=\"paymentterms\"></div><div class=\"contract\"></div><div class=\"consomation\"></div><br/><div class=\"phoneDepannage\"></div><div class=\"phoneContact\"></div><div class=\"bills\"></div><div class=\"close\">x</div>");;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2253,7 +2289,7 @@ if ( societaire)
 {
 buf.push(jade.escape(null == (jade_interp = societaire) ? "" : jade_interp));
 }
-buf.push(".<br/></h3><div class=\"homeMaif\"></div><div class=\"foyerMaif\"></div><div class=\"societaireMaif\"></div><div class=\"sinistres\"></div><div class=\"col-md-6\"></div><p>Service client maif<br/></p><div class=\"col-md-6\"></div><p>&nbsp Tel:&nbsp 09 72 72 15 15</p>");}.call(this,"montantTarifTtc" in locals_for_with?locals_for_with.montantTarifTtc:typeof montantTarifTtc!=="undefined"?montantTarifTtc:undefined,"societaire" in locals_for_with?locals_for_with.societaire:typeof societaire!=="undefined"?societaire:undefined,"startDate" in locals_for_with?locals_for_with.startDate:typeof startDate!=="undefined"?startDate:undefined,"vendor" in locals_for_with?locals_for_with.vendor:typeof vendor!=="undefined"?vendor:undefined));;return buf.join("");
+buf.push(".<br/></h3><div class=\"homeMaif\"></div><div class=\"foyerMaif\"></div><div class=\"societaireMaif\"></div><div class=\"sinistres\"></div><div class=\"col-md-6\"></div><p>Service client maif<br/></p><div class=\"col-md-6\"></div><p>&nbsp Tel:&nbsp 09 72 72 15 15</p><div class=\"close\">x</div>");}.call(this,"montantTarifTtc" in locals_for_with?locals_for_with.montantTarifTtc:typeof montantTarifTtc!=="undefined"?montantTarifTtc:undefined,"societaire" in locals_for_with?locals_for_with.societaire:typeof societaire!=="undefined"?societaire:undefined,"startDate" in locals_for_with?locals_for_with.startDate:typeof startDate!=="undefined"?startDate:undefined,"vendor" in locals_for_with?locals_for_with.vendor:typeof vendor!=="undefined"?vendor:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2272,7 +2308,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (description, iconUrl, name) {
-buf.push("<div class=\"row\"><div class=\"col-md-4\"><img" + (jade.attr("src", iconUrl, true, false)) + " class=\"objecticon img-thumbnail\"/><button id=\"changeicon\" type=\"button\" class=\"btn btn-default btn-xs\">modifier</button></div><div class=\"col-md-8\"><input name=\"name\" type=\"text\" placeholder=\"Nom de l'objet\"" + (jade.attr("value", name, true, false)) + " class=\"form-control\"/><textarea name=\"description\" rows=\"3\" placeholder=\"Description\" class=\"form-control\">" + (jade.escape(null == (jade_interp = description) ? "" : jade_interp)) + "</textarea></div></div><div class=\"row\"><div class=\"col-md-6 addfile\"></div><div class=\"col-md-6 files\"></div></div>");}.call(this,"description" in locals_for_with?locals_for_with.description:typeof description!=="undefined"?description:undefined,"iconUrl" in locals_for_with?locals_for_with.iconUrl:typeof iconUrl!=="undefined"?iconUrl:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
+buf.push("<div class=\"row\"><div class=\"col-md-4\"><img" + (jade.attr("src", iconUrl, true, false)) + " class=\"objecticon img-thumbnail\"/><button id=\"changeicon\" type=\"button\" class=\"btn btn-default btn-xs\">modifier</button></div><div class=\"col-md-8\"><input name=\"name\" type=\"text\" placeholder=\"Nom de l'objet\"" + (jade.attr("value", name, true, false)) + " class=\"form-control\"/><textarea name=\"description\" rows=\"3\" placeholder=\"Description\" class=\"form-control\">" + (jade.escape(null == (jade_interp = description) ? "" : jade_interp)) + "</textarea></div></div><div class=\"filestools row\"><div class=\"col-md-6 addfile\"></div><div class=\"col-md-6 files\"></div></div><div class=\"close\">x</div>");}.call(this,"description" in locals_for_with?locals_for_with.description:typeof description!=="undefined"?description:undefined,"iconUrl" in locals_for_with?locals_for_with.iconUrl:typeof iconUrl!=="undefined"?iconUrl:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2291,7 +2327,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (name) {
-buf.push("<h2>" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "</h2><div class=\"bills\"></div><div class=\"files\"></div>");}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
+buf.push("<h2>" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "</h2><div class=\"bills\"></div><div class=\"files\"></div><div class=\"close\">x</div>");}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

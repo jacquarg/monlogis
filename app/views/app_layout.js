@@ -26,8 +26,10 @@ module.exports = Mn.View.extend({
     uploadFiles: '.upload',
   },
 
+
   initialize: function () {
-    this.listenTo(app, 'houseitemdetails:show', this.showHouseItemDetails);
+    this.listenTo(app, 'houseitemdetails:show', this.showHouseitemDetails);
+    this.listenTo(app, 'houseitemdetails:close', this.onHouseitemDetailsClose);
   },
 
   onRender: function () {
@@ -44,7 +46,7 @@ module.exports = Mn.View.extend({
     }));
   },
 
-  showHouseItemDetails: function (houseItem) {
+  showHouseitemDetails: function (houseItem) {
     const docType = houseItem.getDocType();
     const slug = houseItem.get('slug');
     let ViewClass = null;
@@ -76,6 +78,12 @@ module.exports = Mn.View.extend({
     this.$('.houseitemdetails').toggleClass('col-xs-8', true);
   },
 
-  // closeHouseItemDetails: function () {
-    // this.regions.houseitemDetails.reset();
+  onHouseitemDetailsClose: function () {
+    this.getRegion('houseitemDetails').empty();
+
+    this.$('.mystones').show();
+    this.$('.houseitems').toggleClass('col-xs-8', true);
+    this.$('.houseitems').toggleClass('col-xs-4', false);
+    this.$('.houseitemdetails').toggleClass('col-xs-8', false);
+  },
 });

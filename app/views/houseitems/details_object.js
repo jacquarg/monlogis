@@ -21,6 +21,10 @@ module.exports = Mn.View.extend({
     'click @ui.changeIcon': 'changeIcon',
   },
 
+  triggers: {
+    'click .close': 'close',
+  },
+
   modelEvents: {
     change: 'render',
     newIconUrl: 'render',
@@ -58,6 +62,10 @@ module.exports = Mn.View.extend({
       name: this.ui.inputName.val(),
       description: this.ui.inputDescription.val(),
     });
+  },
+
+  onClose: function () {
+    app.trigger('houseitemdetails:close');
   },
 
   updateFilesCollection: function (file) {

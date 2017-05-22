@@ -24,6 +24,10 @@ module.exports = Mn.View.extend({
   events: {
   },
 
+  triggers: {
+    'click .close': 'close',
+  },
+
   modelEvents: {
     change: 'render',
   },
@@ -45,6 +49,11 @@ module.exports = Mn.View.extend({
     this.showChildView('phoneDepannage', new PhoneDepannageView());
     this.showChildView('phoneContact', new PhoneContactView());
     this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'EDF' }));
+  },
+
+
+  onClose: function () {
+    app.trigger('houseitemdetails:close');
   },
 
 });
