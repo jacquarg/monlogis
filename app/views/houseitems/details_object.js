@@ -2,8 +2,6 @@
 
 const template = require('../templates/houseitems/details_object');
 const FilesView = require('./files');
-const FilesCollection = require('collections/files');
-const UploadFile = require('./upload_file');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -28,19 +26,16 @@ module.exports = Mn.View.extend({
   modelEvents: {
     change: 'render',
     newIconUrl: 'render',
-    newFile: 'updateFilesCollection',
+
   },
 
   regions: {
     files: '.files',
-    addFile: '.addfile',
+
   },
 
   initialize: function () {
-    this.files = new FilesCollection({ folderPath: this.model.getFolderPath() });
-    this.files.fetch();
-
-    console.log(this.files);
+    this.model.getFiles().fetch();
   },
 
   serializeData: function () {
@@ -50,11 +45,7 @@ module.exports = Mn.View.extend({
   },
 
   onRender: function () {
-    this.showChildView('files', new FilesView({
-      model: this.model,
-      collection: this.files,
-    }));
-    this.showChildView('addFile', new UploadFile({ model: this.model }));
+    this.showChildView('files', new FilesView({ model: this.model, }));
   },
 
   onFormChange: function () {
@@ -68,10 +59,6 @@ module.exports = Mn.View.extend({
     app.trigger('houseitemdetails:close');
   },
 
-  updateFilesCollection: function (file) {
-    this.files.add(file);
-  },
-
   // displayIcon: function (iconFile) {
   //   iconFile.getFileUrl().then((url) => {
   //     this.iconUrl = url;
@@ -81,7 +68,8 @@ module.exports = Mn.View.extend({
 
   changeIcon: function () {
     //eslint-disable-next-line
-    const imgFiles = this.files.filter(file => file.has('attributes') && file.get('attributes')['class'] === 'image');
+    const files = this.model.getFiltes();
+    const imgFiles = files.filter(file => file.has('attributes') && file.get('attributes')['class'] === 'image');
 
     if (imgFiles.length === 0) { return; }
 
@@ -89,7 +77,7 @@ module.exports = Mn.View.extend({
     let iconFile = null;
     let index = 0;
     if (iconFileId) {
-      iconFile = this.files.get(iconFileId);
+      iconFile = files.get(iconFileId);
       index = imgFiles.indexOf(iconFile);
       index = (index + 1) % imgFiles.length;
     }

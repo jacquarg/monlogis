@@ -9,6 +9,9 @@ const PaymenttermsView = require('./paymentterms');
 const BillsView = require('./bills');
 const BillsCollection = require('collections/bills');
 
+const FilesView = require('./files');
+
+
 module.exports = Mn.View.extend({
   template: template,
 
@@ -19,6 +22,7 @@ module.exports = Mn.View.extend({
     phoneDepannage: '.phoneDepannage',
     phoneContact: '.phoneContact',
     paymentterms: '.paymentterms',
+    files: '.files',
   },
 
   events: {
@@ -33,6 +37,8 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
+    this.model.getFiles().fetch();
+
     this.bills = new BillsCollection({ vendor: 'EDF' });
     this.bills.fetch();
   },
@@ -49,6 +55,7 @@ module.exports = Mn.View.extend({
     this.showChildView('phoneDepannage', new PhoneDepannageView());
     this.showChildView('phoneContact', new PhoneContactView());
     this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'EDF' }));
+    this.showChildView('files', new FilesView({ model: this.model, }));
   },
 
 

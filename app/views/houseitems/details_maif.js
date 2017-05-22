@@ -9,6 +9,7 @@ const FoyerView = require('./foyer_maif');
 const HomeView = require('./home_maif');
 const SinistreView = require('./sinistre');
 const SinistreCollection = require('collections/sinistre');
+const FilesView = require('./files');
 
 
 module.exports = Mn.View.extend({
@@ -21,6 +22,7 @@ module.exports = Mn.View.extend({
     foyerMaif: '.foyerMaif',
     societaireMaif: '.societaireMaif',
     paymentterms: '.paymentterms',
+    files: '.files',
   },
 
   events: {
@@ -35,10 +37,17 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
-    this.model = new ContractMaif();
-    this.model.fetchMaif();
+    this.model.getFiles().fetch();
+
+    this.contract = new ContractMaif();
+    this.contract.fetchMaif();
     this.sinistres = new SinistreCollection({ vendor: 'Maif' });
     this.sinistres.fetch();
+  },
+
+  serializeData: function () {
+    const data = this.contract.toJSON();
+    return data;
   },
 
   onRender: function () {
@@ -51,6 +60,8 @@ module.exports = Mn.View.extend({
     this.showChildView('foyerMaif', new FoyerView());
     this.showChildView('societaireMaif', new SocietaireView());
     this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'Maif', contract: this.model }));
+    this.showChildView('files', new FilesView({ model: this.model, }));
+
   },
 
   onClose: function () {

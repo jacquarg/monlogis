@@ -740,6 +740,7 @@ require.register("models/object.js", function(exports, require, module) {
 
 const CozyModel = require('../lib/backbone_cozymodel');
 const FileModel = require('./file');
+const FilesCollection = require('collections/files');
 
 const BASE_DIR = '/Administration/objets/';
 
@@ -749,6 +750,7 @@ module.exports = CozyModel.extend({
   getFolderPath: function () {
     return `${BASE_DIR}${this.get('name')}`;
   },
+
   createDir: function () {
     if (this.has('dirID')) {
       return Promise.resolve();
@@ -756,6 +758,13 @@ module.exports = CozyModel.extend({
 
     return cozy.client.files.createDirectoryByPath(this.getFolderPath())
     .then(dir => this.set('dirID', dir._id));
+  },
+
+  getFiles: function () {
+    if (!this.files) {
+      this.files = new FilesCollection({ folderPath: this.getFolderPath() });
+    }
+    return this.files;
   },
 
   setIconFileId: function (iconFileId) {
@@ -884,8 +893,35 @@ require.register("models/vendor.js", function(exports, require, module) {
 
 const CozyModel = require('../lib/backbone_cozymodel');
 
+const FilesCollection = require('../collections/files');
+
 module.exports = CozyModel.extend({
   docType: 'org.fing.mesinfos.vendor',
+
+  createDir: function () {
+    if (this.dirID) { return Promise.resolve(); }
+
+    return cozy.client.files.createDirectoryByPath(this.getFolderPath())
+    .then(dir => this.dirID = dir._id);
+  },
+
+  getDirID: function () {
+    return this.dirID;
+  },
+
+  getFolderPath: function () {
+    return this.get('folderPath');
+  },
+
+  getFiles: function () {
+    if (!this.files) {
+      this.files = new FilesCollection({ folderPath: this.getFolderPath() });
+    }
+
+    return this.files;
+  },
+
+
 });
 
 });
@@ -1181,6 +1217,9 @@ const PaymenttermsView = require('./paymentterms');
 const BillsView = require('./bills');
 const BillsCollection = require('collections/bills');
 
+const FilesView = require('./files');
+
+
 module.exports = Mn.View.extend({
   template: template,
 
@@ -1191,6 +1230,7 @@ module.exports = Mn.View.extend({
     phoneDepannage: '.phoneDepannage',
     phoneContact: '.phoneContact',
     paymentterms: '.paymentterms',
+    files: '.files',
   },
 
   events: {
@@ -1205,6 +1245,8 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
+    this.model.getFiles().fetch();
+
     this.bills = new BillsCollection({ vendor: 'EDF' });
     this.bills.fetch();
   },
@@ -1221,6 +1263,7 @@ module.exports = Mn.View.extend({
     this.showChildView('phoneDepannage', new PhoneDepannageView());
     this.showChildView('phoneContact', new PhoneContactView());
     this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'EDF' }));
+    this.showChildView('files', new FilesView({ model: this.model, }));
   },
 
 
@@ -1244,6 +1287,7 @@ const FoyerView = require('./foyer_maif');
 const HomeView = require('./home_maif');
 const SinistreView = require('./sinistre');
 const SinistreCollection = require('collections/sinistre');
+const FilesView = require('./files');
 
 
 module.exports = Mn.View.extend({
@@ -1256,6 +1300,7 @@ module.exports = Mn.View.extend({
     foyerMaif: '.foyerMaif',
     societaireMaif: '.societaireMaif',
     paymentterms: '.paymentterms',
+    files: '.files',
   },
 
   events: {
@@ -1270,10 +1315,17 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
-    this.model = new ContractMaif();
-    this.model.fetchMaif();
+    this.model.getFiles().fetch();
+
+    this.contract = new ContractMaif();
+    this.contract.fetchMaif();
     this.sinistres = new SinistreCollection({ vendor: 'Maif' });
     this.sinistres.fetch();
+  },
+
+  serializeData: function () {
+    const data = this.contract.toJSON();
+    return data;
   },
 
   onRender: function () {
@@ -1286,6 +1338,8 @@ module.exports = Mn.View.extend({
     this.showChildView('foyerMaif', new FoyerView());
     this.showChildView('societaireMaif', new SocietaireView());
     this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'Maif', contract: this.model }));
+    this.showChildView('files', new FilesView({ model: this.model, }));
+
   },
 
   onClose: function () {
@@ -1302,8 +1356,6 @@ require.register("views/houseitems/details_object.js", function(exports, require
 
 const template = require('../templates/houseitems/details_object');
 const FilesView = require('./files');
-const FilesCollection = require('collections/files');
-const UploadFile = require('./upload_file');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -1328,19 +1380,16 @@ module.exports = Mn.View.extend({
   modelEvents: {
     change: 'render',
     newIconUrl: 'render',
-    newFile: 'updateFilesCollection',
+
   },
 
   regions: {
     files: '.files',
-    addFile: '.addfile',
+
   },
 
   initialize: function () {
-    this.files = new FilesCollection({ folderPath: this.model.getFolderPath() });
-    this.files.fetch();
-
-    console.log(this.files);
+    this.model.getFiles().fetch();
   },
 
   serializeData: function () {
@@ -1350,11 +1399,7 @@ module.exports = Mn.View.extend({
   },
 
   onRender: function () {
-    this.showChildView('files', new FilesView({
-      model: this.model,
-      collection: this.files,
-    }));
-    this.showChildView('addFile', new UploadFile({ model: this.model }));
+    this.showChildView('files', new FilesView({ model: this.model, }));
   },
 
   onFormChange: function () {
@@ -1368,10 +1413,6 @@ module.exports = Mn.View.extend({
     app.trigger('houseitemdetails:close');
   },
 
-  updateFilesCollection: function (file) {
-    this.files.add(file);
-  },
-
   // displayIcon: function (iconFile) {
   //   iconFile.getFileUrl().then((url) => {
   //     this.iconUrl = url;
@@ -1381,7 +1422,8 @@ module.exports = Mn.View.extend({
 
   changeIcon: function () {
     //eslint-disable-next-line
-    const imgFiles = this.files.filter(file => file.has('attributes') && file.get('attributes')['class'] === 'image');
+    const files = this.model.getFiltes();
+    const imgFiles = files.filter(file => file.has('attributes') && file.get('attributes')['class'] === 'image');
 
     if (imgFiles.length === 0) { return; }
 
@@ -1389,7 +1431,7 @@ module.exports = Mn.View.extend({
     let iconFile = null;
     let index = 0;
     if (iconFileId) {
-      iconFile = this.files.get(iconFileId);
+      iconFile = files.get(iconFileId);
       index = imgFiles.indexOf(iconFile);
       index = (index + 1) % imgFiles.length;
     }
@@ -1495,6 +1537,8 @@ module.exports = Mn.View.extend({
 require.register("views/houseitems/files.js", function(exports, require, module) {
 'use strict';
 
+const UploadFile = require('./upload_file');
+
 const FileItemView = require('./file_item');
 const template = require('../templates/houseitems/files');
 
@@ -1505,7 +1549,7 @@ const FilesView = Mn.CollectionView.extend({
 });
 
 module.exports = Mn.View.extend({
-  // className: 'mymovies',
+  // className: 'row',
   template: template,
 
   regions: {
@@ -1513,13 +1557,24 @@ module.exports = Mn.View.extend({
       el: 'ul',
       replaceElement: true,
     },
+    addFile: '.addfile',
+  },
+
+  modelEvents: {
+    newFile: 'updateFilesCollection',
   },
 
   initialize: function () {
+    this.collection = this.model.getFiles();
+  },
+
+  updateFilesCollection: function (file) {
+    this.collection.add(file);
   },
 
   onRender: function () {
     this.showChildView('collection', new FilesView({ collection: this.collection }));
+    this.showChildView('addFile', new UploadFile({ model: this.model }));
   },
 
 });
@@ -1875,7 +1930,7 @@ module.exports = Mn.View.extend({
       app.trigger('message:display', 'Création du répertoire en cours ...', 'upload_file');
       this.model.createDir()
       .then(() => app.trigger('message:display', 'Téléversement du fichier en cours ...', 'upload_file'))
-      .then(() => cozy.client.files.create(file, { name: name, dirID: this.model.get('dirID') }))
+      .then(() => cozy.client.files.create(file, { name: name, dirID: this.model.getDirID() }))
       .then((file) => {
         app.trigger('message:hide', 'upload_file');
         this.model.trigger('newFile', file);
@@ -2250,7 +2305,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<div class=\"paymentterms\"></div><div class=\"contract\"></div><div class=\"consomation\"></div><br/><div class=\"phoneDepannage\"></div><div class=\"phoneContact\"></div><div class=\"bills\"></div><div class=\"close\">x</div>");;return buf.join("");
+buf.push("<div class=\"paymentterms\"></div><div class=\"contract\"></div><div class=\"consomation\"></div><br/><div class=\"phoneDepannage\"></div><div class=\"phoneContact\"></div><div class=\"bills\"></div><div class=\"files\"></div><div class=\"close\">x</div>");;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2289,7 +2344,7 @@ if ( societaire)
 {
 buf.push(jade.escape(null == (jade_interp = societaire) ? "" : jade_interp));
 }
-buf.push(".<br/></h3><div class=\"homeMaif\"></div><div class=\"foyerMaif\"></div><div class=\"societaireMaif\"></div><div class=\"sinistres\"></div><div class=\"col-md-6\"></div><p>Service client maif<br/></p><div class=\"col-md-6\"></div><p>&nbsp Tel:&nbsp 09 72 72 15 15</p><div class=\"close\">x</div>");}.call(this,"montantTarifTtc" in locals_for_with?locals_for_with.montantTarifTtc:typeof montantTarifTtc!=="undefined"?montantTarifTtc:undefined,"societaire" in locals_for_with?locals_for_with.societaire:typeof societaire!=="undefined"?societaire:undefined,"startDate" in locals_for_with?locals_for_with.startDate:typeof startDate!=="undefined"?startDate:undefined,"vendor" in locals_for_with?locals_for_with.vendor:typeof vendor!=="undefined"?vendor:undefined));;return buf.join("");
+buf.push(".<br/></h3><div class=\"homeMaif\"></div><div class=\"foyerMaif\"></div><div class=\"societaireMaif\"></div><div class=\"sinistres\"></div><div class=\"col-md-6\"></div><p>Service client maif<br/></p><div class=\"col-md-6\"></div><p>&nbsp Tel:&nbsp 09 72 72 15 15</p><div class=\"files\"></div><div class=\"close\">x</div>");}.call(this,"montantTarifTtc" in locals_for_with?locals_for_with.montantTarifTtc:typeof montantTarifTtc!=="undefined"?montantTarifTtc:undefined,"societaire" in locals_for_with?locals_for_with.societaire:typeof societaire!=="undefined"?societaire:undefined,"startDate" in locals_for_with?locals_for_with.startDate:typeof startDate!=="undefined"?startDate:undefined,"vendor" in locals_for_with?locals_for_with.vendor:typeof vendor!=="undefined"?vendor:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2308,7 +2363,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (description, iconUrl, name) {
-buf.push("<div class=\"row\"><div class=\"col-md-4\"><img" + (jade.attr("src", iconUrl, true, false)) + " class=\"objecticon img-thumbnail\"/><button id=\"changeicon\" type=\"button\" class=\"btn btn-default btn-xs\">modifier</button></div><div class=\"col-md-8\"><input name=\"name\" type=\"text\" placeholder=\"Nom de l'objet\"" + (jade.attr("value", name, true, false)) + " class=\"form-control\"/><textarea name=\"description\" rows=\"3\" placeholder=\"Description\" class=\"form-control\">" + (jade.escape(null == (jade_interp = description) ? "" : jade_interp)) + "</textarea></div></div><div class=\"filestools row\"><div class=\"col-md-6 addfile\"></div><div class=\"col-md-6 files\"></div></div><div class=\"close\">x</div>");}.call(this,"description" in locals_for_with?locals_for_with.description:typeof description!=="undefined"?description:undefined,"iconUrl" in locals_for_with?locals_for_with.iconUrl:typeof iconUrl!=="undefined"?iconUrl:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
+buf.push("<div class=\"row\"><div class=\"col-md-4\"><img" + (jade.attr("src", iconUrl, true, false)) + " class=\"objecticon img-thumbnail\"/><button id=\"changeicon\" type=\"button\" class=\"btn btn-default btn-xs\">modifier</button></div><div class=\"col-md-8\"><input name=\"name\" type=\"text\" placeholder=\"Nom de l'objet\"" + (jade.attr("value", name, true, false)) + " class=\"form-control\"/><textarea name=\"description\" rows=\"3\" placeholder=\"Description\" class=\"form-control\">" + (jade.escape(null == (jade_interp = description) ? "" : jade_interp)) + "</textarea></div></div><div class=\"files\"></div><div class=\"close\">x</div>");}.call(this,"description" in locals_for_with?locals_for_with.description:typeof description!=="undefined"?description:undefined,"iconUrl" in locals_for_with?locals_for_with.iconUrl:typeof iconUrl!=="undefined"?iconUrl:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2367,8 +2422,8 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-
-buf.push("<h3>Documents associés</h3><ul></ul>");;return buf.join("");
+;var locals_for_with = (locals || {});(function (name) {
+buf.push("<h3>Documents&nbsp;" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "</h3><div class=\"row\"><div class=\"col-xs-6\"><ul></ul></div><div class=\"col-xs-6\"><div class=\"addfile\"></div></div></div>");}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2668,7 +2723,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<h3>Ajouter un document</h3><ol><li>Choisissez un fihcier sur votre terminal :<input type=\"file\"/></li><li>Donnez un nom clair à ce fichier :<input name=\"filename\" type=\"text\" placeholder=\"notice.pdf\" class=\"form-control\"/></li><li>Vous n'avez plus qu'à l'ajouter à votre Cozy :<button name=\"addfile\" type=\"button\" class=\"btn btn-primary\">ajouter</button></li></ol>");;return buf.join("");
+buf.push("<h4>Ajouter un document</h4><ol><li>Choisissez un fichier sur votre terminal :&ensp;<input type=\"file\"/></li><li>Donnez un nom clair à ce fichier :&ensp;<input name=\"filename\" type=\"text\" placeholder=\"notice.pdf\" class=\"form-control\"/></li><li>Vous n'avez plus qu'à l'ajouter à votre Cozy :&ensp;<button name=\"addfile\" type=\"button\" class=\"btn btn-primary\">ajouter</button></li></ol>");;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

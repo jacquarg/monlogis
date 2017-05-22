@@ -2,6 +2,7 @@
 
 const CozyModel = require('../lib/backbone_cozymodel');
 const FileModel = require('./file');
+const FilesCollection = require('collections/files');
 
 const BASE_DIR = '/Administration/objets/';
 
@@ -11,6 +12,7 @@ module.exports = CozyModel.extend({
   getFolderPath: function () {
     return `${BASE_DIR}${this.get('name')}`;
   },
+
   createDir: function () {
     if (this.has('dirID')) {
       return Promise.resolve();
@@ -18,6 +20,13 @@ module.exports = CozyModel.extend({
 
     return cozy.client.files.createDirectoryByPath(this.getFolderPath())
     .then(dir => this.set('dirID', dir._id));
+  },
+
+  getFiles: function () {
+    if (!this.files) {
+      this.files = new FilesCollection({ folderPath: this.getFolderPath() });
+    }
+    return this.files;
   },
 
   setIconFileId: function (iconFileId) {
