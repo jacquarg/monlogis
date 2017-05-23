@@ -837,7 +837,7 @@ module.exports = CozyModel.extend({
     }
   },
 
-  getLastPaymentEDF: function () {
+  getLastPaymentAmountEDF: function () {
     const paymentSchedules = this.get('paymentSchedules');
     if (paymentSchedules && paymentSchedules instanceof Array) {
       let prec;
@@ -846,7 +846,24 @@ module.exports = CozyModel.extend({
         if (value.paid === false) {
           return prec;
         }
+<<<<<<< HEAD
         prec = value;
+=======
+        prec = `${value.amount}€ `;
+      }
+    }
+  },
+  getLastPaymentDateEDF: function () {
+    const paymentSchedules = this.get('paymentSchedules');
+    if (paymentSchedules && paymentSchedules instanceof Array) {
+      let precd;
+      //eslint-disable-next-line
+      for (const value of paymentSchedules) {
+        if (value.paid === false) {
+          return precd;
+        }
+        precd = ` le ${value.scheduleDate}`;
+>>>>>>> appliquer le style de maquette EDF
       }
     }
   },
@@ -1747,7 +1764,8 @@ module.exports = Mn.View.extend({
     const data = this.model.toJSON();
     if (this.model.get('vendor') === 'EDF') {
       data.nextPaymentAmount = this.model.getNextPaymentEDF();
-      data.lastPaymentAmount = this.model.getLastPaymentEDF();
+      data.lastPaymentAmount = this.model.getLastPaymentAmountEDF();
+      data.lastPaymentDate = this.model.getLastPaymentDateEDF();
     }
 
     if (this.model.get('vendor') === 'maif') {
@@ -2541,7 +2559,7 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (lastPaymentAmount, modePaiement, nextPaymentAmount) {
+;var locals_for_with = (locals || {});(function (lastPaymentAmount, lastPaymentDate, modePaiement, nextPaymentAmount) {
 if ( modePaiement)
 {
 buf.push("<h3>Je paye en mode de;" + (jade.escape(null == (jade_interp = modePaiement) ? "" : jade_interp)) + "</h3>");
@@ -2553,8 +2571,13 @@ buf.push("<div class=\"paymentH4 col-md-offset-4\"><span class=\"prochain_paimen
 buf.push("<img src=\"/assets/img/calendar.svg\" class=\"img_calendar\"/>");
 if ( lastPaymentAmount)
 {
+<<<<<<< HEAD
 buf.push("<div class=\"last_payment\"><span class=\"paymentSemaine\">il y a une semaine &nbsp</span>mon précédent paiement était de &nbsp<span class=\"lastPayment\">" + (jade.escape(null == (jade_interp = lastPaymentAmount.amount) ? "" : jade_interp)) + "</span>&nbsp le" + (jade.escape(null == (jade_interp = lastPaymentAmount.scheduleDate) ? "" : jade_interp)) + "</div>");
 }}.call(this,"lastPaymentAmount" in locals_for_with?locals_for_with.lastPaymentAmount:typeof lastPaymentAmount!=="undefined"?lastPaymentAmount:undefined,"modePaiement" in locals_for_with?locals_for_with.modePaiement:typeof modePaiement!=="undefined"?modePaiement:undefined,"nextPaymentAmount" in locals_for_with?locals_for_with.nextPaymentAmount:typeof nextPaymentAmount!=="undefined"?nextPaymentAmount:undefined));;return buf.join("");
+=======
+buf.push("<div class=\"last_payment\"><span class=\"paymentSemaine\">il y a une semaine &nbsp</span>mon précédent paiement était de &nbsp<span class=\"lastPayment\">" + (jade.escape(null == (jade_interp = lastPaymentAmount) ? "" : jade_interp)) + "</span>" + (jade.escape(null == (jade_interp = lastPaymentDate) ? "" : jade_interp)) + "</div>");
+}}.call(this,"lastPaymentAmount" in locals_for_with?locals_for_with.lastPaymentAmount:typeof lastPaymentAmount!=="undefined"?lastPaymentAmount:undefined,"lastPaymentDate" in locals_for_with?locals_for_with.lastPaymentDate:typeof lastPaymentDate!=="undefined"?lastPaymentDate:undefined,"modePaiement" in locals_for_with?locals_for_with.modePaiement:typeof modePaiement!=="undefined"?modePaiement:undefined,"nextPaymentAmount" in locals_for_with?locals_for_with.nextPaymentAmount:typeof nextPaymentAmount!=="undefined"?nextPaymentAmount:undefined));;return buf.join("");
+>>>>>>> appliquer le style de maquette EDF
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

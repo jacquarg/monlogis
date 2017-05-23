@@ -27,7 +27,7 @@ module.exports = CozyModel.extend({
     }
   },
 
-  getLastPaymentEDF: function () {
+  getLastPaymentAmountEDF: function () {
     const paymentSchedules = this.get('paymentSchedules');
     if (paymentSchedules && paymentSchedules instanceof Array) {
       let prec;
@@ -37,6 +37,20 @@ module.exports = CozyModel.extend({
           return prec;
         }
         prec = value;
+      }
+    }
+  },
+  getLastPaymentDateEDF: function () {
+    const paymentSchedules = this.get('paymentSchedules');
+    if (paymentSchedules && paymentSchedules instanceof Array) {
+      let precd;
+      //eslint-disable-next-line
+      for (const value of paymentSchedules) {
+        if (value.paid === false) {
+          return precd;
+        }
+        precd = ` le ${value.scheduleDate}`;
+>>>>>>> appliquer le style de maquette EDF
       }
     }
   },
