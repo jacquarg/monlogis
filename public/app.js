@@ -837,7 +837,7 @@ module.exports = CozyModel.extend({
     }
   },
 
-  getLastPaymentAmountEDF: function () {
+  getLastPaymentEDF: function () {
     const paymentSchedules = this.get('paymentSchedules');
     if (paymentSchedules && paymentSchedules instanceof Array) {
       let prec;
@@ -846,6 +846,7 @@ module.exports = CozyModel.extend({
         if (value.paid === false) {
           return prec;
         }
+<<<<<<< HEAD
 <<<<<<< HEAD
         prec = value;
 =======
@@ -864,6 +865,9 @@ module.exports = CozyModel.extend({
         }
         precd = ` le ${value.scheduleDate}`;
 >>>>>>> appliquer le style de maquette EDF
+=======
+        prec = value;
+>>>>>>> resoudre erreurs eslint, remplacer les fonctions modalite paiment
       }
     }
   },
@@ -1764,8 +1768,7 @@ module.exports = Mn.View.extend({
     const data = this.model.toJSON();
     if (this.model.get('vendor') === 'EDF') {
       data.nextPaymentAmount = this.model.getNextPaymentEDF();
-      data.lastPaymentAmount = this.model.getLastPaymentAmountEDF();
-      data.lastPaymentDate = this.model.getLastPaymentDateEDF();
+      data.lastPaymentAmount = this.model.getLastPaymentEDF();
     }
 
     if (this.model.get('vendor') === 'maif') {
@@ -2559,7 +2562,7 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (lastPaymentAmount, lastPaymentDate, modePaiement, nextPaymentAmount) {
+;var locals_for_with = (locals || {});(function (lastPaymentAmount, modePaiement, nextPaymentAmount) {
 if ( modePaiement)
 {
 buf.push("<h3>Je paye en mode de;" + (jade.escape(null == (jade_interp = modePaiement) ? "" : jade_interp)) + "</h3>");
@@ -2572,12 +2575,17 @@ buf.push("<img src=\"/assets/img/calendar.svg\" class=\"img_calendar\"/>");
 if ( lastPaymentAmount)
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
 buf.push("<div class=\"last_payment\"><span class=\"paymentSemaine\">il y a une semaine &nbsp</span>mon précédent paiement était de &nbsp<span class=\"lastPayment\">" + (jade.escape(null == (jade_interp = lastPaymentAmount.amount) ? "" : jade_interp)) + "</span>&nbsp le" + (jade.escape(null == (jade_interp = lastPaymentAmount.scheduleDate) ? "" : jade_interp)) + "</div>");
 }}.call(this,"lastPaymentAmount" in locals_for_with?locals_for_with.lastPaymentAmount:typeof lastPaymentAmount!=="undefined"?lastPaymentAmount:undefined,"modePaiement" in locals_for_with?locals_for_with.modePaiement:typeof modePaiement!=="undefined"?modePaiement:undefined,"nextPaymentAmount" in locals_for_with?locals_for_with.nextPaymentAmount:typeof nextPaymentAmount!=="undefined"?nextPaymentAmount:undefined));;return buf.join("");
 =======
 buf.push("<div class=\"last_payment\"><span class=\"paymentSemaine\">il y a une semaine &nbsp</span>mon précédent paiement était de &nbsp<span class=\"lastPayment\">" + (jade.escape(null == (jade_interp = lastPaymentAmount) ? "" : jade_interp)) + "</span>" + (jade.escape(null == (jade_interp = lastPaymentDate) ? "" : jade_interp)) + "</div>");
 }}.call(this,"lastPaymentAmount" in locals_for_with?locals_for_with.lastPaymentAmount:typeof lastPaymentAmount!=="undefined"?lastPaymentAmount:undefined,"lastPaymentDate" in locals_for_with?locals_for_with.lastPaymentDate:typeof lastPaymentDate!=="undefined"?lastPaymentDate:undefined,"modePaiement" in locals_for_with?locals_for_with.modePaiement:typeof modePaiement!=="undefined"?modePaiement:undefined,"nextPaymentAmount" in locals_for_with?locals_for_with.nextPaymentAmount:typeof nextPaymentAmount!=="undefined"?nextPaymentAmount:undefined));;return buf.join("");
 >>>>>>> appliquer le style de maquette EDF
+=======
+buf.push("<div class=\"last_payment\"><span class=\"paymentSemaine\">il y a une semaine &nbsp</span>mon précédent paiement était de &nbsp<span class=\"lastPayment\">" + (jade.escape(null == (jade_interp = lastPaymentAmount.amount) ? "" : jade_interp)) + "</span>&nbsp le" + (jade.escape(null == (jade_interp = lastPaymentAmount.scheduleDate) ? "" : jade_interp)) + "</div>");
+}}.call(this,"lastPaymentAmount" in locals_for_with?locals_for_with.lastPaymentAmount:typeof lastPaymentAmount!=="undefined"?lastPaymentAmount:undefined,"modePaiement" in locals_for_with?locals_for_with.modePaiement:typeof modePaiement!=="undefined"?modePaiement:undefined,"nextPaymentAmount" in locals_for_with?locals_for_with.nextPaymentAmount:typeof nextPaymentAmount!=="undefined"?nextPaymentAmount:undefined));;return buf.join("");
+>>>>>>> resoudre erreurs eslint, remplacer les fonctions modalite paiment
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

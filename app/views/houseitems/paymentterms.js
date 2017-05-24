@@ -27,8 +27,7 @@ module.exports = Mn.View.extend({
     const data = this.model.toJSON();
     if (this.model.get('vendor') === 'EDF') {
       data.nextPaymentAmount = this.model.getNextPaymentEDF();
-      data.lastPaymentAmount = this.model.getLastPaymentAmountEDF();
-      data.lastPaymentDate = this.model.getLastPaymentDateEDF();
+      data.lastPaymentAmount = this.model.getLastPaymentEDF();
     }
 
     if (this.model.get('vendor') === 'maif') {
