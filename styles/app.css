@@ -18,7 +18,7 @@
 /* avoid problems with cozy-bar */
 [role=application], body {
   display: block;
-  
+
 }
 
 [role=application] {
@@ -55,21 +55,12 @@
   padding: 10px;
 }
 
-.bills{
-  display: flex;
-  justify-content: center;
-  margin-top: 20%;
-}
-
-.title-facture{
-  margin-left: 19%;
-}
 
 .houseitemdetails {
-  background-color: white;
+  background-color: rgba(224, 228, 204, 255);
   padding: 20px;
   border: solid 3px #999;
-  
+
 }
 
 .houseitemdetails img {
@@ -86,6 +77,9 @@
   right: 15px;
 }
 
+.addfile{
+  margin-top: 11em;
+}
 
 .addfile li {
   margin-bottom: 15px;
@@ -101,4 +95,136 @@
 img.objecticon {
   max-width: 100%;
   max-height: 250px;
+}
+
+ol, ul{
+  list-style: none !important;
+}
+
+/*modalité payment*/
+.container_head{
+  margin-top: -219px;
+  background-color: #fff;
+  margin-left: -20px;
+}
+
+.amountEdf{
+  font-size: 54px;
+  color: #FFA500;
+  font-weight: bold;
+}
+
+.symbolEuro{
+  font-size: 51px;
+  font-weight: bold;
+  color: #FFA500;
+}
+
+.text_date{
+  font-size: 28px;
+}
+
+.img_calendar{
+  width: 80px;
+  margin-top: -68px;
+  margin-left: 13px;
+}
+
+.paymentH4{
+  margin-top: 30px;
+  font-size: 17px;
+}
+
+.paymentSemaine{
+  font-size: 24px;
+  margin-left: 30%;
+}
+
+.prochain_paiment{
+  margin-left: -5%;
+}
+
+.space_text{
+  margin-left: 8%;
+}
+
+.lastPayment{
+  margin-left: 47%;
+  font-size: 30px;
+}
+
+.last_payment{
+  font-size: 17px;
+}
+/*consomation edf*/
+.img_energy{
+  width: 80px;
+  margin-top: -33px;
+}
+
+.container_conso{
+  margin-top: -60px;
+  margin-left: 64px;
+  font-size: 17px;
+}
+
+.conso_energy{
+  font-size: 52px;
+}
+
+.energy_kwh{
+  font-size: 52px;
+}
+
+/*contrat edf*/
+.img_edf{
+  width: 220px;
+  margin-left: 4em;
+  background-color: #fff;
+  padding: 11px;
+}
+
+.contrant_glob{
+  margin-left: 6em;
+  margin-top: 13px;
+}
+
+/*contact edf*/
+.container_contact{
+  margin-top: 104px;
+  margin-left: 56em;
+}
+
+.contact_titre{
+  font-size: 27px;
+}
+
+.img_tell{
+  width: 20px;
+  margin-left: 14px;
+  margin-top: -65px;
+}
+
+.contact_depanage{
+ margin-left: 40px;
+}
+
+.contact_service{
+  margin-left: 42px;
+  margin-top: -19px;
+}
+
+.img_document{
+  width: 77px;
+  margin-top: -30em;
+}
+
+.document_EDF{
+  margin-top: -256px;
+  font-size: 28px;
+  margin-left: 76px;
+}
+
+.files{
+  margin-top: 116px;
 }

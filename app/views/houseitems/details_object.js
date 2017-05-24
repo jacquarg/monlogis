@@ -67,8 +67,8 @@ module.exports = Mn.View.extend({
   // },
 
   changeIcon: function () {
-    //eslint-disable-next-line
     const files = this.model.getFiltes();
+    //eslint-disable-next-line
     const imgFiles = files.filter(file => file.has('attributes') && file.get('attributes')['class'] === 'image');
 
     if (imgFiles.length === 0) { return; }

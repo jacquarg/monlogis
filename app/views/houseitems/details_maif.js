@@ -11,7 +11,6 @@ const SinistreView = require('./sinistre');
 const SinistreCollection = require('collections/sinistre');
 const FilesView = require('./files');
 
-
 module.exports = Mn.View.extend({
   template: template,
 
@@ -61,12 +60,10 @@ module.exports = Mn.View.extend({
     this.showChildView('societaireMaif', new SocietaireView());
     this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'Maif', contract: this.model }));
     this.showChildView('files', new FilesView({ model: this.model, }));
-
   },
 
   onClose: function () {
     app.trigger('houseitemdetails:close');
   },
-
 
 });

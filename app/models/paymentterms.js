@@ -21,7 +21,7 @@ module.exports = CozyModel.extend({
       //eslint-disable-next-line
       for (const value of paymentSchedules) {
         if (value.paid === false) {
-          return `${value.amount}€ le ${value.scheduleDate}`;
+          return value;
         }
       }
     }
@@ -36,8 +36,9 @@ module.exports = CozyModel.extend({
         if (value.paid === false) {
           return prec;
         }
-        prec = `${value.amount}€ le ${value.scheduleDate}`;
+        prec = value;
       }
     }
   },
+
 });
