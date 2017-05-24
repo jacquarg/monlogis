@@ -3,7 +3,6 @@
 const VendorItemView = require('./vendor_item');
 const template = require('../templates/houseitems/vendors');
 
-
 const VendorsView = Mn.CollectionView.extend({
   tagName: 'ul',
   className: 'movielibrary',

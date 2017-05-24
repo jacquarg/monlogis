@@ -27,7 +27,7 @@ module.exports = CozyModel.extend({
     }
   },
 
-  getLastPaymentAmountEDF: function () {
+  getLastPaymentEDF: function () {
     const paymentSchedules = this.get('paymentSchedules');
     if (paymentSchedules && paymentSchedules instanceof Array) {
       let prec;
@@ -36,21 +36,9 @@ module.exports = CozyModel.extend({
         if (value.paid === false) {
           return prec;
         }
-        prec = `${value.amount}€ `;
+        prec = value;
       }
     }
   },
-  getLastPaymentDateEDF: function () {
-    const paymentSchedules = this.get('paymentSchedules');
-    if (paymentSchedules && paymentSchedules instanceof Array) {
-      let precd;
-      //eslint-disable-next-line
-      for (const value of paymentSchedules) {
-        if (value.paid === false) {
-          return precd;
-        }
-        precd = ` le ${value.scheduleDate}`;
-      }
-    }
-  },
+
 });

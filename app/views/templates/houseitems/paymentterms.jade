@@ -26,5 +26,6 @@ if lastPaymentAmount
       | il y a une semaine &nbsp
      |mon précédent paiement était de &nbsp
 
-     span.lastPayment= lastPaymentAmount
-     = lastPaymentDate
+     span.lastPayment= lastPaymentAmount.amount
+     |&nbsp le
+     = lastPaymentAmount.scheduleDate

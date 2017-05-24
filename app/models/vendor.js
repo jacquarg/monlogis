@@ -11,7 +11,9 @@ module.exports = CozyModel.extend({
     if (this.dirID) { return Promise.resolve(); }
 
     return cozy.client.files.createDirectoryByPath(this.getFolderPath())
-    .then(dir => this.dirID = dir._id);
+    .then((dir) => {
+      this.dirID = dir._id;
+    });
   },
 
   getDirID: function () {
