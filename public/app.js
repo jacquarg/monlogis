@@ -846,28 +846,7 @@ module.exports = CozyModel.extend({
         if (value.paid === false) {
           return prec;
         }
-<<<<<<< HEAD
-<<<<<<< HEAD
         prec = value;
-=======
-        prec = `${value.amount}€ `;
-      }
-    }
-  },
-  getLastPaymentDateEDF: function () {
-    const paymentSchedules = this.get('paymentSchedules');
-    if (paymentSchedules && paymentSchedules instanceof Array) {
-      let precd;
-      //eslint-disable-next-line
-      for (const value of paymentSchedules) {
-        if (value.paid === false) {
-          return precd;
-        }
-        precd = ` le ${value.scheduleDate}`;
->>>>>>> appliquer le style de maquette EDF
-=======
-        prec = value;
->>>>>>> resoudre erreurs eslint, remplacer les fonctions modalite paiment
       }
     }
   },
@@ -1304,7 +1283,6 @@ require.register("views/houseitems/details_maif.js", function(exports, require, 
 
 const template = require('../templates/houseitems/details_maif');
 const ContractMaif = require('../../models/contract');
-// const SinstreHabitatView = require('./sinistre_habitat');
 const PaymenttermsView = require('./paymentterms');
 const SocietaireView = require('./societaire_maif');
 const FoyerView = require('./foyer_maif');
@@ -1317,7 +1295,6 @@ module.exports = Mn.View.extend({
   template: template,
 
   regions: {
-    // sinistreHabitat: '.sinistreHabitat',
     sinistres: '.sinistres',
     homeMaif: '.homeMaif',
     foyerMaif: '.foyerMaif',
@@ -1339,20 +1316,20 @@ module.exports = Mn.View.extend({
 
   initialize: function () {
     this.model.getFiles().fetch();
-
     this.contract = new ContractMaif();
     this.contract.fetchMaif();
+    this.listenTo(this.contract, 'change', this.render);
     this.sinistres = new SinistreCollection({ vendor: 'Maif' });
     this.sinistres.fetch();
   },
 
   serializeData: function () {
     const data = this.contract.toJSON();
+    console.log(data);
     return data;
   },
 
   onRender: function () {
-    // this.showChildView('sinistreHabitat', new SinstreHabitatView());
     this.showChildView('sinistres', new SinistreView({
       model: new Backbone.Model({ slug: 'Maif' }),
       collection: this.sinistres,
@@ -1360,7 +1337,7 @@ module.exports = Mn.View.extend({
     this.showChildView('homeMaif', new HomeView());
     this.showChildView('foyerMaif', new FoyerView());
     this.showChildView('societaireMaif', new SocietaireView());
-    this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'Maif', contract: this.model }));
+    this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'Maif', contract: this.contract }));
     this.showChildView('files', new FilesView({ model: this.model, }));
   },
 
@@ -1765,14 +1742,17 @@ module.exports = Mn.View.extend({
   },
 
   serializeData: function () {
+    let vendor = this.model.get('vendor');
+    vendor = vendor ? vendor.toLowerCase() : '';
+
     const data = this.model.toJSON();
-    if (this.model.get('vendor') === 'EDF') {
+    if (vendor === 'edf') {
       data.nextPaymentAmount = this.model.getNextPaymentEDF();
       data.lastPaymentAmount = this.model.getLastPaymentEDF();
     }
 
-    if (this.model.get('vendor') === 'maif') {
-      // data.annualCost = this.contract.get('montantTarifTtc');
+    if (vendor === 'maif') {
+      data.annualCost = this.contract.get('montantTarifTtc');
       // data.nextPaymentAmount = this.contract.get('montantTarifTtc');
     }
     return data;
@@ -2338,28 +2318,18 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (montantTarifTtc, societaire, startDate, vendor) {
-buf.push("<div class=\"paymentterms\"></div><h3>");
-if ( montantTarifTtc)
-{
-buf.push(jade.escape(null == (jade_interp = montantTarifTtc) ? "" : jade_interp));
-}
-buf.push("€ par an.</h3><h3>J'ai eu mon contrat &nbsp");
-if ( vendor)
-{
-buf.push(jade.escape(null == (jade_interp = vendor) ? "" : jade_interp));
-}
-buf.push("&nbsp le &nbsp");
-if ( startDate)
-{
-buf.push(jade.escape(null == (jade_interp = startDate) ? "" : jade_interp));
-}
-buf.push("&nbsp sous le numéro de &nbsp");
+;var locals_for_with = (locals || {});(function (societaire, startDate) {
+buf.push("<div class=\"row col-md-3 col-md-offset-9\"><img src=\"/assets/img/maif_logo_big.png\" class=\"logo_maif_maquette\"/></div><div class=\"col-md-3 col-md-offset-9\">Mon contrat &nbsp");
 if ( societaire)
 {
 buf.push(jade.escape(null == (jade_interp = societaire) ? "" : jade_interp));
 }
-buf.push(".<br/></h3><div class=\"homeMaif\"></div><div class=\"foyerMaif\"></div><div class=\"societaireMaif\"></div><div class=\"sinistres\"></div><div class=\"col-md-6\"></div><p>Service client maif<br/></p><div class=\"col-md-6\"></div><p>&nbsp Tel:&nbsp 09 72 72 15 15</p><div class=\"files\"></div><div class=\"close\">x</div>");}.call(this,"montantTarifTtc" in locals_for_with?locals_for_with.montantTarifTtc:typeof montantTarifTtc!=="undefined"?montantTarifTtc:undefined,"societaire" in locals_for_with?locals_for_with.societaire:typeof societaire!=="undefined"?societaire:undefined,"startDate" in locals_for_with?locals_for_with.startDate:typeof startDate!=="undefined"?startDate:undefined,"vendor" in locals_for_with?locals_for_with.vendor:typeof vendor!=="undefined"?vendor:undefined));;return buf.join("");
+buf.push("<div class=\"row\"></div>Début de contrat &nbsp");
+if ( startDate)
+{
+buf.push(jade.escape(null == (jade_interp = startDate) ? "" : jade_interp));
+}
+buf.push("</div><div class=\"row\"></div><div class=\"col-md-8 espace_blanc_maquette\"><div class=\"paymentterms\"></div><div class=\"affiche_flex\"><div class=\"homeMaif\"></div><div class=\"col-md-offset-3\"><div class=\"foyerMaif\"></div></div></div><div class=\"sinistres\"></div><div class=\"row col-md-offset-3\"><h4>Mon véhicul assuré</h4></div></div><div class=\"row\"></div><div class=\"col-md-offset-9\"><h2>Contact maif</h2></div><div class=\"col-md-offset-8\"><p>&nbsp Tel:&nbsp 09 72 72 15 15</p></div><div class=\"col-md-offset-9\"><div class=\"societaireMaif\"></div></div><div class=\"files\"></div><div class=\"close\">x</div>");}.call(this,"societaire" in locals_for_with?locals_for_with.societaire:typeof societaire!=="undefined"?societaire:undefined,"startDate" in locals_for_with?locals_for_with.startDate:typeof startDate!=="undefined"?startDate:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2457,12 +2427,12 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (address, foyerMaif) {
-buf.push("<h3>Membres de foyer:</h3><ul><li>Nom: &nbsp");
+buf.push("<h4>Membres de foyer:</h4><ul><li>&nbsp");
 if ( foyerMaif)
 {
 buf.push(jade.escape(null == (jade_interp = foyerMaif) ? "" : jade_interp));
 }
-buf.push("</li><li>Adresse: &nbsp");
+buf.push("</li><li>&nbsp");
 if ( address)
 {
 buf.push(jade.escape(null == (jade_interp = address.city) ? "" : jade_interp));
@@ -2491,7 +2461,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (natureLieu, nombrePieces, situationJuridiqueLieu) {
-buf.push("<div class=\"divdiv\"></div><h3>Mon habitat assuré:</h3><ul><li>");
+buf.push("<div class=\"row\"><img src=\"/assets/img/home.svg\" class=\"img_habitat\"/></div><div class=\"col-md-12 col-md-offset-4\"><div class=\"habitat_assuree\"><h3>Mon habitat assuré:</h3><ul class=\"detail_habitat\"><li>");
 if ( natureLieu)
 {
 buf.push(jade.escape(null == (jade_interp = natureLieu) ? "" : jade_interp));
@@ -2506,7 +2476,7 @@ if ( situationJuridiqueLieu)
 {
 buf.push(jade.escape(null == (jade_interp = situationJuridiqueLieu) ? "" : jade_interp));
 }
-buf.push("<br/></li></ul>");}.call(this,"natureLieu" in locals_for_with?locals_for_with.natureLieu:typeof natureLieu!=="undefined"?natureLieu:undefined,"nombrePieces" in locals_for_with?locals_for_with.nombrePieces:typeof nombrePieces!=="undefined"?nombrePieces:undefined,"situationJuridiqueLieu" in locals_for_with?locals_for_with.situationJuridiqueLieu:typeof situationJuridiqueLieu!=="undefined"?situationJuridiqueLieu:undefined));;return buf.join("");
+buf.push("</li></ul></div></div>");}.call(this,"natureLieu" in locals_for_with?locals_for_with.natureLieu:typeof natureLieu!=="undefined"?natureLieu:undefined,"nombrePieces" in locals_for_with?locals_for_with.nombrePieces:typeof nombrePieces!=="undefined"?nombrePieces:undefined,"situationJuridiqueLieu" in locals_for_with?locals_for_with.situationJuridiqueLieu:typeof situationJuridiqueLieu!=="undefined"?situationJuridiqueLieu:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2562,30 +2532,23 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (lastPaymentAmount, modePaiement, nextPaymentAmount) {
+;var locals_for_with = (locals || {});(function (annualCost, lastPaymentAmount, modePaiement, nextPaymentAmount) {
 if ( modePaiement)
 {
-buf.push("<h3>Je paye en mode de;" + (jade.escape(null == (jade_interp = modePaiement) ? "" : jade_interp)) + "</h3>");
+buf.push("<div class=\"row\"><img src=\"/assets/img/payment.svg\" class=\"img_payment\"/></div><div class=\"col-md-offset-2 mode_payment\">Je paye en mode de &nbsp" + (jade.escape(null == (jade_interp = modePaiement) ? "" : jade_interp)) + "</div>");
+}
+if ( annualCost)
+{
+buf.push("<div class=\"row\"><div class=\"col-md-offset-2\"><div class=\"col-md-offset-10\"><div class=\"annual_cost\">" + (jade.escape(null == (jade_interp = annualCost) ? "" : jade_interp)) + "€</div></div><div class=\"row annual_cost_text col-md-offset-8\">par an.</div></div></div>");
 }
 if ( nextPaymentAmount)
 {
-buf.push("<div class=\"paymentH4 col-md-offset-4\"><span class=\"prochain_paiment\"></span>mon prochain paiment &nbsp;<span class=\"amountEdf\">" + (jade.escape(null == (jade_interp = nextPaymentAmount.amount) ? "" : jade_interp)) + "</span><span class=\"symbolEuro\">€</span><div class=\"row\"></div><span class=\"space_text\"></span>&nbsp le &nbsp" + (jade.escape(null == (jade_interp = nextPaymentAmount.scheduleDate) ? "" : jade_interp)) + ",<span class=\"text_date\">&nbsp dans un mois &nbsp</span></div>");
+buf.push("<div class=\"paymentH4 col-md-offset-4\"><span class=\"prochain_paiment\"></span>mon prochain paiment &nbsp;<span class=\"amountEdf\">" + (jade.escape(null == (jade_interp = nextPaymentAmount.amount) ? "" : jade_interp)) + "</span><span class=\"symbolEuro\">€</span><div class=\"row\"></div><span class=\"space_text\"></span>&nbsp le &nbsp" + (jade.escape(null == (jade_interp = nextPaymentAmount.scheduleDate) ? "" : jade_interp)) + ",<span class=\"text_date\">&nbsp dans un mois &nbsp</span></div><img src=\"/assets/img/payment.svg\" class=\"img_calendar\"/>");
 }
-buf.push("<img src=\"/assets/img/calendar.svg\" class=\"img_calendar\"/>");
 if ( lastPaymentAmount)
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
 buf.push("<div class=\"last_payment\"><span class=\"paymentSemaine\">il y a une semaine &nbsp</span>mon précédent paiement était de &nbsp<span class=\"lastPayment\">" + (jade.escape(null == (jade_interp = lastPaymentAmount.amount) ? "" : jade_interp)) + "</span>&nbsp le" + (jade.escape(null == (jade_interp = lastPaymentAmount.scheduleDate) ? "" : jade_interp)) + "</div>");
-}}.call(this,"lastPaymentAmount" in locals_for_with?locals_for_with.lastPaymentAmount:typeof lastPaymentAmount!=="undefined"?lastPaymentAmount:undefined,"modePaiement" in locals_for_with?locals_for_with.modePaiement:typeof modePaiement!=="undefined"?modePaiement:undefined,"nextPaymentAmount" in locals_for_with?locals_for_with.nextPaymentAmount:typeof nextPaymentAmount!=="undefined"?nextPaymentAmount:undefined));;return buf.join("");
-=======
-buf.push("<div class=\"last_payment\"><span class=\"paymentSemaine\">il y a une semaine &nbsp</span>mon précédent paiement était de &nbsp<span class=\"lastPayment\">" + (jade.escape(null == (jade_interp = lastPaymentAmount) ? "" : jade_interp)) + "</span>" + (jade.escape(null == (jade_interp = lastPaymentDate) ? "" : jade_interp)) + "</div>");
-}}.call(this,"lastPaymentAmount" in locals_for_with?locals_for_with.lastPaymentAmount:typeof lastPaymentAmount!=="undefined"?lastPaymentAmount:undefined,"lastPaymentDate" in locals_for_with?locals_for_with.lastPaymentDate:typeof lastPaymentDate!=="undefined"?lastPaymentDate:undefined,"modePaiement" in locals_for_with?locals_for_with.modePaiement:typeof modePaiement!=="undefined"?modePaiement:undefined,"nextPaymentAmount" in locals_for_with?locals_for_with.nextPaymentAmount:typeof nextPaymentAmount!=="undefined"?nextPaymentAmount:undefined));;return buf.join("");
->>>>>>> appliquer le style de maquette EDF
-=======
-buf.push("<div class=\"last_payment\"><span class=\"paymentSemaine\">il y a une semaine &nbsp</span>mon précédent paiement était de &nbsp<span class=\"lastPayment\">" + (jade.escape(null == (jade_interp = lastPaymentAmount.amount) ? "" : jade_interp)) + "</span>&nbsp le" + (jade.escape(null == (jade_interp = lastPaymentAmount.scheduleDate) ? "" : jade_interp)) + "</div>");
-}}.call(this,"lastPaymentAmount" in locals_for_with?locals_for_with.lastPaymentAmount:typeof lastPaymentAmount!=="undefined"?lastPaymentAmount:undefined,"modePaiement" in locals_for_with?locals_for_with.modePaiement:typeof modePaiement!=="undefined"?modePaiement:undefined,"nextPaymentAmount" in locals_for_with?locals_for_with.nextPaymentAmount:typeof nextPaymentAmount!=="undefined"?nextPaymentAmount:undefined));;return buf.join("");
->>>>>>> resoudre erreurs eslint, remplacer les fonctions modalite paiment
+}}.call(this,"annualCost" in locals_for_with?locals_for_with.annualCost:typeof annualCost!=="undefined"?annualCost:undefined,"lastPaymentAmount" in locals_for_with?locals_for_with.lastPaymentAmount:typeof lastPaymentAmount!=="undefined"?lastPaymentAmount:undefined,"modePaiement" in locals_for_with?locals_for_with.modePaiement:typeof modePaiement!=="undefined"?modePaiement:undefined,"nextPaymentAmount" in locals_for_with?locals_for_with.nextPaymentAmount:typeof nextPaymentAmount!=="undefined"?nextPaymentAmount:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2652,7 +2615,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<br/><button>Sinistre d'habitation</button><br/><br/><ul></ul>");;return buf.join("");
+buf.push("<div class=\"row button_sinistre col-md-offset-3\"><button>Sinistre d'habitation</button><ul></ul></div>");;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2670,23 +2633,8 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (ref, timestamp, type) {
-buf.push("<li>Type: &nbsp");
-if ( type)
-{
-buf.push(jade.escape(null == (jade_interp = type) ? "" : jade_interp));
-}
-buf.push("</li><li>Date: &nbsp");
-if ( timestamp)
-{
-buf.push(jade.escape(null == (jade_interp = timestamp) ? "" : jade_interp));
-}
-buf.push("</li><li>Référence: &nbsp");
-if ( ref)
-{
-buf.push(jade.escape(null == (jade_interp = ref) ? "" : jade_interp));
-}
-buf.push("</li><br/>");}.call(this,"ref" in locals_for_with?locals_for_with.ref:typeof ref!=="undefined"?ref:undefined,"timestamp" in locals_for_with?locals_for_with.timestamp:typeof timestamp!=="undefined"?timestamp:undefined,"type" in locals_for_with?locals_for_with.type:typeof type!=="undefined"?type:undefined));;return buf.join("");
+
+;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2704,33 +2652,8 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (email, name, profession, telMobile) {
-buf.push("<br/><button>Societaire</button><br/><br/><ul><li>Nom: &nbsp");
-if ( name)
-{
-buf.push(jade.escape(null == (jade_interp = name.family) ? "" : jade_interp));
-}
-buf.push("&nbsp");
-if ( name)
-{
-buf.push(jade.escape(null == (jade_interp = name.given) ? "" : jade_interp));
-}
-buf.push("</li><li>Profession: &nbsp");
-if ( profession)
-{
-buf.push(jade.escape(null == (jade_interp = profession) ? "" : jade_interp));
-}
-buf.push("</li><li>Téléphone: &nbsp");
-if ( telMobile)
-{
-buf.push(jade.escape(null == (jade_interp = telMobile) ? "" : jade_interp));
-}
-buf.push("</li><li>Email: &nbsp");
-if ( email)
-{
-buf.push(jade.escape(null == (jade_interp = email) ? "" : jade_interp));
-}
-buf.push("</li></ul>");}.call(this,"email" in locals_for_with?locals_for_with.email:typeof email!=="undefined"?email:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"profession" in locals_for_with?locals_for_with.profession:typeof profession!=="undefined"?profession:undefined,"telMobile" in locals_for_with?locals_for_with.telMobile:typeof telMobile!=="undefined"?telMobile:undefined));;return buf.join("");
+
+buf.push("<button>Toutes mes données</button><div class=\"row\"></div>");;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

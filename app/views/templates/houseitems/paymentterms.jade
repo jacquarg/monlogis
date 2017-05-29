@@ -1,7 +1,18 @@
 if modePaiement
-  h3
-     | Je paye en mode de;
+ .row
+     img.img_payment(src="/assets/img/payment.svg")
+  .col-md-offset-2.mode_payment
+     | Je paye en mode de &nbsp
      = modePaiement
+
+if annualCost
+ .row
+  .col-md-offset-2
+    .col-md-offset-10
+      div.annual_cost= annualCost
+       |€
+     .row.annual_cost_text.col-md-offset-8
+     | par an.
 
 if nextPaymentAmount
   .paymentH4.col-md-offset-4
@@ -18,7 +29,7 @@ if nextPaymentAmount
      span.text_date
       | &nbsp dans un mois &nbsp
 
-img.img_calendar(src="/assets/img/calendar.svg")
+  img.img_calendar(src="/assets/img/payment.svg")
 
 if lastPaymentAmount
   .last_payment

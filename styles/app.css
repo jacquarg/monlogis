@@ -126,9 +126,9 @@ ol, ul{
 }
 
 .img_calendar{
-  width: 80px;
-  margin-top: -68px;
-  margin-left: 13px;
+  width: 72px;
+  margin-top: -116px;
+  margin-left: 8px;
 }
 
 .paymentH4{
@@ -228,4 +228,71 @@ ol, ul{
 
 .files{
   margin-top: 116px;
+}
+
+/*maquette Maif*/
+
+.affiche_flex{
+  display: flex;
+}
+
+.espace_blanc_maquette{
+  margin-top: -218px;
+  background-color: #fff;
+  margin-left: -18px;
+  margin-bottom: 48px;
+}
+
+.img_payment{
+  width: 79px;
+  margin-left: 26px;
+  margin-top: 49px;
+}
+
+.mode_payment{
+  margin-top: -61px;
+  font-size: 20px;
+  margin-left: 99px;
+}
+
+.annual_cost{
+  margin-top: -68px;
+  margin-left: -120px;
+  font-size: 60px;
+  color: rgba(255, 102, 0, 255);
+}
+
+.annual_cost_text{
+  font-size: 19px;
+  margin-top: -10px;
+  margin-left: 78%;
+}
+
+.img_habitat{
+  width: 75px;
+  margin-left: 26px;
+  margin-top: 63px;
+}
+
+.habitat_assuree{
+  margin-top: -99px;
+}
+
+.button_sinistre{
+  margin-left: 119px;
+  margin-bottom: 20px;
+}
+
+.detail_habitat{
+  margin-left: -25px;
+}
+
+.foyerMaif{
+  margin-top: 90px;
+  margin-left: -44px;
+}
+
+.logo_maif_maquette{
+  width: 153px;
+  margin-top: 7px;
 }

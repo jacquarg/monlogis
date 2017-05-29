@@ -1,14 +1,17 @@
-.divdiv
-h3 Mon habitat assuré:
-ul
-  li
-     if natureLieu
-        = natureLieu
-     br
-  li
-     if nombrePieces
-        = nombrePieces
-  li
-     if situationJuridiqueLieu
-        = situationJuridiqueLieu
-     br
+.row
+  img.img_habitat(src="/assets/img/home.svg")
+
+.col-md-12.col-md-offset-4
+  .habitat_assuree
+    h3 Mon habitat assuré:
+    ul.detail_habitat
+      li
+         if natureLieu
+            = natureLieu
+         br
+      li
+         if nombrePieces
+            = nombrePieces
+      li
+         if situationJuridiqueLieu
+            = situationJuridiqueLieu

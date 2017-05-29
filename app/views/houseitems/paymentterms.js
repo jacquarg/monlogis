@@ -24,14 +24,17 @@ module.exports = Mn.View.extend({
   },
 
   serializeData: function () {
+    let vendor = this.model.get('vendor');
+    vendor = vendor ? vendor.toLowerCase() : '';
+
     const data = this.model.toJSON();
-    if (this.model.get('vendor') === 'EDF') {
+    if (vendor === 'edf') {
       data.nextPaymentAmount = this.model.getNextPaymentEDF();
       data.lastPaymentAmount = this.model.getLastPaymentEDF();
     }
 
-    if (this.model.get('vendor') === 'maif') {
-      // data.annualCost = this.contract.get('montantTarifTtc');
+    if (vendor === 'maif') {
+      data.annualCost = this.contract.get('montantTarifTtc');
       // data.nextPaymentAmount = this.contract.get('montantTarifTtc');
     }
     return data;

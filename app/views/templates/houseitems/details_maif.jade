@@ -1,35 +1,37 @@
-.paymentterms
-
-h3
-   if montantTarifTtc
-      = montantTarifTtc
-   |€ par an.
-h3
-   | J'ai eu mon contrat &nbsp
-   if vendor
-      = vendor
-   | &nbsp le &nbsp
-   if startDate
-      = startDate
-   | &nbsp sous le numéro de &nbsp
+.row.col-md-3.col-md-offset-9
+     img.logo_maif_maquette(src="/assets/img/maif_logo_big.png")
+.col-md-3.col-md-offset-9
+   | Mon contrat &nbsp
    if societaire
       = societaire
-   |.
-   br
+   .row
+   | Début de contrat &nbsp
+   if startDate
+      = startDate
 
-.homeMaif
-.foyerMaif
-.societaireMaif
-.sinistres
+.row
+.col-md-8.espace_blanc_maquette
+ .paymentterms
+ .affiche_flex
+  .homeMaif
+  .col-md-offset-3
+   .foyerMaif
+ .sinistres
+ .row.col-md-offset-3
+   h4
+     |Mon véhicul assuré
 
-.col-md-6
-p
-  | Service client maif
-  br
-.col-md-6
-p
-  | &nbsp Tel:&nbsp 09 72 72 15 15
+.row
+.col-md-offset-9
+ h2
+   | Contact maif
+.col-md-offset-8
+ p
+   | &nbsp Tel:&nbsp 09 72 72 15 15
+
+.col-md-offset-9
+ .societaireMaif
+
 
 .files
-
 .close x
