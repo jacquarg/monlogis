@@ -2319,17 +2319,17 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (societaire, startDate) {
-buf.push("<div class=\"row col-md-3 col-md-offset-9\"><img src=\"/assets/img/maif_logo_big.png\" class=\"logo_maif_maquette\"/></div><div class=\"col-md-3 col-md-offset-9\">Mon contrat &nbsp");
+buf.push("<div class=\"row col-md-3 col-md-offset-9\"><img src=\"/assets/img/maif_logo_big.png\" class=\"logo_maif_maquette\"/></div><div class=\"col-md-3 col-md-offset-9\"><div class=\"row mon_contrat\">Mon contrat &nbsp</div><div class=\"row numero_contrat\">N°&nbsp");
 if ( societaire)
 {
 buf.push(jade.escape(null == (jade_interp = societaire) ? "" : jade_interp));
 }
-buf.push("<div class=\"row\"></div>Début de contrat &nbsp");
+buf.push("</div><div class=\"row debut_contrat\">Début de contrat &nbsp</div><div class=\"row start_date\">");
 if ( startDate)
 {
 buf.push(jade.escape(null == (jade_interp = startDate) ? "" : jade_interp));
 }
-buf.push("</div><div class=\"row\"></div><div class=\"col-md-8 espace_blanc_maquette\"><div class=\"paymentterms\"></div><div class=\"affiche_flex\"><div class=\"homeMaif\"></div><div class=\"col-md-offset-3\"><div class=\"foyerMaif\"></div></div></div><div class=\"sinistres\"></div><div class=\"row col-md-offset-3\"><h4>Mon véhicul assuré</h4></div></div><div class=\"row\"></div><div class=\"col-md-offset-9\"><h2>Contact maif</h2></div><div class=\"col-md-offset-8\"><p>&nbsp Tel:&nbsp 09 72 72 15 15</p></div><div class=\"col-md-offset-9\"><div class=\"societaireMaif\"></div></div><div class=\"files\"></div><div class=\"close\">x</div>");}.call(this,"societaire" in locals_for_with?locals_for_with.societaire:typeof societaire!=="undefined"?societaire:undefined,"startDate" in locals_for_with?locals_for_with.startDate:typeof startDate!=="undefined"?startDate:undefined));;return buf.join("");
+buf.push("</div></div><div class=\"row\"></div><div class=\"col-md-8 espace_blanc_maquette\"><div class=\"paymentterms\"></div><div class=\"affiche_flex\"><div class=\"homeMaif\"></div><div class=\"col-md-offset-3\"><div class=\"foyerMaif\"></div></div></div><div class=\"sinistres\"></div><div class=\"row col-md-offset-3\"></div><div class=\"vehicul_assure\">Mon véhicul assuré:<Button class=\"btn_sinistre_vehicul\">Sinistre véhicul</Button></div></div><div class=\"row contac_maif\"><div class=\"col-md-offset-9\"><h2>Contact maif</h2></div><div class=\"col-md-offset-9\"><p><img src=\"/assets/img/tell.svg\" class=\"img_tell_maif\"/>&nbsp 09 72 72 15 15</p></div></div><div class=\"col-md-offset-9\"><div class=\"societaireMaif\"></div></div><div class=\"files\"></div><div class=\"close\">x</div>");}.call(this,"societaire" in locals_for_with?locals_for_with.societaire:typeof societaire!=="undefined"?societaire:undefined,"startDate" in locals_for_with?locals_for_with.startDate:typeof startDate!=="undefined"?startDate:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2653,7 +2653,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<button>Toutes mes données</button><div class=\"row\"></div>");;return buf.join("");
+buf.push("<button class=\"btn_toute_mes_donnees\">Toutes mes données</button><div class=\"row\"></div>");;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

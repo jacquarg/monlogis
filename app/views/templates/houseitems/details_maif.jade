@@ -1,13 +1,17 @@
 .row.col-md-3.col-md-offset-9
      img.logo_maif_maquette(src="/assets/img/maif_logo_big.png")
 .col-md-3.col-md-offset-9
-   | Mon contrat &nbsp
-   if societaire
-      = societaire
-   .row
-   | Début de contrat &nbsp
-   if startDate
-      = startDate
+   .row.mon_contrat
+     | Mon contrat &nbsp
+   .row.numero_contrat
+     | N°&nbsp
+     if societaire
+       = societaire
+   .row.debut_contrat
+     | Début de contrat &nbsp
+   .row.start_date
+       if startDate
+          = startDate
 
 .row
 .col-md-8.espace_blanc_maquette
@@ -18,16 +22,22 @@
    .foyerMaif
  .sinistres
  .row.col-md-offset-3
-   h4
-     |Mon véhicul assuré
+ .vehicul_assure
+   |Mon véhicul assuré:
+   Button.btn_sinistre_vehicul
+      | Sinistre véhicul
 
-.row
-.col-md-offset-9
- h2
-   | Contact maif
-.col-md-offset-8
- p
-   | &nbsp Tel:&nbsp 09 72 72 15 15
+
+.row.contac_maif
+  .col-md-offset-9
+   h2
+     | Contact maif
+  .col-md-offset-9
+   p
+     img.img_tell_maif(src="/assets/img/tell.svg")
+
+     | &nbsp 09 72 72 15 15
+
 
 .col-md-offset-9
  .societaireMaif
