@@ -2408,7 +2408,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (description, iconUrl, name) {
-buf.push("<div class=\"row\"><div class=\"col-md-4\"><img" + (jade.attr("src", iconUrl, true, false)) + " class=\"objecticon img-thumbnail\"/><button id=\"changeicon\" type=\"button\" class=\"btn btn-default btn-xs\">modifier</button></div><div class=\"col-md-8\"><input name=\"name\" type=\"text\" placeholder=\"Nom de l'objet\"" + (jade.attr("value", name, true, false)) + " class=\"form-control\"/><textarea name=\"description\" rows=\"3\" placeholder=\"Description\" class=\"form-control\">" + (jade.escape(null == (jade_interp = description) ? "" : jade_interp)) + "</textarea></div></div><div class=\"files\"></div><div class=\"close\">x</div>");}.call(this,"description" in locals_for_with?locals_for_with.description:typeof description!=="undefined"?description:undefined,"iconUrl" in locals_for_with?locals_for_with.iconUrl:typeof iconUrl!=="undefined"?iconUrl:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
+buf.push("<div class=\"columnbody col-xs-8\"><div class=\"files\"></div></div><div class=\"columnright col-xs-4\"><img" + (jade.attr("src", iconUrl, true, false)) + " class=\"objecticon img-thumbnail\"/><button id=\"changeicon\" type=\"button\" class=\"btn btn-default btn-xs\">modifier</button><input name=\"name\" type=\"text\" placeholder=\"Nom de l'objet\"" + (jade.attr("value", name, true, false)) + " class=\"form-control\"/><textarea name=\"description\" rows=\"3\" placeholder=\"Description\" class=\"form-control\">" + (jade.escape(null == (jade_interp = description) ? "" : jade_interp)) + "</textarea></div><div class=\"close\">x</div>");}.call(this,"description" in locals_for_with?locals_for_with.description:typeof description!=="undefined"?description:undefined,"iconUrl" in locals_for_with?locals_for_with.iconUrl:typeof iconUrl!=="undefined"?iconUrl:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2468,7 +2468,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (name) {
-buf.push("<img src=\"/assets/img/doc_edf.svg\" class=\"img_document\"/><h3 class=\"document_EDF col-md-offset-1\">Documents&nbsp;" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "</h3><div class=\"row\"><div class=\"col-xs-6\"><ul></ul></div><div class=\"col-xs-6\"><div class=\"addfile\"></div></div></div>");}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
+buf.push("<img src=\"/assets/img/doc_edf.svg\" class=\"icon\"/><h3>Documents&nbsp;" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "</h3><div class=\"addfile\"></div><ul></ul>");}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2724,7 +2724,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<h4>Ajouter un document</h4><ol><li>Choisissez un fichier sur votre terminal :&ensp;<input type=\"file\"/></li><li>Donnez un nom clair à ce fichier :&ensp;<input name=\"filename\" type=\"text\" placeholder=\"notice.pdf\" class=\"form-control\"/></li><li>Vous n'avez plus qu'à l'ajouter à votre Cozy :&ensp;<button name=\"addfile\" type=\"button\" class=\"btn btn-primary\">ajouter</button></li></ol>");;return buf.join("");
+buf.push("<form class=\"form-inline\"><label for=\"uploadfile\" class=\"btn btn-default btn-sm\">Ajouter un fichier ...</label><input name=\"filename\" type=\"text\" placeholder=\"notice.pdf\" class=\"filename form-control\"/><input id=\"uploadfile\" type=\"file\"/><button name=\"addfile\" type=\"button\" class=\"btn btn-success\">sauvegarder</button></form>");;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

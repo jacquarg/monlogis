@@ -1,13 +1,11 @@
-.row
-  .col-md-4
-    img.objecticon.img-thumbnail(src=iconUrl)
+.columnbody.col-xs-8
+  .files
+.columnright.col-xs-4
+  img.objecticon.img-thumbnail(src=iconUrl)
+  button#changeicon.btn.btn-default.btn-xs(type="button") modifier
 
-    button#changeicon.btn.btn-default.btn-xs(type="button") modifier
-
-  .col-md-8
-    input.form-control(name="name", type="text", placeholder="Nom de l'objet", value=name)
-    textarea.form-control(name="description", rows=3, placeholder="Description")
+  input.form-control(name="name", type="text", placeholder="Nom de l'objet", value=name)
+  textarea.form-control(name="description", rows=3, placeholder="Description")
       = description
 
-.files
 .close x

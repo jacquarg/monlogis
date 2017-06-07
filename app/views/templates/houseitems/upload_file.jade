@@ -1,11 +1,17 @@
-h4 Ajouter un document
+form.form-inline
+  label.btn.btn-default.btn-sm(for='uploadfile') Ajouter un fichier ...
+  input.filename.form-control(name="filename", type="text", placeholder="notice.pdf")
+  input#uploadfile(type='file')
+
+  button.btn.btn-success(name='addfile', type='button') sauvegarder
+
 //- .insights
-ol
-  li Choisissez un fichier sur votre terminal :&ensp;
-    input(type='file')
+//- ol
+//-   li Choisissez un fichier sur votre terminal :&ensp;
+//-     input(type='file')
 
-  li Donnez un nom clair à ce fichier :&ensp;
-    input.form-control(name="filename", type="text", placeholder="notice.pdf")
+//-   li Donnez un nom clair à ce fichier :&ensp;
+//-     input.form-control(name="filename", type="text", placeholder="notice.pdf")
 
-  li Vous n'avez plus qu'à l'ajouter à votre Cozy :&ensp;
-    button.btn.btn-primary(name='addfile', type="button") ajouter
+//- li Vous n'avez plus qu'à l'ajouter à votre Cozy :&ensp;
+//-     button.btn.btn-primary(name='addfile', type="button") ajouter
