@@ -1,6 +1,8 @@
 'use strict';
 
+const BaseDetailsView = require('./details_base');
 const template = require('../templates/houseitems/details_edf');
+// TODO : move to contract edf ; move into this view ?
 const ContractView = require('./contract_client');
 const ConsomationView = require('./consomation_edf');
 const PhoneDepannageView = require('./phone_depannage_edf');
@@ -12,14 +14,14 @@ const BillsCollection = require('collections/bills');
 const FilesView = require('./files');
 
 
-module.exports = Mn.View.extend({
+module.exports = BaseDetailsView.extend({
   template: template,
 
   regions: {
     bills: '.bills',
     contract: '.contract',
-    consomation: '.consomation',
-    phoneDepannage: '.phoneDepannage',
+    consomation: '.consumption',
+    phoneDepannage: '.phoneTroubleshooting',
     phoneContact: '.phoneContact',
     paymentterms: '.paymentterms',
     files: '.files',

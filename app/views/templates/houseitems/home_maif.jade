@@ -1,17 +1,10 @@
-.row
-  img.img_habitat(src="/assets/img/home.svg")
+img.icon(src="/assets/img/home.svg")
+h4 Mon habitat assuré :
 
-.col-md-12.col-md-offset-4
-  .habitat_assuree
-    h3 Mon habitat assuré:
-    ul.detail_habitat
-      li
-         if natureLieu
-            = natureLieu
-         br
-      li
-         if nombrePieces
-            = nombrePieces
-      li
-         if situationJuridiqueLieu
-            = situationJuridiqueLieu
+ul.details
+  li
+    = natureLieu
+  li
+    = nombrePieces
+  li
+    = situationJuridiqueLieu

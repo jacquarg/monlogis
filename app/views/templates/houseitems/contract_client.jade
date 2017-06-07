@@ -1,19 +1,14 @@
-img.img_edf(src="/assets/img/edf_logo_big.png")
-.contrant_glob
- |*&nbsp
- if name
-    = name
- | &nbsp
- .row
- |*&nbsp
- if contractSubcategory1
-    = contractSubcategory1
- |&nbsp
- .row
- |*&nbsp
- if power
-    = power
- .row
- |*&nbsp pdl: &nbsp
- if pdl
-   = pdl
+img.img-thumbnail.icon(src="/assets/img/edf_logo_big.png")
+
+ul
+  li
+    span.label Contrat&nbsp;
+    span.value= name
+      | &ensp;
+      = contractSubcategory1
+  li
+    span.label Puissance :&ensp;
+    span.value= power
+  li
+    span.label Point De Livraison :&ensp;
+    span.value= pdl

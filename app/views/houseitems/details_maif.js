@@ -1,5 +1,6 @@
 'use strict';
 
+const BaseDetailsView = require('./details_base');
 const template = require('../templates/houseitems/details_maif');
 const ContractMaif = require('../../models/contract');
 const PaymenttermsView = require('./paymentterms');
@@ -10,14 +11,14 @@ const SinistreView = require('./sinistre');
 const SinistreCollection = require('collections/sinistre');
 const FilesView = require('./files');
 
-module.exports = Mn.View.extend({
+module.exports = BaseDetailsView.extend({
   template: template,
 
   regions: {
     sinistres: '.sinistres',
     homeMaif: '.homeMaif',
     foyerMaif: '.foyerMaif',
-    societaireMaif: '.societaireMaif',
+    //societaireMaif: '.societaireMaif',
     paymentterms: '.paymentterms',
     files: '.files',
   },
@@ -55,7 +56,7 @@ module.exports = Mn.View.extend({
     }));
     this.showChildView('homeMaif', new HomeView());
     this.showChildView('foyerMaif', new FoyerView());
-    this.showChildView('societaireMaif', new SocietaireView());
+    //this.showChildView('societaireMaif', new SocietaireView());
     this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'Maif', contract: this.contract }));
     this.showChildView('files', new FilesView({ model: this.model, }));
   },

@@ -74,7 +74,7 @@ module.exports = Mn.View.extend({
     this.$('.mystones').hide();
     this.$('.houseitems').toggleClass('col-xs-8', false);
     this.$('.houseitems').toggleClass('col-xs-4', true);
-
+    this.$('.houseitemdetails').show();
     this.$('.houseitemdetails').toggleClass('col-xs-8', true);
   },
 
@@ -84,6 +84,7 @@ module.exports = Mn.View.extend({
     this.$('.mystones').show();
     this.$('.houseitems').toggleClass('col-xs-8', true);
     this.$('.houseitems').toggleClass('col-xs-4', false);
+    this.$('.houseitemdetails').hide();
     this.$('.houseitemdetails').toggleClass('col-xs-8', false);
   },
 });

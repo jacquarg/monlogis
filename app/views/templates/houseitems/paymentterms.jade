@@ -1,42 +1,36 @@
-if modePaiement
- .row
-     img.img_payment(src="/assets/img/payment.svg")
-  .col-md-offset-2.mode_payment
-     | Je paye en mode de &nbsp
-     = modePaiement
-
 if annualCost
- .row
-  .col-md-offset-2
-    .col-md-offset-10
-      div.annual_cost= annualCost
-       |€
-     .row.annual_cost_text.col-md-offset-8
-     | par an.
+  .annualPayment
+    img.icon(src="/assets/img/payment.svg")
+    span.labelamount.topleft Je paye&nbsp
+    span.amount.topright= annualCost
+      |€
+    span.mode.bottomleft= modePaiement
+    span.date.bottomright par an.
 
 if nextPaymentAmount
-  .paymentH4.col-md-offset-4
-     span.prochain_paiment
-     | mon prochain paiment &nbsp;
-     span.amountEdf= nextPaymentAmount.amount
-     span.symbolEuro
-      |€
-     .row
-     span.space_text
-     |&nbsp le &nbsp
-     = nextPaymentAmount.scheduleDate
-     |,
-     span.text_date
-      | &nbsp dans un mois &nbsp
+  .nextpayment
+    img.icon(src="/assets/img/payment.svg")
 
-  img.img_calendar(src="/assets/img/payment.svg")
+    span.labelamount.topright mon prochain paiment
+    span.topleft.amount= nextPaymentAmount.amount
+      |€
+
+    span.bottomright.labeldate
+      |le&nbsp
+      = nextPaymentAmount.scheduleDate
+    span.bottomleft.date
+      | dans un mois
+
 
 if lastPaymentAmount
-  .last_payment
-     span.paymentSemaine
-      | il y a une semaine &nbsp
-     |mon précédent paiement était de &nbsp
+  .lastpayment
+    span.topleft.labelamount mon dernier paiement &nbsp;
+    span.topright.amount= lastPaymentAmount.amount
+      |€
 
-     span.lastPayment= lastPaymentAmount.amount
-     |&nbsp le
-     = lastPaymentAmount.scheduleDate
+    span.bottomleft.labeldate
+      |le &nbsp
+      = nextPaymentAmount.scheduleDate
+      |&nbsp;:
+    span.bottomright.date
+      | il y a un mois

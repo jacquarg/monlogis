@@ -1,7 +1,5 @@
-p.contact_service.col-md-offset-2
-    | service client: &nbsp
+if commercialContact
+  img.img_tell(src="/assets/img/tell.svg")
+  span service client :&nbsp
 
-    if commercialContact
-       = commercialContact.phone
-
-img.img_tell(src="/assets/img/tell.svg")
+  span= commercialContact.phone

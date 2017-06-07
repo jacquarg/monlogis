@@ -1,12 +1,8 @@
-img.img_energy(src="/assets/img/energy.svg")
+img.icon(src="/assets/img/energy.svg")
 
-.container_conso.col-md-offset-1
-   | J'ai consomé &nbsp;
-   if value
-   span.conso_energy=value
-   span.energy_kwh
-    |kWh
-   |&nbsp au dernier mois de
-   |&nbsp
-   if period
-     = period
+span.labelconsumption.topleft J'ai consomé
+span.value.topright= value
+  |kWh
+
+span.labelperiod.bottomleft le dernier semestre
+span.period.bottomright= period
