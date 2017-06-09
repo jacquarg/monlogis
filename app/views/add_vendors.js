@@ -6,8 +6,13 @@ module.exports = Mn.View.extend({
   template: template,
 
   className: 'addvendors',
+
+  triggers: {
+    'click .close': 'close',
+  },
   events: {
     'click .houseitem': 'fireIntent',
+
   },
 
   initialize: function () {
@@ -23,7 +28,6 @@ module.exports = Mn.View.extend({
 
   serializeData: function () {
     const data = {};
-    console.log(data)
     data.mesinfos = [];
     if (this.rawData) {
       data.mesinfos.push(_.findWhere(this.rawData, { slug: 'maif' }));
@@ -41,17 +45,20 @@ module.exports = Mn.View.extend({
   },
 
   fireIntent: function (ev) {
-    console.log(ev);
     const slug = ev.currentTarget.dataset.slug;
     cozy.client.intents.create('CREATE', 'io.cozy.accounts', { slug })
     .start(document.getElementById('popin'))
-    // .then(account => console.log(account))
     .catch((err) => {
       const msg = `Erreur lors de l'activation du connecteur ${slug}`;
       console.error(msg);
       console.error(err);
       app.trigger('message:error', msg);
     });
+  },
+
+
+  onClose: function () {
+    app.trigger('houseitemdetails:close');
   },
 
   // onRender: function () {

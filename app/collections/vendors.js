@@ -37,7 +37,6 @@ module.exports = CozyCollection.extend({
         this.add(vendor);
         vendor.save(); // TODO
       });
-
-    })
+    });
   },
 });

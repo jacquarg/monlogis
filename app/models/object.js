@@ -9,6 +9,10 @@ const BASE_DIR = '/Administration/objets/';
 module.exports = CozyModel.extend({
   docType: 'org.fing.mesinfos.object',
 
+  defaults: $.extend(CozyModel.defaults, {
+    type: 'object',
+  }),
+
   getFolderPath: function () {
     return `${BASE_DIR}${this.get('name')}`;
   },
@@ -40,16 +44,12 @@ module.exports = CozyModel.extend({
       return this.iconUrl;
     }
 
-    const defaultUrl = '/assets/img/gift_icon.png';
-
     this._fetchIcon()
     .catch((err) => {
       console.error(err);
 
       this.unset('iconFileId');
     });
-
-    return defaultUrl;
   },
 
   _fetchIcon: function () {

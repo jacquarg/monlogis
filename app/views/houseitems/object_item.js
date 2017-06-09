@@ -23,6 +23,9 @@ module.exports = Mn.View.extend({
   serializeData: function () {
     const data = this.model.toJSON();
     data.iconUrl = this.model.getIconUrl();
+    if (!data.iconUrl) {
+      data.iconUrl = '/assets/img/gift_icon.png';
+    }
     return data;
   },
 

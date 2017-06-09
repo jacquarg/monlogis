@@ -29,59 +29,11 @@ const Application = Mn.Application.extend({
 
     this.properties = Properties;
     this.vendors = new VendorsCollection();
-    // this.vendors = new VendorsCollection([ // TODO: fetch
-    //   {
-    //     name: 'EDF',
-    //     slug: 'edf',
-    //     domain: 'energy',
-    //     konnectorAccount: null,
-    //     folderPath: '/Administration/EDF/',
-    //   },
-    //   {
-    //     name: 'Maif',
-    //     slug: 'maif',
-    //     domain: 'insurance',
-    //     konnectorAccount: null,
-    //     folderPath: '/Administration/Maif/',
-    //   },
-    //   // {
-    //   //   name: 'Free',
-    //   //   slug: 'free',
-    //   //   domain: 'telecom',
-    //   //   konnectorAccount: null,
-    //   //   folderPath: '/folderPath',
-    //   // },
-    // ]);
-
-    // this.equipments = new EquipmentsCollection([
-    //   {
-    //     name: 'Chauffe Eau',
-    //     slug: 'waterheater',
-    //     type: 'equipment',
-    //     folderPath: '',
-    //   },
-    //   {
-    //     name: 'Réfrigérateur',
-    //     slug: 'fridge',
-    //     type: 'equipment',
-    //     folderPath: '',
-    //   },
-    // ]); // TODO: fetch
     this.objects = new ObjectsCollection();
-    // [
-    //   {
-    //     name: 'Macbook',
-    //     slug: 'laptop',
-    //     type: 'object',
-    //     folderPath: '',
-    //   },
-    // ]);
-    // this.objects.fetch();
-
     this.konnectors = [];
     return this.properties.fetch()
     .then(() => $.getJSON('/assets/data/konnectors.json'))
-    .then(data => this.konnectors = data)
+    .then((data) => { this.konnectors = data; })
     .then(() => Promise.all([
       this.vendors.init(),
       this.objects.fetch(),

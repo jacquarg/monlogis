@@ -394,8 +394,8 @@ module.exports = CozyCollection.extend({
   model: AnObject,
 
   initialize: function () {
-    this.addDummyItem();
-    this.listenTo(this, 'all', this.addDummyItem);
+    // this.addDummyItem();
+    // this.listenTo(this, 'all', this.addDummyItem);
   },
 
   getDummyItemAttrs: () => ({
@@ -803,6 +803,10 @@ const BASE_DIR = '/Administration/objets/';
 module.exports = CozyModel.extend({
   docType: 'org.fing.mesinfos.object',
 
+  defaults: $.extend(CozyModel.defaults, {
+    type: 'object',
+  }),
+
   getFolderPath: function () {
     return `${BASE_DIR}${this.get('name')}`;
   },
@@ -834,16 +838,12 @@ module.exports = CozyModel.extend({
       return this.iconUrl;
     }
 
-    const defaultUrl = '/assets/img/gift_icon.png';
-
     this._fetchIcon()
     .catch((err) => {
       console.error(err);
 
       this.unset('iconFileId');
     });
-
-    return defaultUrl;
   },
 
   _fetchIcon: function () {
@@ -1005,8 +1005,13 @@ module.exports = Mn.View.extend({
   template: template,
 
   className: 'addvendors',
+
+  triggers: {
+    'click .close': 'close',
+  },
   events: {
     'click .houseitem': 'fireIntent',
+
   },
 
   initialize: function () {
@@ -1051,6 +1056,11 @@ module.exports = Mn.View.extend({
       console.error(err);
       app.trigger('message:error', msg);
     });
+  },
+
+
+  onClose: function () {
+    app.trigger('houseitemdetails:close');
   },
 
   // onRender: function () {
@@ -1113,6 +1123,7 @@ module.exports = Mn.View.extend({
   },
 
   showHouseitemDetails: function (houseItem) {
+    console.log(houseItem)
     const docType = houseItem.getDocType();
     const slug = houseItem.get('slug');
     let ViewClass = null;
@@ -1120,7 +1131,6 @@ module.exports = Mn.View.extend({
       if (slug === 'edf') {
         ViewClass = HouseitemDetailsEDFView;
       } else if (slug === 'maif') {
-        console.log('todo');
         ViewClass = HouseitemDetailsMaifView;
       } else {
         ViewClass = HouseitemDetailsVendorView;
@@ -1145,9 +1155,9 @@ module.exports = Mn.View.extend({
     // TODO : something cleaner !
     this.$('.mystones').hide();
     this.$('.houseitems').toggleClass('col-xs-8', false);
-    this.$('.houseitems').toggleClass('col-xs-4', true);
+    this.$('.houseitems').toggleClass('col-xs-3', true);
     this.$('article').show();
-    this.$('article').toggleClass('col-xs-8', true);
+    this.$('article').toggleClass('col-xs-9', true);
   },
 
   _closeArticle: function () {
@@ -1155,13 +1165,12 @@ module.exports = Mn.View.extend({
 
     this.$('.mystones').show();
     this.$('.houseitems').toggleClass('col-xs-8', true);
-    this.$('.houseitems').toggleClass('col-xs-4', false);
+    this.$('.houseitems').toggleClass('col-xs-3', false);
     this.$('article').hide();
-    this.$('article').toggleClass('col-xs-8', false);
+    this.$('article').toggleClass('col-xs-9', false);
   },
 
   onChildviewShowAddvendors: function () {
-    console.log('toto');
     this._showArticle(new AddVendorsView());
   },
 });
@@ -1589,7 +1598,7 @@ const FilesView = require('./files');
 
 module.exports = Mn.View.extend({
   template: template,
-
+  className: 'object',
   ui: {
     icon: 'img.objecticon',
     changeIcon: 'button#changeicon',
@@ -1702,23 +1711,23 @@ module.exports = Mn.View.extend({
   },
 
   regions: {
-    bills: '.bills',
+    // bills: '.bills',
     files: '.files',
   },
 
   initialize: function () {
-    this.bills = new BillsCollection({ vendor: this.model.get('slug') });
-    this.bills.fetch();
+    // this.bills = new BillsCollection({ vendor: this.model.get('slug') });
+    // this.bills.fetch();
 
     this.files = new FilesCollection({ folderPath: this.model.get('folderPath') });
     this.files.fetch();
   },
 
   onRender: function () {
-    this.showChildView('bills', new BillsView({
-      model: this.model,
-      collection: this.bills,
-    }));
+    // this.showChildView('bills', new BillsView({
+    //   model: this.model,
+    //   collection: this.bills,
+    // }));
 
     this.showChildView('files', new FilesView({
       model: this.model,
@@ -1906,6 +1915,9 @@ module.exports = Mn.View.extend({
   serializeData: function () {
     const data = this.model.toJSON();
     data.iconUrl = this.model.getIconUrl();
+    if (!data.iconUrl) {
+        data.iconUrl = '/assets/img/gift_icon.png';
+    }
     return data;
   },
 
@@ -1929,6 +1941,8 @@ require.register("views/houseitems/objects.js", function(exports, require, modul
 const ObjectItemView = require('./object_item');
 const template = require('../templates/houseitems/objects');
 
+const ObjectModel = require('models/object');
+
 const ObjectsView = Mn.CollectionView.extend({
   tagName: 'ul',
   // className: 'movielibrary',
@@ -1948,6 +1962,10 @@ module.exports = Mn.View.extend({
     // newItem: '.newItem',
   },
 
+  triggers: {
+    'click .add': 'show:newobject',
+  },
+
   initialize: function () {
   },
 
@@ -1956,6 +1974,9 @@ module.exports = Mn.View.extend({
     // this.showChildView('newItem', new ObjectItemView({ model: new this.collection.model()}))
   },
 
+  onShowNewobject: function () {
+    app.trigger('houseitemdetails:show', new ObjectModel());
+  },
 });
 
 });
@@ -2498,7 +2519,7 @@ jade_mixins["vendor"](v.slug);
   }
 }).call(this);
 
-buf.push("</ul><div class=\"end\"></div></div>");}.call(this,"isp" in locals_for_with?locals_for_with.isp:typeof isp!=="undefined"?isp:undefined,"mesinfos" in locals_for_with?locals_for_with.mesinfos:typeof mesinfos!=="undefined"?mesinfos:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"telecom" in locals_for_with?locals_for_with.telecom:typeof telecom!=="undefined"?telecom:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
+buf.push("</ul><div class=\"end\"></div></div><div class=\"close\">X</div>");}.call(this,"isp" in locals_for_with?locals_for_with.isp:typeof isp!=="undefined"?isp:undefined,"mesinfos" in locals_for_with?locals_for_with.mesinfos:typeof mesinfos!=="undefined"?mesinfos:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"telecom" in locals_for_with?locals_for_with.telecom:typeof telecom!=="undefined"?telecom:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2517,7 +2538,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<main class=\"row\"><div class=\"col-xs-4 mystones\"><div class=\"well\">TODO : addresse</div></div><div class=\"col-xs-8 houseitems\"><div class=\"row vendors\"><div class=\"well\">TODO : Énergie - EDF</div></div><div class=\"row objects\"><div class=\"well\">TODO : table</div></div></div><article style=\"display: none;\" class=\"houseitemdetails\"></article></main><div class=\"message\"></div><div id=\"popin\"></div>");;return buf.join("");
+buf.push("<main class=\"row\"><div class=\"col-xs-4 mystones\"><div class=\"well\">TODO : addresse</div></div><div class=\"col-xs-8 houseitems\"><div class=\"row\"><div class=\"col-xs-12 vendors\"></div></div><div class=\"row\"><div class=\"col-xs-12 objects\"></div></div></div><article style=\"display: none;\" class=\"houseitemdetails\"></article></main><div class=\"message\"></div><div id=\"popin\"></div>");;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2650,7 +2671,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (description, iconUrl, name) {
-buf.push("<div class=\"columnbody col-xs-8\"><div class=\"files\"></div></div><div class=\"columnright col-xs-4\"><img" + (jade.attr("src", iconUrl, true, false)) + " class=\"objecticon img-thumbnail\"/><button id=\"changeicon\" type=\"button\" class=\"btn btn-default btn-xs\">modifier</button><input name=\"name\" type=\"text\" placeholder=\"Nom de l'objet\"" + (jade.attr("value", name, true, false)) + " class=\"form-control\"/><textarea name=\"description\" rows=\"3\" placeholder=\"Description\" class=\"form-control\">" + (jade.escape(null == (jade_interp = description) ? "" : jade_interp)) + "</textarea></div><div class=\"close\">x</div>");}.call(this,"description" in locals_for_with?locals_for_with.description:typeof description!=="undefined"?description:undefined,"iconUrl" in locals_for_with?locals_for_with.iconUrl:typeof iconUrl!=="undefined"?iconUrl:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
+buf.push("<div class=\"columnbody col-xs-8\"><div class=\"files\"></div></div><div class=\"columnright col-xs-4\"><img" + (jade.attr("src", iconUrl, true, false)) + " class=\"objecticon img-thumbnail\"/><button id=\"changeicon\" type=\"button\" class=\"btn btn-default btn-xs\">modifier l'icône</button><input name=\"name\" type=\"text\" placeholder=\"Nom de l'objet\"" + (jade.attr("value", name, true, false)) + " class=\"form-control\"/><textarea name=\"description\" rows=\"3\" placeholder=\"Description\" class=\"form-control\">" + (jade.escape(null == (jade_interp = description) ? "" : jade_interp)) + "</textarea></div><div class=\"close\">x</div>");}.call(this,"description" in locals_for_with?locals_for_with.description:typeof description!=="undefined"?description:undefined,"iconUrl" in locals_for_with?locals_for_with.iconUrl:typeof iconUrl!=="undefined"?iconUrl:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2668,8 +2689,8 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (name) {
-buf.push("<h2>" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "</h2><div class=\"bills\"></div><div class=\"files\"></div><div class=\"close\">x</div>");}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
+;var locals_for_with = (locals || {});(function (slug) {
+buf.push("<div class=\"columnbody col-xs-8\"><div class=\"bills\"></div><div class=\"files\"></div></div><div class=\"columnright col-xs-4\"><div class=\"contract\"><img" + (jade.attr("src", "/assets/img/icon_konnectors/" + (slug) + ".svg", true, false)) + " class=\"img-thumbnail icon\"/></div></div><div class=\"close\">x</div>");}.call(this,"slug" in locals_for_with?locals_for_with.slug:typeof slug!=="undefined"?slug:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2800,7 +2821,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (iconUrl, name) {
-buf.push("<div class=\"houseitem vendoritem\"><img" + (jade.attr("src", iconUrl, true, false)) + (jade.attr("title", name, true, false)) + " class=\"img-thumbnail\"/></div>");}.call(this,"iconUrl" in locals_for_with?locals_for_with.iconUrl:typeof iconUrl!=="undefined"?iconUrl:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
+buf.push("<div class=\"houseitem img-thumbnail\"><img" + (jade.attr("src", iconUrl, true, false)) + (jade.attr("title", name, true, false)) + "/></div>");}.call(this,"iconUrl" in locals_for_with?locals_for_with.iconUrl:typeof iconUrl!=="undefined"?iconUrl:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2819,7 +2840,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (title) {
-buf.push("<h2>" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + "</h2><ul></ul>");}.call(this,"title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
+buf.push("<h2>" + (jade.escape(null == (jade_interp = title) ? "" : jade_interp)) + "&emsp;<button class=\"btn btn-default btn-sm add\">ajouter</button></h2><ul></ul>");}.call(this,"title" in locals_for_with?locals_for_with.title:typeof title!=="undefined"?title:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

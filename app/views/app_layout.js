@@ -55,7 +55,6 @@ module.exports = Mn.View.extend({
       if (slug === 'edf') {
         ViewClass = HouseitemDetailsEDFView;
       } else if (slug === 'maif') {
-        console.log('todo');
         ViewClass = HouseitemDetailsMaifView;
       } else {
         ViewClass = HouseitemDetailsVendorView;
@@ -72,17 +71,15 @@ module.exports = Mn.View.extend({
     this._showArticle(new ViewClass({ model: houseItem }));
   },
 
-
-
   _showArticle: function (view) {
     this.showChildView('article', view);
 
     // TODO : something cleaner !
     this.$('.mystones').hide();
     this.$('.houseitems').toggleClass('col-xs-8', false);
-    this.$('.houseitems').toggleClass('col-xs-4', true);
+    this.$('.houseitems').toggleClass('col-xs-3', true);
     this.$('article').show();
-    this.$('article').toggleClass('col-xs-8', true);
+    this.$('article').toggleClass('col-xs-9', true);
   },
 
   _closeArticle: function () {
@@ -90,13 +87,12 @@ module.exports = Mn.View.extend({
 
     this.$('.mystones').show();
     this.$('.houseitems').toggleClass('col-xs-8', true);
-    this.$('.houseitems').toggleClass('col-xs-4', false);
+    this.$('.houseitems').toggleClass('col-xs-3', false);
     this.$('article').hide();
-    this.$('article').toggleClass('col-xs-8', false);
+    this.$('article').toggleClass('col-xs-9', false);
   },
 
   onChildviewShowAddvendors: function () {
-    console.log('toto');
     this._showArticle(new AddVendorsView());
   },
 });

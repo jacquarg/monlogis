@@ -4,7 +4,7 @@ const BaseDetailsView = require('./details_base');
 const template = require('../templates/houseitems/details_maif');
 const ContractMaif = require('../../models/contract');
 const PaymenttermsView = require('./paymentterms');
-const SocietaireView = require('./societaire_maif');
+// const SocietaireView = require('./societaire_maif');
 const FoyerView = require('./foyer_maif');
 const HomeView = require('./home_maif');
 const SinistreView = require('./sinistre');
@@ -18,7 +18,7 @@ module.exports = BaseDetailsView.extend({
     sinistres: '.sinistres',
     homeMaif: '.homeMaif',
     foyerMaif: '.foyerMaif',
-    //societaireMaif: '.societaireMaif',
+    // societaireMaif: '.societaireMaif',
     paymentterms: '.paymentterms',
     files: '.files',
   },
@@ -56,7 +56,7 @@ module.exports = BaseDetailsView.extend({
     }));
     this.showChildView('homeMaif', new HomeView());
     this.showChildView('foyerMaif', new FoyerView());
-    //this.showChildView('societaireMaif', new SocietaireView());
+    // this.showChildView('societaireMaif', new SocietaireView());
     this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'Maif', contract: this.contract }));
     this.showChildView('files', new FilesView({ model: this.model, }));
   },

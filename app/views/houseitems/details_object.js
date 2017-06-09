@@ -5,7 +5,7 @@ const FilesView = require('./files');
 
 module.exports = Mn.View.extend({
   template: template,
-
+  className: 'object',
   ui: {
     icon: 'img.objecticon',
     changeIcon: 'button#changeicon',

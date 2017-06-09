@@ -3,6 +3,8 @@
 const ObjectItemView = require('./object_item');
 const template = require('../templates/houseitems/objects');
 
+const ObjectModel = require('models/object');
+
 const ObjectsView = Mn.CollectionView.extend({
   tagName: 'ul',
   // className: 'movielibrary',
@@ -22,6 +24,10 @@ module.exports = Mn.View.extend({
     // newItem: '.newItem',
   },
 
+  triggers: {
+    'click .add': 'show:newobject',
+  },
+
   initialize: function () {
   },
 
@@ -30,4 +36,7 @@ module.exports = Mn.View.extend({
     // this.showChildView('newItem', new ObjectItemView({ model: new this.collection.model()}))
   },
 
+  onShowNewobject: function () {
+    app.trigger('houseitemdetails:show', new ObjectModel());
+  },
 });

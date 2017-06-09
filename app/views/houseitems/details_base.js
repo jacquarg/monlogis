@@ -1,6 +1,6 @@
 'use strict';
 
-const FilesView = require('./files');
+// const FilesView = require('./files');
 
 module.exports = Mn.View.extend({
   className: 'row',

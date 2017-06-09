@@ -7,8 +7,8 @@ module.exports = CozyCollection.extend({
   model: AnObject,
 
   initialize: function () {
-    this.addDummyItem();
-    this.listenTo(this, 'all', this.addDummyItem);
+    // this.addDummyItem();
+    // this.listenTo(this, 'all', this.addDummyItem);
   },
 
   getDummyItemAttrs: () => ({
