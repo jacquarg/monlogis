@@ -179,62 +179,14 @@ const Application = Mn.Application.extend({
 
     this.properties = Properties;
     this.vendors = new VendorsCollection();
-    // this.vendors = new VendorsCollection([ // TODO: fetch
-    //   {
-    //     name: 'EDF',
-    //     slug: 'edf',
-    //     domain: 'energy',
-    //     konnectorAccount: null,
-    //     folderPath: '/Administration/EDF/',
-    //   },
-    //   {
-    //     name: 'Maif',
-    //     slug: 'maif',
-    //     domain: 'insurance',
-    //     konnectorAccount: null,
-    //     folderPath: '/Administration/Maif/',
-    //   },
-    //   // {
-    //   //   name: 'Free',
-    //   //   slug: 'free',
-    //   //   domain: 'telecom',
-    //   //   konnectorAccount: null,
-    //   //   folderPath: '/folderPath',
-    //   // },
-    // ]);
-
-    // this.equipments = new EquipmentsCollection([
-    //   {
-    //     name: 'Chauffe Eau',
-    //     slug: 'waterheater',
-    //     type: 'equipment',
-    //     folderPath: '',
-    //   },
-    //   {
-    //     name: 'Réfrigérateur',
-    //     slug: 'fridge',
-    //     type: 'equipment',
-    //     folderPath: '',
-    //   },
-    // ]); // TODO: fetch
     this.objects = new ObjectsCollection();
-    // [
-    //   {
-    //     name: 'Macbook',
-    //     slug: 'laptop',
-    //     type: 'object',
-    //     folderPath: '',
-    //   },
-    // ]);
-    // this.objects.fetch();
-
     this.konnectors = [];
     return this.properties.fetch()
     .then(() => $.getJSON('/assets/data/konnectors.json'))
-    .then(data => this.konnectors = data)
+    .then((data) => { this.konnectors = data; })
     .then(() => Promise.all([
       this.vendors.init(),
-      this.objects.fetch(),
+      // this.objects.fetch(),
     ]))
     .then(() => this._defineViews());
   },
@@ -479,8 +431,7 @@ module.exports = CozyCollection.extend({
         this.add(vendor);
         vendor.save(); // TODO
       });
-
-    })
+    });
   },
 });
 
@@ -1027,7 +978,6 @@ module.exports = Mn.View.extend({
 
   serializeData: function () {
     const data = {};
-    console.log(data)
     data.mesinfos = [];
     if (this.rawData) {
       data.mesinfos.push(_.findWhere(this.rawData, { slug: 'maif' }));
@@ -1045,11 +995,9 @@ module.exports = Mn.View.extend({
   },
 
   fireIntent: function (ev) {
-    console.log(ev);
     const slug = ev.currentTarget.dataset.slug;
     cozy.client.intents.create('CREATE', 'io.cozy.accounts', { slug })
     .start(document.getElementById('popin'))
-    // .then(account => console.log(account))
     .catch((err) => {
       const msg = `Erreur lors de l'activation du connecteur ${slug}`;
       console.error(msg);
@@ -1083,7 +1031,7 @@ const HouseitemDetailsMaifView = require('views/houseitems/details_maif');
 const HouseitemDetailsVendorView = require('views/houseitems/details_vendor');
 const HouseitemDetailsObjectView = require('views/houseitems/details_object');
 const VendorsView = require('views/houseitems/vendors');
-const ObjectsView = require('views/houseitems/objects');
+// const ObjectsView = require('views/houseitems/objects');
 const AddVendorsView = require('views/add_vendors');
 
 
@@ -1098,7 +1046,7 @@ module.exports = Mn.View.extend({
     article: 'article',
     vendors: '.vendors',
     equipments: '.equipments',
-    objects: '.objects',
+    // objects: '.objects',
     uploadFiles: '.upload',
   },
 
@@ -1116,14 +1064,13 @@ module.exports = Mn.View.extend({
     //   model: new Backbone.Model({ title: 'Mes équipements' }),
     //   collection: app.equipments,
     // }));
-    this.showChildView('objects', new ObjectsView({
-      model: new Backbone.Model({ title: 'Mes objets' }),
-      collection: app.objects,
-    }));
+    // this.showChildView('objects', new ObjectsView({
+    //   model: new Backbone.Model({ title: 'Mes objets' }),
+    //   collection: app.objects,
+    // }));
   },
 
   showHouseitemDetails: function (houseItem) {
-    console.log(houseItem)
     const docType = houseItem.getDocType();
     const slug = houseItem.get('slug');
     let ViewClass = null;
@@ -1146,8 +1093,6 @@ module.exports = Mn.View.extend({
 
     this._showArticle(new ViewClass({ model: houseItem }));
   },
-
-
 
   _showArticle: function (view) {
     this.showChildView('article', view);
@@ -1355,7 +1300,7 @@ module.exports = Mn.View.extend({
 require.register("views/houseitems/details_base.js", function(exports, require, module) {
 'use strict';
 
-const FilesView = require('./files');
+// const FilesView = require('./files');
 
 module.exports = Mn.View.extend({
   className: 'row',
@@ -1525,7 +1470,7 @@ const BaseDetailsView = require('./details_base');
 const template = require('../templates/houseitems/details_maif');
 const ContractMaif = require('../../models/contract');
 const PaymenttermsView = require('./paymentterms');
-const SocietaireView = require('./societaire_maif');
+// const SocietaireView = require('./societaire_maif');
 const FoyerView = require('./foyer_maif');
 const HomeView = require('./home_maif');
 const SinistreView = require('./sinistre');
@@ -1539,7 +1484,7 @@ module.exports = BaseDetailsView.extend({
     sinistres: '.sinistres',
     homeMaif: '.homeMaif',
     foyerMaif: '.foyerMaif',
-    //societaireMaif: '.societaireMaif',
+    // societaireMaif: '.societaireMaif',
     paymentterms: '.paymentterms',
     files: '.files',
   },
@@ -1577,7 +1522,7 @@ module.exports = BaseDetailsView.extend({
     }));
     this.showChildView('homeMaif', new HomeView());
     this.showChildView('foyerMaif', new FoyerView());
-    //this.showChildView('societaireMaif', new SocietaireView());
+    // this.showChildView('societaireMaif', new SocietaireView());
     this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'Maif', contract: this.contract }));
     this.showChildView('files', new FilesView({ model: this.model, }));
   },
@@ -1689,9 +1634,9 @@ require.register("views/houseitems/details_vendor.js", function(exports, require
 'use strict';
 
 const template = require('../templates/houseitems/details_vendor');
-const BillsView = require('./bills');
+// const BillsView = require('./bills');
 const FilesView = require('./files');
-const BillsCollection = require('collections/bills');
+// const BillsCollection = require('collections/bills');
 const FilesCollection = require('collections/files');
 
 module.exports = Mn.View.extend({
@@ -1916,7 +1861,7 @@ module.exports = Mn.View.extend({
     const data = this.model.toJSON();
     data.iconUrl = this.model.getIconUrl();
     if (!data.iconUrl) {
-        data.iconUrl = '/assets/img/gift_icon.png';
+      data.iconUrl = '/assets/img/gift_icon.png';
     }
     return data;
   },
@@ -3137,5 +3082,3 @@ if (typeof define === 'function' && define.amd) {
   
 });})();require('___globals___');
 
-
-//# sourceMappingURL=app.js.map

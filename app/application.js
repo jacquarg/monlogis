@@ -36,7 +36,7 @@ const Application = Mn.Application.extend({
     .then((data) => { this.konnectors = data; })
     .then(() => Promise.all([
       this.vendors.init(),
-      this.objects.fetch(),
+      // this.objects.fetch(),
     ]))
     .then(() => this._defineViews());
   },

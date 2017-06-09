@@ -8,7 +8,7 @@ const HouseitemDetailsMaifView = require('views/houseitems/details_maif');
 const HouseitemDetailsVendorView = require('views/houseitems/details_vendor');
 const HouseitemDetailsObjectView = require('views/houseitems/details_object');
 const VendorsView = require('views/houseitems/vendors');
-const ObjectsView = require('views/houseitems/objects');
+// const ObjectsView = require('views/houseitems/objects');
 const AddVendorsView = require('views/add_vendors');
 
 
@@ -23,7 +23,7 @@ module.exports = Mn.View.extend({
     article: 'article',
     vendors: '.vendors',
     equipments: '.equipments',
-    objects: '.objects',
+    // objects: '.objects',
     uploadFiles: '.upload',
   },
 
@@ -41,10 +41,10 @@ module.exports = Mn.View.extend({
     //   model: new Backbone.Model({ title: 'Mes équipements' }),
     //   collection: app.equipments,
     // }));
-    this.showChildView('objects', new ObjectsView({
-      model: new Backbone.Model({ title: 'Mes objets' }),
-      collection: app.objects,
-    }));
+    // this.showChildView('objects', new ObjectsView({
+    //   model: new Backbone.Model({ title: 'Mes objets' }),
+    //   collection: app.objects,
+    // }));
   },
 
   showHouseitemDetails: function (houseItem) {
