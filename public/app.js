@@ -178,30 +178,30 @@ const Application = Mn.Application.extend({
     cozy.bar.init({ appName: 'Mon Logis' });
 
     this.properties = Properties;
-
-    this.vendors = new VendorsCollection([ // TODO: fetch
-      {
-        name: 'EDF',
-        slug: 'edf',
-        domain: 'energy',
-        konnectorAccount: null,
-        folderPath: '/Administration/EDF/',
-      },
-      {
-        name: 'Maif',
-        slug: 'maif',
-        domain: 'insurance',
-        konnectorAccount: null,
-        folderPath: '/Administration/Maif/',
-      },
-      // {
-      //   name: 'Free',
-      //   slug: 'free',
-      //   domain: 'telecom',
-      //   konnectorAccount: null,
-      //   folderPath: '/folderPath',
-      // },
-    ]);
+    this.vendors = new VendorsCollection();
+    // this.vendors = new VendorsCollection([ // TODO: fetch
+    //   {
+    //     name: 'EDF',
+    //     slug: 'edf',
+    //     domain: 'energy',
+    //     konnectorAccount: null,
+    //     folderPath: '/Administration/EDF/',
+    //   },
+    //   {
+    //     name: 'Maif',
+    //     slug: 'maif',
+    //     domain: 'insurance',
+    //     konnectorAccount: null,
+    //     folderPath: '/Administration/Maif/',
+    //   },
+    //   // {
+    //   //   name: 'Free',
+    //   //   slug: 'free',
+    //   //   domain: 'telecom',
+    //   //   konnectorAccount: null,
+    //   //   folderPath: '/folderPath',
+    //   // },
+    // ]);
 
     // this.equipments = new EquipmentsCollection([
     //   {
@@ -217,17 +217,25 @@ const Application = Mn.Application.extend({
     //     folderPath: '',
     //   },
     // ]); // TODO: fetch
-    this.objects = new ObjectsCollection([
-      {
-        name: 'Macbook',
-        slug: 'laptop',
-        type: 'object',
-        folderPath: '',
-      },
-    ]);
-    this.objects.fetch();
+    this.objects = new ObjectsCollection();
+    // [
+    //   {
+    //     name: 'Macbook',
+    //     slug: 'laptop',
+    //     type: 'object',
+    //     folderPath: '',
+    //   },
+    // ]);
+    // this.objects.fetch();
 
+    this.konnectors = [];
     return this.properties.fetch()
+    .then(() => $.getJSON('/assets/data/konnectors.json'))
+    .then(data => this.konnectors = data)
+    .then(() => Promise.all([
+      this.vendors.init(),
+      this.objects.fetch(),
+    ]))
     .then(() => this._defineViews());
   },
 
@@ -292,13 +300,21 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+});
 
-cozy.client.intents.create('CREATE', 'io.cozy.accounts', { slug: 'EDF' })
-  .start(document.getElementById('intent-service-wrapper'))
+require.register("collections/accounts.js", function(exports, require, module) {
+'use-strict';
+
+const CozyCollection = require('../lib/backbone_cozycollection');
+const Model = require('models/account');
+
+module.exports = CozyCollection.extend({
+  model: Model,
+});
 
 });
 
-;require.register("collections/bills.js", function(exports, require, module) {
+require.register("collections/bills.js", function(exports, require, module) {
 'use-strict';
 
 const CozyCollection = require('../lib/backbone_cozycollection');
@@ -429,8 +445,43 @@ require.register("collections/vendors.js", function(exports, require, module) {
 const CozyCollection = require('../lib/backbone_cozycollection');
 const Vendor = require('models/vendor');
 
+const AccountsCollection = require('./accounts');
+
 module.exports = CozyCollection.extend({
   model: Vendor,
+
+  init: function () {
+    // init with
+    // * saved vendors in db
+    // * accounts
+    // * examples ?
+    this.accounts = new AccountsCollection();
+    return Promise.all([
+      this.fetch(),
+      this.accounts.fetch(),
+    ])
+    .then(() => {
+      const konnectorsBySlug = _.indexBy(app.konnectors, 'slug');
+      this.accounts.filter((account) => {
+        const konnector = konnectorsBySlug[account.get('account_type')];
+        return konnector && ['isp', 'telecom', 'energy', 'insurance'].indexOf(konnector.category) !== -1;
+      })
+      .forEach((account) => {
+        if (this.some(v => v.get('slug') === account.get('account_type'))) { return; }
+
+        const konnector = konnectorsBySlug[account.get('account_type')];
+        const vendor = new Vendor({
+          slug: konnector.slug,
+          name: konnector.name,
+          folderPath: account.get('folderPath'),
+          domain: konnector.domain,
+        });
+        this.add(vendor);
+        vendor.save(); // TODO
+      });
+
+    })
+  },
 });
 
 });
@@ -519,7 +570,7 @@ module.exports = Backbone.Collection.extend({
     //eslint-disable-next-line
     const docType = new this.model().docType.toLowerCase();
 
-    cozy.client.data.defineIndex(docType, this.getFetchIndex())
+    return cozy.client.data.defineIndex(docType, this.getFetchIndex())
     .then(index => cozy.client.data.query(index, this.getFetchQuery()))
     .then(options.success, options.error);
   },
@@ -619,6 +670,18 @@ module.exports.get = function (obj, ...prop) {
 module.exports.getFirst = function (obj) {
   return obj[Object.keys(obj)[0]];
 };
+
+});
+
+require.register("models/account.js", function(exports, require, module) {
+'use-strict';
+
+const CozyModel = require('../lib/backbone_cozymodel');
+
+module.exports = CozyModel.extend({
+  docType: 'io.cozy.accounts',
+
+});
 
 });
 
@@ -1624,6 +1687,8 @@ const FilesCollection = require('collections/files');
 
 module.exports = Mn.View.extend({
   template: template,
+  className: 'row',
+
 
   events: {
   },
@@ -2920,7 +2985,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (name, slug) {
-buf.push("<div class=\"houseitem objectitem\"><img" + (jade.attr("src", "assets/img/" + (slug) + "_logo_big.png", true, false)) + (jade.attr("title", name, true, false)) + " class=\"img-thumbnail\"/></div>");}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"slug" in locals_for_with?locals_for_with.slug:typeof slug!=="undefined"?slug:undefined));;return buf.join("");
+buf.push("<div class=\"houseitem img-thumbnail\"><img" + (jade.attr("src", "assets/img/icon_konnectors/" + (slug) + ".svg", true, false)) + (jade.attr("title", name, true, false)) + "/></div>");}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"slug" in locals_for_with?locals_for_with.slug:typeof slug!=="undefined"?slug:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

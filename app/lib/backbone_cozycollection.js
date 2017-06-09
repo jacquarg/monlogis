@@ -18,7 +18,7 @@ module.exports = Backbone.Collection.extend({
     //eslint-disable-next-line
     const docType = new this.model().docType.toLowerCase();
 
-    cozy.client.data.defineIndex(docType, this.getFetchIndex())
+    return cozy.client.data.defineIndex(docType, this.getFetchIndex())
     .then(index => cozy.client.data.query(index, this.getFetchQuery()))
     .then(options.success, options.error);
   },

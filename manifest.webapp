@@ -37,6 +37,11 @@
       "type": "io.cozy.apps",
       "verbs": ["GET"]
     },
+    "accounts": {
+      "description": "Détecter et afficher vos fournisseurs.",
+      "type": "io.cozy.accounts",
+      "verbs": ["GET"]
+    },
     "Vendors": {
       "description": "Gérer la liste de ses fournisseurs.",
       "type": "org.fing.mesinfos.vendor"

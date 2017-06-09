@@ -8,6 +8,8 @@ const FilesCollection = require('collections/files');
 
 module.exports = Mn.View.extend({
   template: template,
+  className: 'row',
+
 
   events: {
   },

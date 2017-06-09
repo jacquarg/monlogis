@@ -28,30 +28,30 @@ const Application = Mn.Application.extend({
     cozy.bar.init({ appName: 'Mon Logis' });
 
     this.properties = Properties;
-
-    this.vendors = new VendorsCollection([ // TODO: fetch
-      {
-        name: 'EDF',
-        slug: 'edf',
-        domain: 'energy',
-        konnectorAccount: null,
-        folderPath: '/Administration/EDF/',
-      },
-      {
-        name: 'Maif',
-        slug: 'maif',
-        domain: 'insurance',
-        konnectorAccount: null,
-        folderPath: '/Administration/Maif/',
-      },
-      // {
-      //   name: 'Free',
-      //   slug: 'free',
-      //   domain: 'telecom',
-      //   konnectorAccount: null,
-      //   folderPath: '/folderPath',
-      // },
-    ]);
+    this.vendors = new VendorsCollection();
+    // this.vendors = new VendorsCollection([ // TODO: fetch
+    //   {
+    //     name: 'EDF',
+    //     slug: 'edf',
+    //     domain: 'energy',
+    //     konnectorAccount: null,
+    //     folderPath: '/Administration/EDF/',
+    //   },
+    //   {
+    //     name: 'Maif',
+    //     slug: 'maif',
+    //     domain: 'insurance',
+    //     konnectorAccount: null,
+    //     folderPath: '/Administration/Maif/',
+    //   },
+    //   // {
+    //   //   name: 'Free',
+    //   //   slug: 'free',
+    //   //   domain: 'telecom',
+    //   //   konnectorAccount: null,
+    //   //   folderPath: '/folderPath',
+    //   // },
+    // ]);
 
     // this.equipments = new EquipmentsCollection([
     //   {
@@ -67,17 +67,25 @@ const Application = Mn.Application.extend({
     //     folderPath: '',
     //   },
     // ]); // TODO: fetch
-    this.objects = new ObjectsCollection([
-      {
-        name: 'Macbook',
-        slug: 'laptop',
-        type: 'object',
-        folderPath: '',
-      },
-    ]);
-    this.objects.fetch();
+    this.objects = new ObjectsCollection();
+    // [
+    //   {
+    //     name: 'Macbook',
+    //     slug: 'laptop',
+    //     type: 'object',
+    //     folderPath: '',
+    //   },
+    // ]);
+    // this.objects.fetch();
 
+    this.konnectors = [];
     return this.properties.fetch()
+    .then(() => $.getJSON('/assets/data/konnectors.json'))
+    .then(data => this.konnectors = data)
+    .then(() => Promise.all([
+      this.vendors.init(),
+      this.objects.fetch(),
+    ]))
     .then(() => this._defineViews());
   },
 
@@ -141,7 +149,3 @@ document.addEventListener('DOMContentLoaded', () => {
     application.trigger('message:error', msg);
   });
 });
-
-
-cozy.client.intents.create('CREATE', 'io.cozy.accounts', { slug: 'EDF' })
-  .start(document.getElementById('intent-service-wrapper'))
