@@ -20,6 +20,10 @@ module.exports = Mn.View.extend({
     },
   },
 
+  triggers: {
+    'click .add': 'show:addvendors',
+  },
+
   initialize: function () {
   },
 

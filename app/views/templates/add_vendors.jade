@@ -1,0 +1,29 @@
+mixin vendor(slug)
+  li.img-thumbnail.houseitem.objectitem(data-slug=slug)
+    img(src="assets/img/icon_konnectors/#{slug}.svg", title=name)
+
+h2 Sélectionnez vos fournisseurs, puis configurez la collect automatique de données (factures, ...)
+
+.category.mesinfos
+  h3 Fournisseurs&ensp;
+    b partenaires MesInfos
+  ul
+    each v in mesinfos
+      +vendor(v.slug)
+  .end
+
+.category.isp
+  h3 Fournisseurs&ensp;
+    b Internet
+  ul
+    each v in isp
+      +vendor(v.slug)
+  .end
+
+.category.telecom
+  h3 Fournisseurs&ensp;
+    b Télécom
+  ul
+    each v in telecom
+      +vendor(v.slug)
+  .end

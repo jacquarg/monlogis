@@ -293,9 +293,12 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+cozy.client.intents.create('CREATE', 'io.cozy.accounts', { slug: 'EDF' })
+  .start(document.getElementById('intent-service-wrapper'))
+
 });
 
-require.register("collections/bills.js", function(exports, require, module) {
+;require.register("collections/bills.js", function(exports, require, module) {
 'use-strict';
 
 const CozyCollection = require('../lib/backbone_cozycollection');
@@ -930,6 +933,72 @@ module.exports = Backbone.Router.extend({
 
 });
 
+require.register("views/add_vendors.js", function(exports, require, module) {
+'use strict';
+
+const template = require('./templates/add_vendors');
+
+module.exports = Mn.View.extend({
+  template: template,
+
+  className: 'addvendors',
+  events: {
+    'click .houseitem': 'fireIntent',
+  },
+
+  initialize: function () {
+    $.getJSON('/assets/data/konnectors.json')
+    .then(this._parseData.bind(this));
+  },
+
+  _parseData: function (data) {
+    this.rawData = data;
+    // TODO use events !
+    this.render();
+  },
+
+  serializeData: function () {
+    const data = {};
+    console.log(data)
+    data.mesinfos = [];
+    if (this.rawData) {
+      data.mesinfos.push(_.findWhere(this.rawData, { slug: 'maif' }));
+      data.mesinfos.push(_.findWhere(this.rawData, { slug: 'edf' }));
+      data.mesinfos.push(_.findWhere(this.rawData, { slug: 'orangemobile' }));
+      data.mesinfos.push(_.findWhere(this.rawData, { slug: 'orangelivebox' }));
+    }
+
+    data.isp = _.where(this.rawData, { category: 'isp' })
+      .filter(k => k.slug !== 'orangelivebox');
+    data.telecom = _.where(this.rawData, { category: 'telecom' })
+      .filter(k => k.slug !== 'orangemobile');
+
+    return data;
+  },
+
+  fireIntent: function (ev) {
+    console.log(ev);
+    const slug = ev.currentTarget.dataset.slug;
+    cozy.client.intents.create('CREATE', 'io.cozy.accounts', { slug })
+    .start(document.getElementById('popin'))
+    // .then(account => console.log(account))
+    .catch((err) => {
+      const msg = `Erreur lors de l'activation du connecteur ${slug}`;
+      console.error(msg);
+      console.error(err);
+      app.trigger('message:error', msg);
+    });
+  },
+
+  // onRender: function () {
+
+  // },
+
+
+});
+
+});
+
 require.register("views/app_layout.js", function(exports, require, module) {
 'use-strict';
 
@@ -942,6 +1011,7 @@ const HouseitemDetailsVendorView = require('views/houseitems/details_vendor');
 const HouseitemDetailsObjectView = require('views/houseitems/details_object');
 const VendorsView = require('views/houseitems/vendors');
 const ObjectsView = require('views/houseitems/objects');
+const AddVendorsView = require('views/add_vendors');
 
 
 module.exports = Mn.View.extend({
@@ -952,7 +1022,7 @@ module.exports = Mn.View.extend({
   regions: {
     message: '.message',
     myStones: '.mystones',
-    houseitemDetails: '.houseitemdetails',
+    article: 'article',
     vendors: '.vendors',
     equipments: '.equipments',
     objects: '.objects',
@@ -962,7 +1032,7 @@ module.exports = Mn.View.extend({
 
   initialize: function () {
     this.listenTo(app, 'houseitemdetails:show', this.showHouseitemDetails);
-    this.listenTo(app, 'houseitemdetails:close', this.onHouseitemDetailsClose);
+    this.listenTo(app, 'houseitemdetails:close', this._closeArticle);
   },
 
   onRender: function () {
@@ -1001,24 +1071,35 @@ module.exports = Mn.View.extend({
       ViewClass = HouseitemDetailsObjectView;
     }
 
-    this.showChildView('houseitemDetails', new ViewClass({ model: houseItem }));
+    this._showArticle(new ViewClass({ model: houseItem }));
+  },
+
+
+
+  _showArticle: function (view) {
+    this.showChildView('article', view);
 
     // TODO : something cleaner !
     this.$('.mystones').hide();
     this.$('.houseitems').toggleClass('col-xs-8', false);
     this.$('.houseitems').toggleClass('col-xs-4', true);
-    this.$('.houseitemdetails').show();
-    this.$('.houseitemdetails').toggleClass('col-xs-8', true);
+    this.$('article').show();
+    this.$('article').toggleClass('col-xs-8', true);
   },
 
-  onHouseitemDetailsClose: function () {
-    this.getRegion('houseitemDetails').empty();
+  _closeArticle: function () {
+    this.getRegion('article').empty();
 
     this.$('.mystones').show();
     this.$('.houseitems').toggleClass('col-xs-8', true);
     this.$('.houseitems').toggleClass('col-xs-4', false);
-    this.$('.houseitemdetails').hide();
-    this.$('.houseitemdetails').toggleClass('col-xs-8', false);
+    this.$('article').hide();
+    this.$('article').toggleClass('col-xs-8', false);
+  },
+
+  onChildviewShowAddvendors: function () {
+    console.log('toto');
+    this._showArticle(new AddVendorsView());
   },
 });
 
@@ -2097,6 +2178,10 @@ module.exports = Mn.View.extend({
     },
   },
 
+  triggers: {
+    'click .add': 'show:addvendors',
+  },
+
   initialize: function () {
   },
 
@@ -2269,13 +2354,105 @@ module.exports = Mn.View.extend({
 
 });
 
-require.register("views/templates/app_layout.jade", function(exports, require, module) {
+require.register("views/templates/add_vendors.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (isp, mesinfos, name, telecom, undefined) {
+jade_mixins["vendor"] = jade_interp = function(slug){
+var block = (this && this.block), attributes = (this && this.attributes) || {};
+buf.push("<li" + (jade.attr("data-slug", slug, true, false)) + " class=\"img-thumbnail houseitem objectitem\"><img" + (jade.attr("src", "assets/img/icon_konnectors/" + (slug) + ".svg", true, false)) + (jade.attr("title", name, true, false)) + "/></li>");
+};
+buf.push("<h2>Sélectionnez vos fournisseurs, puis configurez la collect automatique de données (factures, ...)</h2><div class=\"category mesinfos\"><h3>Fournisseurs&ensp;<b>partenaires MesInfos</b></h3><ul>");
+// iterate mesinfos
+;(function(){
+  var $$obj = mesinfos;
+  if ('number' == typeof $$obj.length) {
+
+    for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+      var v = $$obj[$index];
+
+jade_mixins["vendor"](v.slug);
+    }
+
+  } else {
+    var $$l = 0;
+    for (var $index in $$obj) {
+      $$l++;      var v = $$obj[$index];
+
+jade_mixins["vendor"](v.slug);
+    }
+
+  }
+}).call(this);
+
+buf.push("</ul><div class=\"end\"></div></div><div class=\"category isp\"><h3>Fournisseurs&ensp;<b>Internet</b></h3><ul>");
+// iterate isp
+;(function(){
+  var $$obj = isp;
+  if ('number' == typeof $$obj.length) {
+
+    for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+      var v = $$obj[$index];
+
+jade_mixins["vendor"](v.slug);
+    }
+
+  } else {
+    var $$l = 0;
+    for (var $index in $$obj) {
+      $$l++;      var v = $$obj[$index];
+
+jade_mixins["vendor"](v.slug);
+    }
+
+  }
+}).call(this);
+
+buf.push("</ul><div class=\"end\"></div></div><div class=\"category telecom\"><h3>Fournisseurs&ensp;<b>Télécom</b></h3><ul>");
+// iterate telecom
+;(function(){
+  var $$obj = telecom;
+  if ('number' == typeof $$obj.length) {
+
+    for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+      var v = $$obj[$index];
+
+jade_mixins["vendor"](v.slug);
+    }
+
+  } else {
+    var $$l = 0;
+    for (var $index in $$obj) {
+      $$l++;      var v = $$obj[$index];
+
+jade_mixins["vendor"](v.slug);
+    }
+
+  }
+}).call(this);
+
+buf.push("</ul><div class=\"end\"></div></div>");}.call(this,"isp" in locals_for_with?locals_for_with.isp:typeof isp!=="undefined"?isp:undefined,"mesinfos" in locals_for_with?locals_for_with.mesinfos:typeof mesinfos!=="undefined"?mesinfos:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"telecom" in locals_for_with?locals_for_with.telecom:typeof telecom!=="undefined"?telecom:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
+;require.register("views/templates/app_layout.jade", function(exports, require, module) {
 var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<main class=\"row\"><div class=\"col-xs-4 mystones\"><div class=\"well\">TODO : addresse</div></div><div class=\"col-xs-8 houseitems\"><div class=\"row vendors\"><div class=\"well\">TODO : Énergie - EDF</div></div><div class=\"row objects\"><div class=\"well\">TODO : table</div></div></div><div style=\"display: none;\" class=\"houseitemdetails\"></div></main><div class=\"message\"></div>");;return buf.join("");
+buf.push("<main class=\"row\"><div class=\"col-xs-4 mystones\"><div class=\"well\">TODO : addresse</div></div><div class=\"col-xs-8 houseitems\"><div class=\"row vendors\"><div class=\"well\">TODO : Énergie - EDF</div></div><div class=\"row objects\"><div class=\"well\">TODO : table</div></div></div><article style=\"display: none;\" class=\"houseitemdetails\"></article></main><div class=\"message\"></div><div id=\"popin\"></div>");;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2762,7 +2939,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<h2>Mes fournisseurs</h2><ul></ul>");;return buf.join("");
+buf.push("<h2>Mes fournisseurs\n&emsp;<button class=\"btn btn-default btn-sm add\">ajouter</button></h2><ul></ul>");;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

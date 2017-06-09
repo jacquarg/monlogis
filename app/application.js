@@ -142,3 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+
+cozy.client.intents.create('CREATE', 'io.cozy.accounts', { slug: 'EDF' })
+  .start(document.getElementById('intent-service-wrapper'))

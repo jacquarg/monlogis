@@ -21,6 +21,34 @@ body {
   width: 100vw;
 }
 
+/* Popin */
+@media(min-width: 768px) {
+  #popin iframe {
+    border: 5000px solid rgba(0,0,0, 0.7);
+    position: absolute;
+    top: 50%;
+    height: 10500px;
+    width: 10700px;
+    left: 50%;
+    margin-top: -5250px;
+    margin-left: -5350px;
+    z-index: 10000;
+  }
+}
+
+@media(max-width: 767px) {
+  #popin iframe {
+    /*border: 5px solid rgba(0,0,0, 0.7);*/
+    position: absolute;
+    top: 0;
+    height: 100vh;
+    width: 100vw;
+    left: 0;
+    z-index: 10000;
+  }
+}
+/* END Popin */
+
 [role=application] {
   position: absolute;
   width: 100%;
@@ -65,13 +93,17 @@ main {
 }
 
 .houseitem {
-  margin: 20px;
+  height: 80px;
+  text-align: center;
+  margin: 15px;
   float: left;
+  padding: 15px;
 }
 
 .houseitem img {
-  max-height: 80px;
-  padding: 10px;
+  max-height: 50px;
+  max-width: 100px;
+  min-height: 50px;
 }
 
 /*
@@ -87,10 +119,7 @@ main {
   overflow-y:  auto;
 }
 
-.houseitemdetails img {
-  max-width: 100%;
-  /*! max-height: 100%; */
-}
+
 .houseitemdetails .filestools {
   margin-top: 40px;
 }
@@ -108,7 +137,7 @@ main {
 .paymentterms .icon {
   width: 72px;
   position: absolute;
-  
+
   top: 50%;
   margin-top: -36px;
   left: 15px;
@@ -135,7 +164,7 @@ main {
 .paymentterms .bottomright {
   position: absolute;
   left: 61%;
-  top: 51%;  
+  top: 51%;
 }
 
 .paymentterms .nextpayment,
@@ -259,7 +288,7 @@ main {
 .consumption .bottomright {
   position: absolute;
   left: 31%;
-  top: 51%;  
+  top: 51%;
 }
 
 .consumption .value {
@@ -370,6 +399,14 @@ main {
   margin: 0 10px;
 }
 
+/* Add vendors */
+.addvendors .category {
+    margin-bottom: 30px;
+}
+
+.addvendors .category  .end {
+  clear: both;
+}
 
 
 /* unknown */

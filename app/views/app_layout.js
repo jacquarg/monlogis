@@ -9,6 +9,7 @@ const HouseitemDetailsVendorView = require('views/houseitems/details_vendor');
 const HouseitemDetailsObjectView = require('views/houseitems/details_object');
 const VendorsView = require('views/houseitems/vendors');
 const ObjectsView = require('views/houseitems/objects');
+const AddVendorsView = require('views/add_vendors');
 
 
 module.exports = Mn.View.extend({
@@ -19,7 +20,7 @@ module.exports = Mn.View.extend({
   regions: {
     message: '.message',
     myStones: '.mystones',
-    houseitemDetails: '.houseitemdetails',
+    article: 'article',
     vendors: '.vendors',
     equipments: '.equipments',
     objects: '.objects',
@@ -29,7 +30,7 @@ module.exports = Mn.View.extend({
 
   initialize: function () {
     this.listenTo(app, 'houseitemdetails:show', this.showHouseitemDetails);
-    this.listenTo(app, 'houseitemdetails:close', this.onHouseitemDetailsClose);
+    this.listenTo(app, 'houseitemdetails:close', this._closeArticle);
   },
 
   onRender: function () {
@@ -68,23 +69,34 @@ module.exports = Mn.View.extend({
       ViewClass = HouseitemDetailsObjectView;
     }
 
-    this.showChildView('houseitemDetails', new ViewClass({ model: houseItem }));
+    this._showArticle(new ViewClass({ model: houseItem }));
+  },
+
+
+
+  _showArticle: function (view) {
+    this.showChildView('article', view);
 
     // TODO : something cleaner !
     this.$('.mystones').hide();
     this.$('.houseitems').toggleClass('col-xs-8', false);
     this.$('.houseitems').toggleClass('col-xs-4', true);
-    this.$('.houseitemdetails').show();
-    this.$('.houseitemdetails').toggleClass('col-xs-8', true);
+    this.$('article').show();
+    this.$('article').toggleClass('col-xs-8', true);
   },
 
-  onHouseitemDetailsClose: function () {
-    this.getRegion('houseitemDetails').empty();
+  _closeArticle: function () {
+    this.getRegion('article').empty();
 
     this.$('.mystones').show();
     this.$('.houseitems').toggleClass('col-xs-8', true);
     this.$('.houseitems').toggleClass('col-xs-4', false);
-    this.$('.houseitemdetails').hide();
-    this.$('.houseitemdetails').toggleClass('col-xs-8', false);
+    this.$('article').hide();
+    this.$('article').toggleClass('col-xs-8', false);
+  },
+
+  onChildviewShowAddvendors: function () {
+    console.log('toto');
+    this._showArticle(new AddVendorsView());
   },
 });
