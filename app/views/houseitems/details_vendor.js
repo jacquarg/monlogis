@@ -3,6 +3,7 @@
 const template = require('../templates/houseitems/details_vendor');
 // const BillsView = require('./bills');
 const FilesView = require('./files');
+const BudgetView = require('./budget');
 // const BillsCollection = require('collections/bills');
 const FilesCollection = require('collections/files');
 
@@ -19,20 +20,17 @@ module.exports = Mn.View.extend({
   },
 
   modelEvents: {
-    change: 'render',
+    fetchedall: 'render',
   },
 
   regions: {
     // bills: '.bills',
     files: '.files',
+    budget: '.budget',
   },
 
   initialize: function () {
-    // this.bills = new BillsCollection({ vendor: this.model.get('slug') });
-    // this.bills.fetch();
-
-    this.files = new FilesCollection({ folderPath: this.model.get('folderPath') });
-    this.files.fetch();
+    this.model.fetchAll();
   },
 
   onRender: function () {
@@ -44,6 +42,9 @@ module.exports = Mn.View.extend({
     this.showChildView('files', new FilesView({
       model: this.model,
       collection: this.files,
+    }));
+    this.showChildView('budget', new BudgetView({
+      model: this.model,
     }));
   },
 

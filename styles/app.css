@@ -49,6 +49,7 @@ body {
 }
 /* END Popin */
 
+
 [role=application] {
   position: absolute;
   width: 100%;
@@ -69,6 +70,9 @@ main {
   height: 100%;
 }
 
+.clearright { 
+  clear: right;
+}
 
 
 .mapcontainer > #map {
@@ -130,6 +134,50 @@ main {
   right: 15px;
 }
 
+/* 
+  budget
+*/
+
+.budget .icon {
+  width: 200px;
+  padding: 10px;
+  float: left;
+}
+
+.budget .value,
+.budget .unit {
+  font-size: 20px; 
+}
+
+.budget .value {
+  font-weight: bold;
+}
+
+.budget .annual,
+.budget .mensual,
+.budget .daily {
+  margin: 30px;
+}
+
+.budget .metaphore {
+  float: right;
+}
+
+.budget .metaphore img {
+  padding: 10px;
+  width: 70px;
+} 
+
+.budget .metaphoreLabel {
+  text-align: center;
+  width: 100%;
+  clear: right;
+  
+}
+
+/* 
+  END budget
+*/
 
 /*
   paymentterms

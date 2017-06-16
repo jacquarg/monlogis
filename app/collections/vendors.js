@@ -1,12 +1,13 @@
 'use-strict';
 
 const CozyCollection = require('../lib/backbone_cozycollection');
-const Vendor = require('models/vendor');
 
 const AccountsCollection = require('./accounts');
+const Vendor = require('models/vendor');
 
 module.exports = CozyCollection.extend({
   model: Vendor,
+
 
   init: function () {
     // init with

@@ -275,11 +275,12 @@ const Bill = require('models/bill');
 module.exports = CozyCollection.extend({
   model: Bill,
 
+  sort: 'date',
   initialize: function (options) {
     this.vendor = options.vendor;
   },
 
-  getFetchIndex: function () { return ['vendor']; },
+  getFetchIndex: function () { return ['vendor', 'date']; },
   getFetchQuery: function () {
     return { selector: { vendor: this.vendor } };
   },
@@ -395,12 +396,13 @@ require.register("collections/vendors.js", function(exports, require, module) {
 'use-strict';
 
 const CozyCollection = require('../lib/backbone_cozycollection');
-const Vendor = require('models/vendor');
 
 const AccountsCollection = require('./accounts');
+const Vendor = require('models/vendor');
 
 module.exports = CozyCollection.extend({
   model: Vendor,
+
 
   init: function () {
     // init with
@@ -642,7 +644,7 @@ require.register("models/bill.js", function(exports, require, module) {
 const CozyModel = require('../lib/backbone_cozymodel');
 
 module.exports = CozyModel.extend({
-  docType: 'io.cozy.bill',
+  docType: 'io.cozy.bills',
 });
 
 });
@@ -899,12 +901,43 @@ module.exports = CozyModel.extend({
 require.register("models/vendor.js", function(exports, require, module) {
 'use-strict';
 
+const VendorBase = require('./vendor_base');
+const VendorEDF = require('./vendor_edf');
+const VendorMaif = new require('./vendor_maif');
+
+module.exports = function (attributes, options) {
+    if (attributes) {
+      switch(attributes.slug) {
+        case 'edf': return new VendorEDF(attributes);
+        case 'maif': return new VendorMaif(attributes);
+      }
+    }
+
+    return new VendorBase(attributes);
+};
+
+});
+
+require.register("models/vendor_base.js", function(exports, require, module) {
+'use-strict';
+
 const CozyModel = require('../lib/backbone_cozymodel');
 
+const BillsCollection = require('../collections/bills');
 const FilesCollection = require('../collections/files');
+
 
 module.exports = CozyModel.extend({
   docType: 'org.fing.mesinfos.vendor',
+
+  fetchAll: function () {
+    return Promise.all([
+      this.getFiles().fetch(),
+      this.getBills().fetch(),
+    ]).then(() => {
+      this.trigger('fetchedall');
+    });
+  },
 
   createDir: function () {
     if (this.dirID) { return Promise.resolve(); }
@@ -927,10 +960,109 @@ module.exports = CozyModel.extend({
     if (!this.files) {
       this.files = new FilesCollection({ folderPath: this.getFolderPath() });
     }
-
     return this.files;
   },
 
+  // case may vary from a vendor to another...
+  _getBillsVendor: function () {
+    return this.get('name')
+  },
+
+  getBills: function () {
+    if (!this.bills) {
+      this.bills = new BillsCollection({ vendor: this._getBillsVendor() });
+    }
+    return this.bills;
+  },
+
+  getBudget: function () {
+    // if (!this.budget) {
+    //   this.budget = this._computeBudget();
+    // }
+    // return this.budget;
+    return this._computeBudget();
+  },
+
+  _computeBudget: function () {
+    // assume mensual bills, and always the same value
+    const bill = this.getBills().last();
+    if (!bill) { return {}; }
+
+    const mensual = bill.get('amount');
+    return {
+      mensual: mensual,
+      daily: mensual / 30,
+      annual: mensual * 12,
+    };
+  },
+
+});
+
+});
+
+require.register("models/vendor_edf.js", function(exports, require, module) {
+'use-strict';
+
+const VendorModel = require('./vendor_base');
+
+module.exports = VendorModel.extend({
+  fetchAll: function () {
+    return Promise.all([
+      this.getFiles().fetch(),
+      this.getBills().fetch(),
+      // this.getPaymentterms
+    ]);
+  },
+
+
+  _getBillsVendor: () => 'EDF',
+
+  _computeBudget: function () {
+    const bill = this.getBills().last();
+    const yearly = bill.get('totalPaymentDue');
+    return {
+      mensual: yearly / 12,
+      daily: yearly / 12 / 30,
+      annual: yearly,
+    };
+  },
+});
+
+});
+
+require.register("models/vendor_maif.js", function(exports, require, module) {
+'use-strict';
+
+const VendorModel = require('./vendor_base');
+
+const Contract = require('./contract');
+
+module.exports = VendorModel.extend({
+
+  fetchAll: function () {
+    return Promise.all([
+      this.getFiles().fetch(),
+      this.getContract().fetch(),
+      // this.getPaymentterms
+    ]);
+  },
+
+  getContract: function () {
+    if (!this.contract) {
+      this.contract = new ContractMaif();
+    }
+    return this.contract;
+
+  },
+
+  _computeBudget: function () {
+    const yearly = this.contract.get('montantTarifTtc'); //TODO !!
+    return {
+      mensual: yearly / 12,
+      daily: yearly / 12 / 30,
+      annual: yearly,
+    };
+  },
 
 });
 
@@ -1247,6 +1379,36 @@ module.exports = Mn.View.extend({
 
 });
 
+require.register("views/houseitems/budget.js", function(exports, require, module) {
+'use strict';
+
+const template = require('../templates/houseitems/budget');
+
+module.exports = Mn.View.extend({
+  template: template,
+
+  events: {
+  },
+
+  // modelEvents: {
+  //   change: 'render',
+  // },
+
+  initialize: function (options) {
+  },
+
+  serializeData: function () {
+    const data = this.model.getBudget();
+    data.annualMetaphore = Math.round(data.annual / 100); // dîner gastronomique
+    data.mensualMetaphore = Math.round(data.mensual / 10); //places de cinéma
+    data.dailyMetaphore = Math.round(data.daily / 0.90); // croissant;
+    return data;
+  },
+
+});
+
+});
+
 require.register("views/houseitems/consomation_edf.js", function(exports, require, module) {
 'use strict';
 
@@ -1404,6 +1566,7 @@ const PhoneContactView = require('./phone_contact_edf');
 const PaymenttermsView = require('./paymentterms');
 const BillsView = require('./bills');
 const BillsCollection = require('collections/bills');
+const BudgetView = require('./budget');
 
 const FilesView = require('./files');
 
@@ -1412,6 +1575,7 @@ module.exports = BaseDetailsView.extend({
   template: template,
 
   regions: {
+    budget: '.budget',
     bills: '.bills',
     contract: '.contract',
     consomation: '.consumption',
@@ -1433,25 +1597,27 @@ module.exports = BaseDetailsView.extend({
   },
 
   initialize: function () {
-    this.model.getFiles().fetch();
+    this.model.fetchAll();
+    // this.model.getFiles().fetch();
 
-    this.bills = new BillsCollection({ vendor: 'EDF' });
-    this.bills.fetch();
+    // this.bills = new BillsCollection({ vendor: 'EDF' });
+    // this.bills.fetch();
   },
 
   // .holder= dernierReglement.type
 
   onRender: function () {
-    this.showChildView('bills', new BillsView({
-      model: new Backbone.Model({ slug: 'EDF' }),
-      collection: this.bills,
-    }));
+    // this.showChildView('bills', new BillsView({
+    //   model: new Backbone.Model({ slug: 'EDF' }),
+    //   collection: this.bills,
+    // }));
     this.showChildView('contract', new ContractView());
     this.showChildView('consomation', new ConsomationView());
     this.showChildView('phoneDepannage', new PhoneDepannageView());
     this.showChildView('phoneContact', new PhoneContactView());
     this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'EDF' }));
     this.showChildView('files', new FilesView({ model: this.model, }));
+    this.showChildView('budget', new BudgetView({ model: this.model }));
   },
 
 
@@ -1636,6 +1802,7 @@ require.register("views/houseitems/details_vendor.js", function(exports, require
 const template = require('../templates/houseitems/details_vendor');
 // const BillsView = require('./bills');
 const FilesView = require('./files');
+const BudgetView = require('./budget');
 // const BillsCollection = require('collections/bills');
 const FilesCollection = require('collections/files');
 
@@ -1652,20 +1819,17 @@ module.exports = Mn.View.extend({
   },
 
   modelEvents: {
-    change: 'render',
+    fetchedall: 'render',
   },
 
   regions: {
     // bills: '.bills',
     files: '.files',
+    budget: '.budget',
   },
 
   initialize: function () {
-    // this.bills = new BillsCollection({ vendor: this.model.get('slug') });
-    // this.bills.fetch();
-
-    this.files = new FilesCollection({ folderPath: this.model.get('folderPath') });
-    this.files.fetch();
+    this.model.fetchAll();
   },
 
   onRender: function () {
@@ -1677,6 +1841,9 @@ module.exports = Mn.View.extend({
     this.showChildView('files', new FilesView({
       model: this.model,
       collection: this.files,
+    }));
+    this.showChildView('budget', new BudgetView({
+      model: this.model,
     }));
   },
 
@@ -2534,6 +2701,42 @@ if (typeof define === 'function' && define.amd) {
 }
 });
 
+;require.register("views/templates/houseitems/budget.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (annual, annualMetaphore, daily, dailyMetaphore, mensual, mensualMetaphore) {
+jade_mixins["period"] = jade_interp = function(value, unit, metaphoreCount, metaphoreLabel, metaphoreImg){
+var block = (this && this.block), attributes = (this && this.attributes) || {};
+buf.push("<span class=\"value\">" + (jade.escape(null == (jade_interp = value.toFixed(2)) ? "" : jade_interp)) + "</span><span class=\"unit\">" + (jade.escape(null == (jade_interp = unit) ? "" : jade_interp)) + "</span><div class=\"metaphore\">");
+var n = 0;
+while (n < metaphoreCount)
+{
+buf.push("<img" + (jade.attr("src", metaphoreImg, true, false)) + "/>");
+n++
+}
+buf.push("<div class=\"metaphoreLabel\">" + (jade.escape(null == (jade_interp = metaphoreCount) ? "" : jade_interp)) + (jade.escape(null == (jade_interp = metaphoreLabel) ? "" : jade_interp)) + "</div></div><div class=\"clearright\"></div>");
+};
+buf.push("<h3>Budget</h3><img src=\"/assets/img/piggybank.svg\" class=\"icon\"/><div class=\"daily\">");
+jade_mixins["period"](daily, "€/jour ", dailyMetaphore, " croissants", "/assets/img/croissant.svg");
+buf.push("</div><div class=\"mensual\">");
+jade_mixins["period"](mensual, "€/mois ", mensualMetaphore, " places de cinéma", "/assets/img/cinematicket.svg");
+buf.push("</div><div class=\"annual\">");
+jade_mixins["period"](annual, "€/an ", annualMetaphore, " dîners gastronomiques", "/assets/img/toque.svg");
+buf.push("</div>");}.call(this,"annual" in locals_for_with?locals_for_with.annual:typeof annual!=="undefined"?annual:undefined,"annualMetaphore" in locals_for_with?locals_for_with.annualMetaphore:typeof annualMetaphore!=="undefined"?annualMetaphore:undefined,"daily" in locals_for_with?locals_for_with.daily:typeof daily!=="undefined"?daily:undefined,"dailyMetaphore" in locals_for_with?locals_for_with.dailyMetaphore:typeof dailyMetaphore!=="undefined"?dailyMetaphore:undefined,"mensual" in locals_for_with?locals_for_with.mensual:typeof mensual!=="undefined"?mensual:undefined,"mensualMetaphore" in locals_for_with?locals_for_with.mensualMetaphore:typeof mensualMetaphore!=="undefined"?mensualMetaphore:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
 ;require.register("views/templates/houseitems/consomation_edf.jade", function(exports, require, module) {
 var __templateData = function template(locals) {
 var buf = [];
@@ -2578,7 +2781,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<div class=\"columnbody col-xs-8\"><div class=\"row container_head\"><div class=\"paymentterms\"></div><div class=\"consumption\"></div></div><div class=\"container_bills\"><div class=\"bills\"></div></div><div class=\"files\"></div></div><div class=\"columnright col-xs-4\"><div class=\"contract\"></div><div class=\"contact\"><h4>Contacter EDF</h4><div class=\"phoneTroubleshooting\"></div><div class=\"phoneContact\"></div></div></div><div class=\"close\">x</div>");;return buf.join("");
+buf.push("<div class=\"columnbody col-xs-8\"><div class=\"row container_head\"><div class=\"paymentterms\"></div><div class=\"budget\"></div><div class=\"consumption\"></div></div><div class=\"container_bills\"><div class=\"bills\"></div></div><div class=\"files\"></div></div><div class=\"columnright col-xs-4\"><div class=\"contract\"></div><div class=\"contact\"><h4>Contacter EDF</h4><div class=\"phoneTroubleshooting\"></div><div class=\"phoneContact\"></div></div></div><div class=\"close\">x</div>");;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2635,7 +2838,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (slug) {
-buf.push("<div class=\"columnbody col-xs-8\"><div class=\"bills\"></div><div class=\"files\"></div></div><div class=\"columnright col-xs-4\"><div class=\"contract\"><img" + (jade.attr("src", "/assets/img/icon_konnectors/" + (slug) + ".svg", true, false)) + " class=\"img-thumbnail icon\"/></div></div><div class=\"close\">x</div>");}.call(this,"slug" in locals_for_with?locals_for_with.slug:typeof slug!=="undefined"?slug:undefined));;return buf.join("");
+buf.push("<div class=\"columnbody col-xs-8\"><div class=\"row container_head\"><div class=\"col-xs-12\"><div class=\"budget\"></div></div></div><div class=\"bills\"></div><div class=\"files\"></div></div><div class=\"columnright col-xs-4\"><div class=\"contract\"><img" + (jade.attr("src", "/assets/img/icon_konnectors/" + (slug) + ".svg", true, false)) + " class=\"img-thumbnail icon\"/></div></div><div class=\"close\">x</div>");}.call(this,"slug" in locals_for_with?locals_for_with.slug:typeof slug!=="undefined"?slug:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -3082,3 +3285,5 @@ if (typeof define === 'function' && define.amd) {
   
 });})();require('___globals___');
 
+
+//# sourceMappingURL=app.js.map

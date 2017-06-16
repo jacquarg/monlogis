@@ -1,36 +1,16 @@
 'use-strict';
 
-const CozyModel = require('../lib/backbone_cozymodel');
+const VendorBase = require('./vendor_base');
+const VendorEDF = require('./vendor_edf');
+const VendorMaif = new require('./vendor_maif');
 
-const FilesCollection = require('../collections/files');
-
-module.exports = CozyModel.extend({
-  docType: 'org.fing.mesinfos.vendor',
-
-  createDir: function () {
-    if (this.dirID) { return Promise.resolve(); }
-
-    return cozy.client.files.createDirectoryByPath(this.getFolderPath())
-    .then((dir) => {
-      this.dirID = dir._id;
-    });
-  },
-
-  getDirID: function () {
-    return this.dirID;
-  },
-
-  getFolderPath: function () {
-    return this.get('folderPath');
-  },
-
-  getFiles: function () {
-    if (!this.files) {
-      this.files = new FilesCollection({ folderPath: this.getFolderPath() });
+module.exports = function (attributes, options) {
+    if (attributes) {
+      switch(attributes.slug) {
+        case 'edf': return new VendorEDF(attributes);
+        case 'maif': return new VendorMaif(attributes);
+      }
     }
 
-    return this.files;
-  },
-
-
-});
+    return new VendorBase(attributes);
+};

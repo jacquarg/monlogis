@@ -1,0 +1,27 @@
+mixin period(value, unit, metaphoreCount, metaphoreLabel, metaphoreImg)
+  span.value= value.toFixed(2)
+  span.unit= unit
+  .metaphore
+    //- .metaphoreicons
+    - var n = 0;
+    while n < metaphoreCount
+      img(src=metaphoreImg)
+      - n++
+    .metaphoreLabel
+      = metaphoreCount
+      = metaphoreLabel
+  .clearright
+
+h3 Budget
+img.icon(src="/assets/img/piggybank.svg")
+
+.daily
+  +period(daily, "€/jour ", dailyMetaphore, " croissants", "/assets/img/croissant.svg")
+
+
+.mensual
+  +period(mensual, "€/mois ", mensualMetaphore, " places de cinéma", "/assets/img/cinematicket.svg")
+
+.annual
+  +period(annual, "€/an ", annualMetaphore, " dîners gastronomiques", "/assets/img/toque.svg")
+

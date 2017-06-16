@@ -10,6 +10,7 @@ const PhoneContactView = require('./phone_contact_edf');
 const PaymenttermsView = require('./paymentterms');
 const BillsView = require('./bills');
 const BillsCollection = require('collections/bills');
+const BudgetView = require('./budget');
 
 const FilesView = require('./files');
 
@@ -18,6 +19,7 @@ module.exports = BaseDetailsView.extend({
   template: template,
 
   regions: {
+    budget: '.budget',
     bills: '.bills',
     contract: '.contract',
     consomation: '.consumption',
@@ -39,25 +41,27 @@ module.exports = BaseDetailsView.extend({
   },
 
   initialize: function () {
-    this.model.getFiles().fetch();
+    this.model.fetchAll();
+    // this.model.getFiles().fetch();
 
-    this.bills = new BillsCollection({ vendor: 'EDF' });
-    this.bills.fetch();
+    // this.bills = new BillsCollection({ vendor: 'EDF' });
+    // this.bills.fetch();
   },
 
   // .holder= dernierReglement.type
 
   onRender: function () {
-    this.showChildView('bills', new BillsView({
-      model: new Backbone.Model({ slug: 'EDF' }),
-      collection: this.bills,
-    }));
+    // this.showChildView('bills', new BillsView({
+    //   model: new Backbone.Model({ slug: 'EDF' }),
+    //   collection: this.bills,
+    // }));
     this.showChildView('contract', new ContractView());
     this.showChildView('consomation', new ConsomationView());
     this.showChildView('phoneDepannage', new PhoneDepannageView());
     this.showChildView('phoneContact', new PhoneContactView());
     this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'EDF' }));
     this.showChildView('files', new FilesView({ model: this.model, }));
+    this.showChildView('budget', new BudgetView({ model: this.model }));
   },
 
 

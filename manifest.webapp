@@ -64,7 +64,7 @@
     },
     "io.cozy.bill": {
       "description": "TODO",
-      "type": "io.cozy.bill"
+      "type": "io.cozy.bills"
     },
     "org.fing.mesinfos.client": {
       "description": "TODO",
