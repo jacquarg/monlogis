@@ -1,52 +1,60 @@
-.columnbody.col-xs-8
-  .row.container_head
-    .paymentterms
-    .budget.col-xs-12
-    .consumption.col-xs-12
+.col-xs-12
+  h2 Mon fournisseur&ensp;
+    = category
+    | &ensp;
+    img.icon(src="/assets/img/icon_konnectors/#{slug}.svg")
 
-  .container_bills
-    .bills
-  .files
+.col-xs-12.frame
+  .row
+    .col-xs-8.paymentterms
+    .col-xs-4.consumption
 
-.columnright.col-xs-4
-  .contract
-    if contract
-      img.img-thumbnail.icon(src="/assets/img/edf_logo_big.png")
-      ul
-        li
-          span.label Contrat&nbsp;
-          span.value= contract.name
-            | &ensp;
-            = contract.contractSubcategory1
-        li
-          span.label Puissance :&ensp;
-          span.value= contract.power
-        li
-          span.label Point De Livraison :&ensp;
-          span.value= contract.pdl
+  .row
+    .col-xs-12.budget
 
 
-  .identifiers
-    h3 Identifiants
-    ul
-      if login
-        li
-          span.label login web &ensp;
-          span.value= login
+  .row
+    .col-xs-8.files
+
+    .col-xs-4.relation
+      h3
+        i.fa.fa-handshake-o
+        | Ma relation avec&ensp;
+        = name
 
 
-  .contact
-    h4 Contacter EDF
-    .phoneTroubleshooting
-      if contract
-        img.img_tell(src="/assets/img/tell.svg")
-        span dépannage :&nbsp
-        span= contract.troubleshootingPhone
-    .phoneContact
-      if (client && client.commercialContact)
-        img.img_tell(src="/assets/img/tell.svg")
-        span service client :&nbsp
-        span= client.commercialContact.phone
+      .contract
+        if contract
+          ul
+            li
+              span.label Contrat&nbsp;
+              span.value= contract.name
+                | &ensp;
+                = contract.contractSubcategory1
+            li
+              span.label Puissance :&ensp;
+              span.value= contract.power
+            li
+              span.label Point De Livraison :&ensp;
+              span.value= contract.pdl
 
+      .identifiers
+        h4 Mes identifiants :
+        ul
+          if login
+            li
+              span.label login web :&ensp;
+              span.value= login
 
-.close x
+      .contact
+        h4 Contacter EDF
+        .phoneTroubleshooting
+          if contract
+            img.img_tell(src="/assets/img/tell.svg")
+            span dépannage :&nbsp
+            span= contract.troubleshootingPhone
+        .phoneContact
+          if (client && client.commercialContact)
+            img.img_tell(src="/assets/img/tell.svg")
+            span service client :&nbsp
+            span= client.commercialContact.phone

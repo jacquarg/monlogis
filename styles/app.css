@@ -229,6 +229,11 @@ main {
   height: 72px;
 }
 
+.text1 {
+  position: absolute;
+  left: 0px;
+}
+
 .budget .value,
 .budget .unit {
   font-size: 20px;
@@ -239,22 +244,22 @@ main {
 }
 
 .budget .equal {
-  position: absolute;
-  left: 150px;
+  margin-left: 150px;
   font-size: 20px;
   font-weight: 700;
 }
 
 .budget .metaphore {
-  position: absolute;
-  left: 180px;
+  margin-left: 20px;
   text-align: center;
+  display: inline-block;
 }
 
 .budget .metaphore img {
   margin-right: 10px;
   max-width: 32px;
   max-height: 32px;
+  padding: 1px;
 }
 
 .budget .metaphoreLabel {
@@ -350,7 +355,7 @@ main {
 .lastpayment .labelamount {}
 
 /* files */
-.files {
+.frame .col-xs-8 {
   border-right: solid 2px #CCC;
 }
 
@@ -408,9 +413,9 @@ main {
   houseitemdetails consumption (EDF)
 */
 .consumption {
-  height: 120px;
   position: relative;
-  margin: 20px 0;
+  height: 290px;
+
 }
 
 .consumption .icon {
@@ -445,8 +450,14 @@ main {
   top: 51%;
 }
 
+.consumption .top {
+  position: absolute;
+  left: 20%;
+  bottom: 51%;
+}
+
 .consumption .value {
-  font-size: 40px;
+  font-size: 35px;
   line-height: 1;
 }
 
@@ -485,7 +496,7 @@ main {
   margin-bottom: 20px;
 }
 
-.detail_habitat{
+.detail_habitat {
   margin-left: -25px;
 }
 
