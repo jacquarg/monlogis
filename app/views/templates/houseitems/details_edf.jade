@@ -10,12 +10,43 @@
 
 .columnright.col-xs-4
   .contract
+    if contract
+      img.img-thumbnail.icon(src="/assets/img/edf_logo_big.png")
+      ul
+        li
+          span.label Contrat&nbsp;
+          span.value= contract.name
+            | &ensp;
+            = contract.contractSubcategory1
+        li
+          span.label Puissance :&ensp;
+          span.value= contract.power
+        li
+          span.label Point De Livraison :&ensp;
+          span.value= contract.pdl
+
+
+  .identifiers
+    h3 Identifiants
+    ul
+      if login
+        li
+          span.label login web &ensp;
+          span.value= login
+
 
   .contact
-
     h4 Contacter EDF
-
     .phoneTroubleshooting
+      if contract
+        img.img_tell(src="/assets/img/tell.svg")
+        span dépannage :&nbsp
+        span= contract.troubleshootingPhone
     .phoneContact
+      if (client && client.commercialContact)
+        img.img_tell(src="/assets/img/tell.svg")
+        span service client :&nbsp
+        span= client.commercialContact.phone
+
 
 .close x

@@ -10,12 +10,17 @@ module.exports = CozyModel.extend({
   docType: 'org.fing.mesinfos.vendor',
 
   fetchAll: function () {
-    return Promise.all([
-      this.getFiles().fetch(),
-      this.getBills().fetch(),
-    ]).then(() => {
+    return Promise.all(this.toFetch())
+    .then(() => {
       this.trigger('fetchedall');
     });
+  },
+
+  toFetch: function () {
+    return [
+      this.getFiles().fetch(),
+      this.getBills().fetch(),
+    ];
   },
 
   createDir: function () {

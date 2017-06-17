@@ -1,22 +1,39 @@
 'use-strict';
 
 const VendorModel = require('./vendor_base');
+const Client = require('./client');
+const Contract = require('./contract');
+
 
 module.exports = VendorModel.extend({
-  fetchAll: function () {
-    return Promise.all([
+
+  toFetch: function () {
+    return [
       this.getFiles().fetch(),
       this.getBills().fetch(),
+      this.fetchClient(),
+      this.fetchContract(),
       // this.getPaymentterms
-    ]);
+    ];
   },
 
+
+  fetchClient: function () {
+    this.client = new Client();
+    return this.client.fetchEDF();
+  },
+
+  fetchContract: function () {
+    this.contract = new Contract();
+    return this.contract.fetchEDF();
+  },
 
   _getBillsVendor: () => 'EDF',
 
   _computeBudget: function () {
     const bill = this.getBills().last();
-    const yearly = bill.get('totalPaymentDue');
+    const yearly = Number(bill.get('totalPaymentDue'));
+    console.log(yearly)
     return {
       mensual: yearly / 12,
       daily: yearly / 12 / 30,

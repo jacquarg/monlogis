@@ -329,7 +329,7 @@ module.exports = Backbone.Collection.extend({
       return;
     }
 
-    cozy.client.files.statByPath(this.folderPath)
+    return cozy.client.files.statByPath(this.folderPath)
     .then(dir => dir.relations('contents'))
     .then(options.success, options.error);
   },
@@ -738,6 +738,14 @@ const CozyModel = require('../lib/backbone_cozymodel');
 
 module.exports = CozyModel.extend({
   docType: 'io.cozy.bills',
+
+  parse: function () {
+    const attr = CozyModel.prototype.parse.apply(this, arguments);
+    if (attr.vendor === 'EDF') {
+      attr.amount = attr.value;
+    }
+    return attr;
+  },
 });
 
 });
@@ -1024,12 +1032,17 @@ module.exports = CozyModel.extend({
   docType: 'org.fing.mesinfos.vendor',
 
   fetchAll: function () {
-    return Promise.all([
-      this.getFiles().fetch(),
-      this.getBills().fetch(),
-    ]).then(() => {
+    return Promise.all(this.toFetch())
+    .then(() => {
       this.trigger('fetchedall');
     });
+  },
+
+  toFetch: function () {
+    return [
+      this.getFiles().fetch(),
+      this.getBills().fetch(),
+    ];
   },
 
   createDir: function () {
@@ -1105,22 +1118,39 @@ require.register("models/vendor_edf.js", function(exports, require, module) {
 'use-strict';
 
 const VendorModel = require('./vendor_base');
+const Client = require('./client');
+const Contract = require('./contract');
+
 
 module.exports = VendorModel.extend({
-  fetchAll: function () {
-    return Promise.all([
+
+  toFetch: function () {
+    return [
       this.getFiles().fetch(),
       this.getBills().fetch(),
+      this.fetchClient(),
+      this.fetchContract(),
       // this.getPaymentterms
-    ]);
+    ];
   },
 
+
+  fetchClient: function () {
+    this.client = new Client();
+    return this.client.fetchEDF();
+  },
+
+  fetchContract: function () {
+    this.contract = new Contract();
+    return this.contract.fetchEDF();
+  },
 
   _getBillsVendor: () => 'EDF',
 
   _computeBudget: function () {
     const bill = this.getBills().last();
-    const yearly = bill.get('totalPaymentDue');
+    const yearly = Number(bill.get('totalPaymentDue'));
+    console.log(yearly)
     return {
       mensual: yearly / 12,
       daily: yearly / 12 / 30,
@@ -1535,31 +1565,6 @@ module.exports = Mn.View.extend({
 
 });
 
-require.register("views/houseitems/contract_client.js", function(exports, require, module) {
-'use strict';
-
-const template = require('../templates/houseitems/contract_client');
-const Contract = require('../../models/contract');
-
-module.exports = Mn.View.extend({
-  template: template,
-
-  events: {
-  },
-
-  modelEvents: {
-    change: 'render',
-  },
-
-  initialize: function () {
-    this.model = new Contract();
-    this.model.fetchEDF();
-  },
-
-});
-
-});
-
 require.register("views/houseitems/details_base.js", function(exports, require, module) {
 'use strict';
 
@@ -1657,73 +1662,38 @@ module.exports = Mn.View.extend({
 require.register("views/houseitems/details_edf.js", function(exports, require, module) {
 'use strict';
 
-const BaseDetailsView = require('./details_base');
+const DetailsVendorView = require('./details_vendor');
 const template = require('../templates/houseitems/details_edf');
 // TODO : move to contract edf ; move into this view ?
-const ContractView = require('./contract_client');
 const ConsomationView = require('./consomation_edf');
-const PhoneDepannageView = require('./phone_depannage_edf');
-const PhoneContactView = require('./phone_contact_edf');
 const PaymenttermsView = require('./paymentterms');
-const BillsView = require('./bills');
-const BillsCollection = require('collections/bills');
-const BudgetView = require('./budget');
-
-const FilesView = require('./files');
 
 
-module.exports = BaseDetailsView.extend({
+module.exports = DetailsVendorView.extend({
   template: template,
 
   regions: {
     budget: '.budget',
-    bills: '.bills',
-    contract: '.contract',
     consomation: '.consumption',
-    phoneDepannage: '.phoneTroubleshooting',
-    phoneContact: '.phoneContact',
     paymentterms: '.paymentterms',
     files: '.files',
   },
 
-  events: {
+  serializeData: function () {
+    const data = DetailsVendorView.prototype.serializeData.apply(this, arguments);
+    if (this.model.client) {
+      data.client = this.model.client.toJSON();
+    }
+    if (this.model.contract) {
+      data.contract = this.model.contract.toJSON();
+    }
+    return data;
   },
-
-  triggers: {
-    'click .close': 'close',
-  },
-
-  modelEvents: {
-    change: 'render',
-  },
-
-  initialize: function () {
-    this.model.fetchAll();
-    // this.model.getFiles().fetch();
-
-    // this.bills = new BillsCollection({ vendor: 'EDF' });
-    // this.bills.fetch();
-  },
-
-  // .holder= dernierReglement.type
 
   onRender: function () {
-    // this.showChildView('bills', new BillsView({
-    //   model: new Backbone.Model({ slug: 'EDF' }),
-    //   collection: this.bills,
-    // }));
-    this.showChildView('contract', new ContractView());
+    DetailsVendorView.prototype.onRender.apply(this, arguments);
     this.showChildView('consomation', new ConsomationView());
-    this.showChildView('phoneDepannage', new PhoneDepannageView());
-    this.showChildView('phoneContact', new PhoneContactView());
     this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'EDF' }));
-    this.showChildView('files', new FilesView({ model: this.model, }));
-    this.showChildView('budget', new BudgetView({ model: this.model }));
-  },
-
-
-  onClose: function () {
-    app.trigger('houseitemdetails:close');
   },
 
 });
@@ -1911,10 +1881,6 @@ module.exports = Mn.View.extend({
   template: template,
   className: 'row',
 
-
-  events: {
-  },
-
   triggers: {
     'click .close': 'close',
   },
@@ -1939,13 +1905,8 @@ module.exports = Mn.View.extend({
     //   collection: this.bills,
     // }));
 
-    this.showChildView('files', new FilesView({
-      model: this.model,
-      collection: this.files,
-    }));
-    this.showChildView('budget', new BudgetView({
-      model: this.model,
-    }));
+    this.showChildView('files', new FilesView({ model: this.model }));
+    this.showChildView('budget', new BudgetView({ model: this.model }));
   },
 
   onClose: function () {
@@ -2251,56 +2212,6 @@ module.exports = Mn.View.extend({
       // data.nextPaymentAmount = this.contract.get('montantTarifTtc');
     }
     return data;
-  },
-
-});
-
-});
-
-require.register("views/houseitems/phone_contact_edf.js", function(exports, require, module) {
-'use strict';
-
-const template = require('../templates/houseitems/phone_contact_edf');
-const PhoneContact = require('../../models/client');
-
-module.exports = Mn.View.extend({
-  template: template,
-
-  events: {
-  },
-
-  modelEvents: {
-    change: 'render',
-  },
-
-  initialize: function () {
-    this.model = new PhoneContact();
-    this.model.fetchEDF();
-  },
-
-});
-
-});
-
-require.register("views/houseitems/phone_depannage_edf.js", function(exports, require, module) {
-'use strict';
-
-const template = require('../templates/houseitems/phone_depannage_edf');
-const PhoneDeppanage = require('../../models/contract');
-
-module.exports = Mn.View.extend({
-  template: template,
-
-  events: {
-  },
-
-  modelEvents: {
-    change: 'render',
-  },
-
-  initialize: function () {
-    this.model = new PhoneDeppanage();
-    this.model.fetchEDF();
   },
 
 });
@@ -2885,32 +2796,33 @@ if (typeof define === 'function' && define.amd) {
 }
 });
 
-;require.register("views/templates/houseitems/contract_client.jade", function(exports, require, module) {
-var __templateData = function template(locals) {
-var buf = [];
-var jade_mixins = {};
-var jade_interp;
-;var locals_for_with = (locals || {});(function (contractSubcategory1, name, pdl, power) {
-buf.push("<img src=\"/assets/img/edf_logo_big.png\" class=\"img-thumbnail icon\"/><ul><li><span class=\"label\">Contrat&nbsp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "&ensp;" + (jade.escape(null == (jade_interp = contractSubcategory1) ? "" : jade_interp)) + "</span></li><li><span class=\"label\">Puissance :&ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = power) ? "" : jade_interp)) + "</span></li><li><span class=\"label\">Point De Livraison :&ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = pdl) ? "" : jade_interp)) + "</span></li></ul>");}.call(this,"contractSubcategory1" in locals_for_with?locals_for_with.contractSubcategory1:typeof contractSubcategory1!=="undefined"?contractSubcategory1:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"pdl" in locals_for_with?locals_for_with.pdl:typeof pdl!=="undefined"?pdl:undefined,"power" in locals_for_with?locals_for_with.power:typeof power!=="undefined"?power:undefined));;return buf.join("");
-};
-if (typeof define === 'function' && define.amd) {
-  define([], function() {
-    return __templateData;
-  });
-} else if (typeof module === 'object' && module && module.exports) {
-  module.exports = __templateData;
-} else {
-  __templateData;
-}
-});
-
 ;require.register("views/templates/houseitems/details_edf.jade", function(exports, require, module) {
 var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-
-buf.push("<div class=\"columnbody col-xs-8\"><div class=\"row container_head\"><div class=\"paymentterms\"></div><div class=\"budget col-xs-12\"></div><div class=\"consumption col-xs-12\"></div></div><div class=\"container_bills\"><div class=\"bills\"></div></div><div class=\"files\"></div></div><div class=\"columnright col-xs-4\"><div class=\"contract\"></div><div class=\"contact\"><h4>Contacter EDF</h4><div class=\"phoneTroubleshooting\"></div><div class=\"phoneContact\"></div></div></div><div class=\"close\">x</div>");;return buf.join("");
+;var locals_for_with = (locals || {});(function (client, contract, login) {
+buf.push("<div class=\"columnbody col-xs-8\"><div class=\"row container_head\"><div class=\"paymentterms\"></div><div class=\"budget col-xs-12\"></div><div class=\"consumption col-xs-12\"></div></div><div class=\"container_bills\"><div class=\"bills\"></div></div><div class=\"files\"></div></div><div class=\"columnright col-xs-4\"><div class=\"contract\">");
+if ( contract)
+{
+buf.push("<img src=\"/assets/img/edf_logo_big.png\" class=\"img-thumbnail icon\"/><ul><li><span class=\"label\">Contrat&nbsp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.name) ? "" : jade_interp)) + "&ensp;" + (jade.escape(null == (jade_interp = contract.contractSubcategory1) ? "" : jade_interp)) + "</span></li><li><span class=\"label\">Puissance :&ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.power) ? "" : jade_interp)) + "</span></li><li><span class=\"label\">Point De Livraison :&ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.pdl) ? "" : jade_interp)) + "</span></li></ul>");
+}
+buf.push("</div><div class=\"identifiers\"><h3>Identifiants</h3><ul>");
+if ( login)
+{
+buf.push("<li><span class=\"label\">login web &ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = login) ? "" : jade_interp)) + "</span></li>");
+}
+buf.push("</ul></div><div class=\"contact\"><h4>Contacter EDF</h4><div class=\"phoneTroubleshooting\">");
+if ( contract)
+{
+buf.push("<img src=\"/assets/img/tell.svg\" class=\"img_tell\"/><span>dépannage :&nbsp</span><span>" + (jade.escape(null == (jade_interp = contract.troubleshootingPhone) ? "" : jade_interp)) + "</span>");
+}
+buf.push("</div><div class=\"phoneContact\">");
+if ( (client && client.commercialContact))
+{
+buf.push("<img src=\"/assets/img/tell.svg\" class=\"img_tell\"/><span>service client :&nbsp</span><span>" + (jade.escape(null == (jade_interp = client.commercialContact.phone) ? "" : jade_interp)) + "</span>");
+}
+buf.push("</div></div></div><div class=\"close\">x</div>");}.call(this,"client" in locals_for_with?locals_for_with.client:typeof client!=="undefined"?client:undefined,"contract" in locals_for_with?locals_for_with.contract:typeof contract!=="undefined"?contract:undefined,"login" in locals_for_with?locals_for_with.login:typeof login!=="undefined"?login:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -3161,47 +3073,6 @@ if ( lastPaymentAmount)
 {
 buf.push("<div class=\"lastpayment\"><span class=\"topleft labelamount\">mon dernier paiement &nbsp;</span><span class=\"topright amount\">" + (jade.escape(null == (jade_interp = lastPaymentAmount.amount) ? "" : jade_interp)) + "€</span><span class=\"bottomleft labeldate\">le &nbsp" + (jade.escape(null == (jade_interp = nextPaymentAmount.scheduleDate) ? "" : jade_interp)) + "&nbsp;:</span><span class=\"bottomright date\">il y a un mois</span></div>");
 }}.call(this,"annualCost" in locals_for_with?locals_for_with.annualCost:typeof annualCost!=="undefined"?annualCost:undefined,"lastPaymentAmount" in locals_for_with?locals_for_with.lastPaymentAmount:typeof lastPaymentAmount!=="undefined"?lastPaymentAmount:undefined,"modePaiement" in locals_for_with?locals_for_with.modePaiement:typeof modePaiement!=="undefined"?modePaiement:undefined,"nextPaymentAmount" in locals_for_with?locals_for_with.nextPaymentAmount:typeof nextPaymentAmount!=="undefined"?nextPaymentAmount:undefined));;return buf.join("");
-};
-if (typeof define === 'function' && define.amd) {
-  define([], function() {
-    return __templateData;
-  });
-} else if (typeof module === 'object' && module && module.exports) {
-  module.exports = __templateData;
-} else {
-  __templateData;
-}
-});
-
-;require.register("views/templates/houseitems/phone_contact_edf.jade", function(exports, require, module) {
-var __templateData = function template(locals) {
-var buf = [];
-var jade_mixins = {};
-var jade_interp;
-;var locals_for_with = (locals || {});(function (commercialContact) {
-if ( commercialContact)
-{
-buf.push("<img src=\"/assets/img/tell.svg\" class=\"img_tell\"/><span>service client :&nbsp</span><span>" + (jade.escape(null == (jade_interp = commercialContact.phone) ? "" : jade_interp)) + "</span>");
-}}.call(this,"commercialContact" in locals_for_with?locals_for_with.commercialContact:typeof commercialContact!=="undefined"?commercialContact:undefined));;return buf.join("");
-};
-if (typeof define === 'function' && define.amd) {
-  define([], function() {
-    return __templateData;
-  });
-} else if (typeof module === 'object' && module && module.exports) {
-  module.exports = __templateData;
-} else {
-  __templateData;
-}
-});
-
-;require.register("views/templates/houseitems/phone_depannage_edf.jade", function(exports, require, module) {
-var __templateData = function template(locals) {
-var buf = [];
-var jade_mixins = {};
-var jade_interp;
-;var locals_for_with = (locals || {});(function (troubleshootingPhone) {
-buf.push("<img src=\"/assets/img/tell.svg\" class=\"img_tell\"/><span>dépannage :&nbsp</span><span>" + (jade.escape(null == (jade_interp = troubleshootingPhone) ? "" : jade_interp)) + "</span>");}.call(this,"troubleshootingPhone" in locals_for_with?locals_for_with.troubleshootingPhone:typeof troubleshootingPhone!=="undefined"?troubleshootingPhone:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

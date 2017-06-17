@@ -2,7 +2,7 @@
   "version": "0.0.1",
   "name": "MonLogis",
   "slug": "app",
-  "icon": "/img/icon.svg",
+  "icon": "/assets/img/icon.svg",
   "description": "Le tableau de bord de mon logement",
   "source": "",
   "developer": {

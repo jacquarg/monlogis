@@ -11,10 +11,6 @@ module.exports = Mn.View.extend({
   template: template,
   className: 'row',
 
-
-  events: {
-  },
-
   triggers: {
     'click .close': 'close',
   },
@@ -39,13 +35,8 @@ module.exports = Mn.View.extend({
     //   collection: this.bills,
     // }));
 
-    this.showChildView('files', new FilesView({
-      model: this.model,
-      collection: this.files,
-    }));
-    this.showChildView('budget', new BudgetView({
-      model: this.model,
-    }));
+    this.showChildView('files', new FilesView({ model: this.model }));
+    this.showChildView('budget', new BudgetView({ model: this.model }));
   },
 
   onClose: function () {
