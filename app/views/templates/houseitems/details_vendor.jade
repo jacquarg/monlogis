@@ -1,23 +1,30 @@
-.columnbody.col-xs-8
-  .row.container_head
-    .col-xs-12
-      .budget
+.col-xs-12
+  h2 Mon fournisseur&ensp;
+    = category
+    | &ensp;
+    img.icon(src="/assets/img/icon_konnectors/#{slug}.svg")
 
-  .bills
-
-  .files
-
-.columnright.col-xs-4
-  .contract
-    img.img-thumbnail.icon(src="/assets/img/icon_konnectors/#{slug}.svg")
-
-    .identifiers
-      h3 Identifiants
-      ul
-        if login
-          li
-            span.label login web &ensp;
-            span.value= login
+.col-xs-12.frame
+  .row
+    .col-xs-12.budget
 
 
-.close x
+  .row
+    .col-xs-8.files
+
+    .col-xs-4.relation
+      h3
+        i.fa.fa-handshake-o
+        | Ma relation avec&ensp;
+        = name
+
+
+      .contract
+
+      .identifiers
+        h4 Mes identifiants :
+        ul
+          if login
+            li
+              span.label login web :&ensp;
+              span.value= login

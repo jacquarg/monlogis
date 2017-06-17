@@ -1,12 +1,26 @@
 'use strict';
 
 const VendorItemView = require('./vendor_item');
-const template = require('../templates/houseitems/vendors');
+const template = require('./templates/menu');
 
 const VendorsView = Mn.CollectionView.extend({
   tagName: 'ul',
-  className: 'movielibrary',
+  // className: '',
   childView: VendorItemView,
+
+  initialize: function () {
+    this.listenTo(app, 'houseitemdetails:show', this.showSelected);
+  },
+
+  showSelected: function (houseItem) {
+    this.$('li').toggleClass('selected', false);
+    const item = this.children.findByModel(houseItem)
+    console.log(item);
+    item.$el.toggleClass('selected', true);
+    // const idx = this.collection.indexOf(houseItem);
+
+  },
+
 });
 
 module.exports = Mn.View.extend({

@@ -1,7 +1,8 @@
 mixin period(value, unit, metaphoreCount, metaphoreLabel, metaphoreImg)
   span.value= value.toFixed(2)
   span.unit= unit
-  .metaphore
+  span.equal =
+  span.metaphore
     //- .metaphoreicons
     - var n = 0;
     while n < metaphoreCount
@@ -10,19 +11,28 @@ mixin period(value, unit, metaphoreCount, metaphoreLabel, metaphoreImg)
     .metaphoreLabel
       = metaphoreCount
       = metaphoreLabel
-  .clearright
 
-h3 Budget
-img.icon(src="/assets/img/piggybank.svg")
+h3
+  i.fa.fa-eur
+  | Budget
 
-if daily
-  .daily
-    +period(daily, "€/jour ", dailyMetaphore, " croissants", "/assets/img/croissant.svg")
+.row
+  .col-xs-5
+    img.illustration(src='/assets/img/illustrations/ON40SD0.jpg')
 
-if mensual
-  .mensual
-    +period(mensual, "€/mois ", mensualMetaphore, " places de cinéma", "/assets/img/cinematicket.svg")
+  .col-xs-7
+    h4 Vos dépenses&ensp;
+      = name
+      | &ensp;représentent :
 
-if annual
-  .annual
-    +period(annual, "€/an ", annualMetaphore, " dîners gastronomiques", "/assets/img/toque.svg")
+    if daily
+      .budgetline.daily
+        +period(daily, "€/jour ", dailyMetaphore, " croissants", "/assets/img/croissant.svg")
+
+    if mensual
+      .budgetline.mensual
+        +period(mensual, "€/mois ", mensualMetaphore, " places de cinéma", "/assets/img/cinematicket.svg")
+
+    if annual
+      .budgetline.annual
+        +period(annual, "€/an ", annualMetaphore, " dîners gastronomiques", "/assets/img/toque.svg")

@@ -22,6 +22,7 @@ body {
   width: 100vw;
 }
 
+
 /* Popin */
 @media(min-width: 768px) {
   #popin iframe {
@@ -58,45 +59,64 @@ body {
   top: 0;
   overflow: hidden;
   border-top: 35px solid white;
-
-  background: #F38630;
+  font-family: Lato, sans-serif;
 }
 
-.container-fluid {
-  margin-left: 0px;
-  margin-right: 0px;
-}
-
-main {
-  height: 100%;
-}
-
-.clearright {
-  clear: right;
-}
-
-
-.mapcontainer > #map {
-  width: 100%;
-  padding-bottom: 100%;
-}
-
-#map {
- width: 100%;
- height: 100%;
-}
-
-.houseitems {
-  background: #F38630;
-  color: white;
-  height: 100%;
-}
-
-.houseitems ul {
+ol, ul{
   list-style: none;
-  padding: 0;
 }
 
+h2 {
+  font-size: 1.5em;
+}
+
+h2 img {
+  max-height: 1.5em;
+}
+
+/*
+  typycal cozy left bar
+*/
+aside {
+  width: 220px;
+  height: 100%;
+  float: left;
+  background: #EEE;
+  font-family: Lato, sans-serif;
+  font-size: 15px;
+  padding: 16px;
+}
+
+aside .category {
+  line-height: 48px;
+}
+
+
+aside .selected {
+  font-weight: 700;
+}
+
+aside ul {
+  list-style: none;
+  padding-left: 16px;
+}
+
+aside li {
+  line-height: 30px;
+  cursor: pointer;
+}
+
+
+aside .btn {
+  border-radius: 100%;
+}
+
+
+/*aside li:hover {
+  background: #CCC;
+}*/
+
+/*
 .houseitem {
   height: 80px;
   text-align: center;
@@ -109,19 +129,79 @@ main {
   max-height: 50px;
   max-width: 100px;
   min-height: 50px;
+}*/
+
+
+
+/* END left bar */
+
+main {
+  height: 100%;
 }
+
+.clearright {
+  clear: right;
+}
+
+/*
+.mapcontainer > #map {
+  width: 100%;
+  padding-bottom: 100%;
+}
+
+#map {
+ width: 100%;
+ height: 100%;
+}
+*/
 
 /*
   houseitemdetails
 */
+
+
 .houseitemdetails {
   /* background-color: #d9edf7; */
-  background-color: rgba(224, 228, 204, 255);
-  /*! padding: 20px; */
-  /*! border: solid 3px #999; */
-
   height: 100%;
-  overflow-y:  auto;
+  overflow-y: auto;
+  padding: 30px;
+}
+
+.houseitemdetails .frame {
+  border: solid 2px #CCC;
+}
+
+.houseitemdetails .frame h3 {
+  font-size: 1.1em;
+  background: #EEE;
+  line-height: 2.5;
+  margin: none;
+  margin:  0 -15px 15px -15px;
+  padding: 0 15px;
+}
+
+.houseitemdetails .frame h3 i {
+  margin-right: 10px;
+}
+
+.houseitemdetails .frame h3 a {
+  float: right;
+}
+
+.houseitemdetails .frame h3 a i {
+  margin: 0 10px;
+}
+
+.houseitemdetails .frame h4 {
+  font-size: 1em;
+}
+
+.houseitemsdetails .frame .row {
+  border-bottom: solid 2px #CCC;
+}
+
+.houseitemsdetails .frame .row:last-child {
+  border-bottom: none;
 }
 
 
@@ -139,10 +219,14 @@ main {
   budget
 */
 
-.budget .icon {
-  width: 200px;
-  padding: 10px;
-  float: left;
+.budget .illustration {
+  max-width: 100%;
+  margin-bottom: 15px;
+}
+
+.budget .budgetline {
+  position: relative;
+  height: 72px;
 }
 
 .budget .value,
@@ -154,26 +238,29 @@ main {
   font-weight: bold;
 }
 
-.budget .annual,
-.budget .mensual,
-.budget .daily {
-  margin: 30px;
+.budget .equal {
+  position: absolute;
+  left: 150px;
+  font-size: 20px;
+  font-weight: 700;
 }
 
 .budget .metaphore {
-  float: right;
+  position: absolute;
+  left: 180px;
+  text-align: center;
 }
 
 .budget .metaphore img {
-  padding: 10px;
-  width: 70px;
+  margin-right: 10px;
+  max-width: 32px;
+  max-height: 32px;
 }
 
 .budget .metaphoreLabel {
   text-align: center;
   width: 100%;
   clear: right;
-
 }
 
 /*
@@ -263,33 +350,38 @@ main {
 .lastpayment .labelamount {}
 
 /* files */
-.files .icon {
-  height: 75px;
-  float: left;
-  margin-right: 10px
+.files {
+  border-right: solid 2px #CCC;
 }
 
 .files ul {
   clear: both;
-  margin: 20px;
   padding: 0;
-  font-size: 16px;
 }
+
 .files li {
   cursor: pointer;
-  font-size: 18px;
-  margin: 10px;
+  line-height: 48px;
+  border-bottom: solid 1px #EEE;
 }
+
+/*.files li:hover {
+  background: #EEE;
+}*/
 
 .files li i {
   margin-right: 10px;
+  font-size: 24px;
 }
 
 .files li .bill {
   color: #666;
-  font-size: 15px;
-  margin-left: 30px;
-  line-height: 1em;
+  float: right;
+  font-size: 80%;
+}
+
+.addfile {
+  margin-bottom: 10px;
 }
 
 .addfile #uploadfile {
@@ -302,6 +394,7 @@ main {
 .addfile input.filename {
   width: 200px;
 }
+
 .addfile button {
   margin-left: 10px;
 }
@@ -415,7 +508,30 @@ main {
 }
 
 
-/* contract */
+/* relation */
+.relation ul {
+
+}
+
+.relation ul {
+  /*! padding: 0; */
+}
+
+.relation li .label {
+  color: black;
+  font-weight: normal;
+  font-size: 13px;
+}
+
+.relation li .value {
+  font-weight: bold;
+}
+
+
+
+/* end relation */
+
+
 
 /*contrat edf*/
 
@@ -431,19 +547,6 @@ main {
   margin: 40px auto;
 }
 
-.contract ul {
-  padding: 0;
-}
-
-.contract li .label {
-  color: black;
-  font-weight: normal;
-  font-size: 13px;
-}
-
-.contract li .value {
-  font-weight: bold;
-}
 
 .contrant_glob{
   margin-left: 6em;
@@ -469,32 +572,3 @@ main {
   clear: both;
 }
 
-
-/* unknown */
-
-img.objecticon {
-  max-width: 100%;
-  max-height: 250px;
-  margin: 40px auto;
-}
-
-ol, ul{
-  list-style: none;
-}
-
-/*modalité payment*/
-.container_head{
-  /*! margin-top: -219px; */
-  background-color: #fff;
-  /*! margin-left: -20px; */
-}
-
-.document_EDF{
-  /*! margin-top: -256px; */
-  font-size: 28px;
-  margin-left: 76px;
-}
-
-.files{
-  /*! margin-top: 116px; */
-}

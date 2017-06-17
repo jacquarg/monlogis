@@ -7,7 +7,7 @@ const HouseitemDetailsEDFView = require('views/houseitems/details_edf');
 const HouseitemDetailsMaifView = require('views/houseitems/details_maif');
 const HouseitemDetailsVendorView = require('views/houseitems/details_vendor');
 const HouseitemDetailsObjectView = require('views/houseitems/details_object');
-const VendorsView = require('views/houseitems/vendors');
+const MenuView = require('views/menu');
 // const ObjectsView = require('views/houseitems/objects');
 const AddVendorsView = require('views/add_vendors');
 
@@ -19,24 +19,23 @@ module.exports = Mn.View.extend({
 
   regions: {
     message: '.message',
-    myStones: '.mystones',
-    article: 'article',
-    vendors: '.vendors',
-    equipments: '.equipments',
+    // myStones: '.mystones',
+    main: 'main',
+    menu: 'aside',
+    // equipments: '.equipments',
     // objects: '.objects',
-    uploadFiles: '.upload',
   },
 
 
   initialize: function () {
     this.listenTo(app, 'houseitemdetails:show', this.showHouseitemDetails);
-    this.listenTo(app, 'houseitemdetails:close', this._closeArticle);
+    // this.listenTo(app, 'houseitemdetails:close', this._closeMain);
   },
 
   onRender: function () {
     this.showChildView('message', new MessageView());
-    this.showChildView('myStones', new MystonesView());
-    this.showChildView('vendors', new VendorsView({ collection: app.vendors }));
+    // this.showChildView('myStones', new MystonesView());
+    this.showChildView('menu', new MenuView({ collection: app.vendors }));
     // this.showChildView('equipments', new ObjectsView({
     //   model: new Backbone.Model({ title: 'Mes équipements' }),
     //   collection: app.equipments,
@@ -68,31 +67,31 @@ module.exports = Mn.View.extend({
       ViewClass = HouseitemDetailsObjectView;
     }
 
-    this._showArticle(new ViewClass({ model: houseItem }));
+    this._showMain(new ViewClass({ model: houseItem }));
   },
 
-  _showArticle: function (view) {
-    this.showChildView('article', view);
+  _showMain: function (view) {
+    this.showChildView('main', view);
 
-    // TODO : something cleaner !
-    this.$('.mystones').hide();
-    this.$('.houseitems').toggleClass('col-xs-8', false);
-    this.$('.houseitems').toggleClass('col-xs-3', true);
-    this.$('article').show();
-    this.$('article').toggleClass('col-xs-9', true);
+    // // TODO : something cleaner !
+    // this.$('.mystones').hide();
+    // this.$('.houseitems').toggleClass('col-xs-8', false);
+    // this.$('.houseitems').toggleClass('col-xs-3', true);
+    // this.$('Main').show();
+    // this.$('Main').toggleClass('col-xs-9', true);
   },
 
-  _closeArticle: function () {
-    this.getRegion('article').empty();
+  _closeMain: function () {
+    this.getRegion('main').empty();
 
-    this.$('.mystones').show();
-    this.$('.houseitems').toggleClass('col-xs-8', true);
-    this.$('.houseitems').toggleClass('col-xs-3', false);
-    this.$('article').hide();
-    this.$('article').toggleClass('col-xs-9', false);
+    // this.$('.mystones').show();
+    // this.$('.houseitems').toggleClass('col-xs-8', true);
+    // this.$('.houseitems').toggleClass('col-xs-3', false);
+    // this.$('Main').hide();
+    // this.$('Main').toggleClass('col-xs-9', false);
   },
 
   onChildviewShowAddvendors: function () {
-    this._showArticle(new AddVendorsView());
+    this._showMain(new AddVendorsView());
   },
 });

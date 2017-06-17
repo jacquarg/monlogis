@@ -1,6 +1,6 @@
 'use-strict';
 
-const template = require('../templates/houseitems/vendor_item');
+const template = require('./templates/vendor_item');
 
 module.exports = Mn.View.extend({
   template: template,
