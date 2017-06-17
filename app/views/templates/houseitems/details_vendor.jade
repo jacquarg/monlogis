@@ -11,4 +11,13 @@
   .contract
     img.img-thumbnail.icon(src="/assets/img/icon_konnectors/#{slug}.svg")
 
+    .identifiers
+      h3 Identifiants
+      ul
+        if login
+          li
+            span.label login web &ensp;
+            span.value= login
+
+
 .close x

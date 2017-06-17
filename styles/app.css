@@ -2,6 +2,7 @@
 @import url("./vendors/bootstrap/css/bootstrap.min.css");
 @import url("./vendors/bootstrap/css/bootstrap-theme.min.css");
 
+@import url("./vendors/fontawesome/css/font-awesome.css");
 @import url("./vendors/weloveiconfonts/iconicstroke.css");
 
 @import url("./vendors/OSMBuildings.css");
@@ -70,7 +71,7 @@ main {
   height: 100%;
 }
 
-.clearright { 
+.clearright {
   clear: right;
 }
 
@@ -134,7 +135,7 @@ main {
   right: 15px;
 }
 
-/* 
+/*
   budget
 */
 
@@ -146,7 +147,7 @@ main {
 
 .budget .value,
 .budget .unit {
-  font-size: 20px; 
+  font-size: 20px;
 }
 
 .budget .value {
@@ -166,16 +167,16 @@ main {
 .budget .metaphore img {
   padding: 10px;
   width: 70px;
-} 
+}
 
 .budget .metaphoreLabel {
   text-align: center;
   width: 100%;
   clear: right;
-  
+
 }
 
-/* 
+/*
   END budget
 */
 
@@ -276,7 +277,19 @@ main {
 }
 .files li {
   cursor: pointer;
-  line-height: 2em;
+  font-size: 18px;
+  margin: 10px;
+}
+
+.files li i {
+  margin-right: 10px;
+}
+
+.files li .bill {
+  color: #666;
+  font-size: 15px;
+  margin-left: 30px;
+  line-height: 1em;
 }
 
 .addfile #uploadfile {

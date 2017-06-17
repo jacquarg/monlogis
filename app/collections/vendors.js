@@ -32,7 +32,8 @@ module.exports = CozyCollection.extend({
         const vendor = new Vendor({
           slug: konnector.slug,
           name: konnector.name,
-          folderPath: account.get('folderPath'),
+          folderPath: account.get('auth').folderPath,
+          login: account.get('auth').login,
           domain: konnector.domain,
         });
         this.add(vendor);

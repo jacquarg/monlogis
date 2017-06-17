@@ -427,7 +427,8 @@ module.exports = CozyCollection.extend({
         const vendor = new Vendor({
           slug: konnector.slug,
           name: konnector.name,
-          folderPath: account.get('folderPath'),
+          folderPath: account.get('auth').folderPath,
+          login: account.get('auth').login,
           domain: konnector.domain,
         });
         this.add(vendor);
@@ -613,7 +614,99 @@ module.exports = CozyModel.extend({
 
 });
 
-require.register("lib/walktree_utils.js", function(exports, require, module) {
+require.register("lib/mimetype2fa.js", function(exports, require, module) {
+
+var mapping = [
+  // Images
+  [ 'file-image-o', /^image\// ],
+  // Audio
+  [ 'file-audio-o', /^audio\// ],
+  // Video
+  [ 'file-video-o', /^video\// ],
+  // Documents
+  [ 'file-pdf-o', 'application/pdf' ],
+  [ 'file-text-o', 'text/plain' ],
+  [ 'file-code-o', [
+    'text/html',
+    'text/javascript'
+  ] ],
+  // Archives
+  [ 'file-archive-o', [
+    /^application\/x-(g?tar|xz|compress|bzip2|g?zip)$/,
+    /^application\/x-(7z|rar|zip)-compressed$/,
+    /^application\/(zip|gzip|tar)$/
+  ] ],
+  // Word
+  [ 'file-word-o', [
+    /ms-?word/,
+    'application/vnd.oasis.opendocument.text',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  ] ],
+  // Powerpoint
+  [ 'file-powerpoint-o', [
+    /ms-?powerpoint/,
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+  ] ],
+  // Excel
+  [ 'file-excel-o', [
+    /ms-?excel/,
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  ] ],
+  // Default, misc
+  [ 'file-o' ]
+]
+
+function match (mimetype, cond) {
+  if (Array.isArray(cond)) {
+    return cond.reduce(function (v, c) {
+      return v || match(mimetype, c)
+    }, false)
+  } else if (cond instanceof RegExp) {
+    return cond.test(mimetype)
+  } else if (cond === undefined) {
+    return true
+  } else {
+    return mimetype === cond
+  }
+}
+
+var cache = {}
+
+function resolve (mimetype) {
+  if (cache[mimetype]) {
+    return cache[mimetype]
+  }
+
+  for (var i = 0; i < mapping.length; i++) {
+    if (match(mimetype, mapping[i][1])) {
+      cache[mimetype] = mapping[i][0]
+      return mapping[i][0]
+    }
+  }
+}
+
+function mimetype2fa (mimetype, options) {
+  if (typeof mimetype === 'object') {
+    options = mimetype
+    return function (mimetype) {
+      return mimetype2fa(mimetype, options)
+    }
+  } else {
+    var icon = resolve(mimetype)
+
+    if (icon && options && options.prefix) {
+      return options.prefix + icon
+    } else {
+      return icon
+    }
+  }
+}
+
+module.exports = mimetype2fa
+
+});
+
+;require.register("lib/walktree_utils.js", function(exports, require, module) {
 'use_strict';
 
 module.exports.get = function (obj, ...prop) {
@@ -963,6 +1056,14 @@ module.exports = CozyModel.extend({
     return this.files;
   },
 
+  injectBillsInFiles: function() {
+    this.getBills().each((bill) => {
+      const file = this.getFiles().findWhere({ _id: bill.get('file') });
+      if (file) {
+        file.bill = bill;
+      }
+    })
+  },
   // case may vary from a vendor to another...
   _getBillsVendor: function () {
     return this.get('name')
@@ -1859,6 +1960,7 @@ require.register("views/houseitems/file_item.js", function(exports, require, mod
 'use-strict';
 
 const template = require('../templates/houseitems/file_item');
+const mimetype2FA = require('lib/mimetype2fa')({ prefix: 'fa-' });
 
 module.exports = Mn.View.extend({
   template: template,
@@ -1871,6 +1973,20 @@ module.exports = Mn.View.extend({
   modelEvents: {
     change: 'render',
   },
+
+  serializeData: function () {
+    const data = this.model.toJSON();
+    if (this.model.bill) {
+      data.bill = this.model.bill.toJSON();
+      data.bill.date = data.bill.date.slice(0, 10);
+    }
+    if (data.attributes && data.attributes.mime) {
+      data.faClass = mimetype2FA(data.attributes.mime);
+    }
+    console.log(data);
+    return data;
+  },
+
 
   openFile: function () {
     this.model.getFileUrl()
@@ -1919,6 +2035,7 @@ module.exports = Mn.View.extend({
 
   initialize: function () {
     this.collection = this.model.getFiles();
+    this.model.injectBillsInFiles();
   },
 
   updateFilesCollection: function (file) {
@@ -2718,13 +2835,25 @@ n++
 }
 buf.push("<div class=\"metaphoreLabel\">" + (jade.escape(null == (jade_interp = metaphoreCount) ? "" : jade_interp)) + (jade.escape(null == (jade_interp = metaphoreLabel) ? "" : jade_interp)) + "</div></div><div class=\"clearright\"></div>");
 };
-buf.push("<h3>Budget</h3><img src=\"/assets/img/piggybank.svg\" class=\"icon\"/><div class=\"daily\">");
+buf.push("<h3>Budget</h3><img src=\"/assets/img/piggybank.svg\" class=\"icon\"/>");
+if ( daily)
+{
+buf.push("<div class=\"daily\">");
 jade_mixins["period"](daily, "€/jour ", dailyMetaphore, " croissants", "/assets/img/croissant.svg");
-buf.push("</div><div class=\"mensual\">");
+buf.push("</div>");
+}
+if ( mensual)
+{
+buf.push("<div class=\"mensual\">");
 jade_mixins["period"](mensual, "€/mois ", mensualMetaphore, " places de cinéma", "/assets/img/cinematicket.svg");
-buf.push("</div><div class=\"annual\">");
+buf.push("</div>");
+}
+if ( annual)
+{
+buf.push("<div class=\"annual\">");
 jade_mixins["period"](annual, "€/an ", annualMetaphore, " dîners gastronomiques", "/assets/img/toque.svg");
-buf.push("</div>");}.call(this,"annual" in locals_for_with?locals_for_with.annual:typeof annual!=="undefined"?annual:undefined,"annualMetaphore" in locals_for_with?locals_for_with.annualMetaphore:typeof annualMetaphore!=="undefined"?annualMetaphore:undefined,"daily" in locals_for_with?locals_for_with.daily:typeof daily!=="undefined"?daily:undefined,"dailyMetaphore" in locals_for_with?locals_for_with.dailyMetaphore:typeof dailyMetaphore!=="undefined"?dailyMetaphore:undefined,"mensual" in locals_for_with?locals_for_with.mensual:typeof mensual!=="undefined"?mensual:undefined,"mensualMetaphore" in locals_for_with?locals_for_with.mensualMetaphore:typeof mensualMetaphore!=="undefined"?mensualMetaphore:undefined));;return buf.join("");
+buf.push("</div>");
+}}.call(this,"annual" in locals_for_with?locals_for_with.annual:typeof annual!=="undefined"?annual:undefined,"annualMetaphore" in locals_for_with?locals_for_with.annualMetaphore:typeof annualMetaphore!=="undefined"?annualMetaphore:undefined,"daily" in locals_for_with?locals_for_with.daily:typeof daily!=="undefined"?daily:undefined,"dailyMetaphore" in locals_for_with?locals_for_with.dailyMetaphore:typeof dailyMetaphore!=="undefined"?dailyMetaphore:undefined,"mensual" in locals_for_with?locals_for_with.mensual:typeof mensual!=="undefined"?mensual:undefined,"mensualMetaphore" in locals_for_with?locals_for_with.mensualMetaphore:typeof mensualMetaphore!=="undefined"?mensualMetaphore:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2781,7 +2910,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<div class=\"columnbody col-xs-8\"><div class=\"row container_head\"><div class=\"paymentterms\"></div><div class=\"budget\"></div><div class=\"consumption\"></div></div><div class=\"container_bills\"><div class=\"bills\"></div></div><div class=\"files\"></div></div><div class=\"columnright col-xs-4\"><div class=\"contract\"></div><div class=\"contact\"><h4>Contacter EDF</h4><div class=\"phoneTroubleshooting\"></div><div class=\"phoneContact\"></div></div></div><div class=\"close\">x</div>");;return buf.join("");
+buf.push("<div class=\"columnbody col-xs-8\"><div class=\"row container_head\"><div class=\"paymentterms\"></div><div class=\"budget col-xs-12\"></div><div class=\"consumption col-xs-12\"></div></div><div class=\"container_bills\"><div class=\"bills\"></div></div><div class=\"files\"></div></div><div class=\"columnright col-xs-4\"><div class=\"contract\"></div><div class=\"contact\"><h4>Contacter EDF</h4><div class=\"phoneTroubleshooting\"></div><div class=\"phoneContact\"></div></div></div><div class=\"close\">x</div>");;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2837,8 +2966,13 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (slug) {
-buf.push("<div class=\"columnbody col-xs-8\"><div class=\"row container_head\"><div class=\"col-xs-12\"><div class=\"budget\"></div></div></div><div class=\"bills\"></div><div class=\"files\"></div></div><div class=\"columnright col-xs-4\"><div class=\"contract\"><img" + (jade.attr("src", "/assets/img/icon_konnectors/" + (slug) + ".svg", true, false)) + " class=\"img-thumbnail icon\"/></div></div><div class=\"close\">x</div>");}.call(this,"slug" in locals_for_with?locals_for_with.slug:typeof slug!=="undefined"?slug:undefined));;return buf.join("");
+;var locals_for_with = (locals || {});(function (login, slug) {
+buf.push("<div class=\"columnbody col-xs-8\"><div class=\"row container_head\"><div class=\"col-xs-12\"><div class=\"budget\"></div></div></div><div class=\"bills\"></div><div class=\"files\"></div></div><div class=\"columnright col-xs-4\"><div class=\"contract\"><img" + (jade.attr("src", "/assets/img/icon_konnectors/" + (slug) + ".svg", true, false)) + " class=\"img-thumbnail icon\"/><div class=\"identifiers\"><h3>Identifiants</h3><ul>");
+if ( login)
+{
+buf.push("<li><span class=\"label\">login web &ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = login) ? "" : jade_interp)) + "</span></li>");
+}
+buf.push("</ul></div></div></div><div class=\"close\">x</div>");}.call(this,"login" in locals_for_with?locals_for_with.login:typeof login!=="undefined"?login:undefined,"slug" in locals_for_with?locals_for_with.slug:typeof slug!=="undefined"?slug:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2856,11 +2990,19 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (attributes) {
+;var locals_for_with = (locals || {});(function (attributes, bill, faClass) {
+if ( faClass)
+{
+buf.push("<i" + (jade.cls(["fa " +faClass], [true])) + "></i>");
+}
 if ( attributes)
 {
 buf.push(jade.escape(null == (jade_interp = attributes.name) ? "" : jade_interp));
-}}.call(this,"attributes" in locals_for_with?locals_for_with.attributes:typeof attributes!=="undefined"?attributes:undefined));;return buf.join("");
+}
+if ( bill)
+{
+buf.push("<div class=\"bill\">" + (jade.escape(null == (jade_interp = bill.amount) ? "" : jade_interp)) + "€ le&ensp;" + (jade.escape(null == (jade_interp = bill.date) ? "" : jade_interp)) + "</div>");
+}}.call(this,"attributes" in locals_for_with?locals_for_with.attributes:typeof attributes!=="undefined"?attributes:undefined,"bill" in locals_for_with?locals_for_with.bill:typeof bill!=="undefined"?bill:undefined,"faClass" in locals_for_with?locals_for_with.faClass:typeof faClass!=="undefined"?faClass:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

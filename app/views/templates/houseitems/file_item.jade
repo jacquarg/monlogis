@@ -1,2 +1,12 @@
+if faClass
+  i(class="fa " +faClass)
+
 if attributes
   = attributes.name
+
+if bill
+  .bill
+    = bill.amount
+    | € le&ensp;
+    =bill.date
+

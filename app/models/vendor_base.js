@@ -42,6 +42,14 @@ module.exports = CozyModel.extend({
     return this.files;
   },
 
+  injectBillsInFiles: function() {
+    this.getBills().each((bill) => {
+      const file = this.getFiles().findWhere({ _id: bill.get('file') });
+      if (file) {
+        file.bill = bill;
+      }
+    })
+  },
   // case may vary from a vendor to another...
   _getBillsVendor: function () {
     return this.get('name')

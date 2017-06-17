@@ -29,6 +29,7 @@ module.exports = Mn.View.extend({
 
   initialize: function () {
     this.collection = this.model.getFiles();
+    this.model.injectBillsInFiles();
   },
 
   updateFilesCollection: function (file) {
