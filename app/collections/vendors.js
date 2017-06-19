@@ -23,7 +23,9 @@ module.exports = CozyCollection.extend({
       const konnectorsBySlug = _.indexBy(app.konnectors, 'slug');
       this.accounts.filter((account) => {
         const konnector = konnectorsBySlug[account.get('account_type')];
-        return konnector && ['isp', 'telecom', 'energy', 'insurance'].indexOf(konnector.category) !== -1;
+        return konnector
+          && ['isp', 'telecom', 'energy', 'insurance'].indexOf(konnector.category) !== -1
+          && ['orangemobile', 'orangelivebox'].indexOf((konnector.slug)) === -1;
       })
       .forEach((account) => {
         if (this.some(v => v.get('slug') === account.get('account_type'))) { return; }
@@ -32,10 +34,11 @@ module.exports = CozyCollection.extend({
         const vendor = new Vendor({
           slug: konnector.slug,
           name: konnector.name,
-          folderPath: account.get('auth').folderPath,
-          login: account.get('auth').login,
+          folderPath: account.has('auth') ? account.get('auth').folderPath : '',
+          login: account.has('auth') ? account.get('auth').login : '',
           domain: konnector.domain,
         });
+
         this.add(vendor);
         vendor.save(); // TODO
       });

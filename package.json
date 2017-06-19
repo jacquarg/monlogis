@@ -1,6 +1,6 @@
 {
   "name": "monlogis",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Le tableau de bord de mon logement",
   "scripts": {
     "watch": "brunch watch",

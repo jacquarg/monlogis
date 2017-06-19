@@ -76,6 +76,12 @@ const Application = Mn.Application.extend({
     if (Backbone.history) {
       Backbone.history.start({ pushState: false });
     }
+
+    if (app.vendors.size() > 0) {
+      app.trigger('houseitemdetails:show', app.vendors.at(0));
+    } else {
+      app.layout.onChildviewShowAddvendors();
+    }
   },
 });
 
