@@ -4,18 +4,18 @@ h3
 
 if annualCost
   .annualPayment
-    img.icon(src="/assets/img/payment.svg")
-    span.labelamount.topleft Je paye&nbsp
-    span.amount.topright= annualCost
+    //- img.icon(src="/assets/img/payment.svg")
+    span.labelamount Je paie&nbsp
+    span.amount= annualCost
       |€
-    span.mode.bottomleft= modePaiement
-    span.date.bottomright par an.
+    span.mode= modePaiement
+    span.date par an.
 
 if nextPaymentAmount
   .nextpayment
     img.icon(src="/assets/img/payment.svg")
 
-    span.labelamount.topright mon prochain paiment
+    span.labelamount.topright mon prochain paiement
     span.topleft.amount= nextPaymentAmount.amount
       |€
 

@@ -1,8 +1,15 @@
 'use-strict';
 
-// TODO : the good method !
-const CozySingleton = require('../lib/backbone_cozysingleton');
+const get = require('../lib/walktree_utils').get;
+const CozyModel = require('../lib/backbone_cozysingleton');
 
-module.exports = CozySingleton.extend({
-  docType: 'org.fing.mesinfos.foyer',
+module.exports = CozyModel.extend({
+  docType: 'fr.maif.maifuser.foyer',
+
+  parse: function () {
+    const attr = CozyModel.prototype.parse.apply(this, arguments);
+    $.extend(attr, get(attr, 'foyer'));
+    return attr
+  },
+
 });

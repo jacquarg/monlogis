@@ -804,6 +804,24 @@ module.exports = CozyModel.extend({
 
 });
 
+require.register("models/contract_maif.js", function(exports, require, module) {
+'use-strict';
+
+const get = require('../lib/walktree_utils').get;
+const CozyModel = require('../lib/backbone_cozysingleton');
+
+module.exports = CozyModel.extend({
+  docType: 'fr.maif.maifuser.contrat',
+
+  parse: function () {
+    const attr = CozyModel.prototype.parse.apply(this, arguments);
+    $.extend(attr, get(attr, 'contrat', 0));
+    return attr
+  },
+});
+
+});
+
 require.register("models/file.js", function(exports, require, module) {
 'use-strict';
 
@@ -824,11 +842,18 @@ module.exports = CozyModel.extend({
 require.register("models/foyer.js", function(exports, require, module) {
 'use-strict';
 
-// TODO : the good method !
-const CozySingleton = require('../lib/backbone_cozysingleton');
+const get = require('../lib/walktree_utils').get;
+const CozyModel = require('../lib/backbone_cozysingleton');
 
-module.exports = CozySingleton.extend({
-  docType: 'org.fing.mesinfos.foyer',
+module.exports = CozyModel.extend({
+  docType: 'fr.maif.maifuser.foyer',
+
+  parse: function () {
+    const attr = CozyModel.prototype.parse.apply(this, arguments);
+    $.extend(attr, get(attr, 'foyer'));
+    return attr
+  },
+
 });
 
 });
@@ -836,10 +861,18 @@ module.exports = CozySingleton.extend({
 require.register("models/home.js", function(exports, require, module) {
 'use-strict';
 
-const CozySingleton = require('../lib/backbone_cozysingleton');
+const get = require('../lib/walktree_utils').get;
+const CozyModel = require('../lib/backbone_cozysingleton');
 
-module.exports = CozySingleton.extend({
-  docType: 'org.fing.mesinfos.home',
+module.exports = CozyModel.extend({
+  docType: 'fr.maif.maifuser.home',
+
+  parse: function () {
+    const attr = CozyModel.prototype.parse.apply(this, arguments);
+    $.extend(attr, get(attr, 'home', 0));
+    console.log(attr)
+    return attr
+  },
 
 });
 
@@ -959,6 +992,25 @@ module.exports = CozyModel.extend({
         prec = value;
       }
     }
+  },
+
+});
+
+});
+
+require.register("models/paymentterms_maif.js", function(exports, require, module) {
+'use-strict';
+
+const get = require('../lib/walktree_utils').get;
+const CozyModel = require('../lib/backbone_cozysingleton');
+
+module.exports = CozyModel.extend({
+  docType: 'fr.maif.maifuser.paymentterms',
+
+  parse: function () {
+    const attr = CozyModel.prototype.parse.apply(this, arguments);
+    $.extend(attr, get(attr, 'paymentterms'));
+    return attr;
   },
 
 });
@@ -1166,24 +1218,48 @@ require.register("models/vendor_maif.js", function(exports, require, module) {
 
 const VendorModel = require('./vendor_base');
 
-const Contract = require('./contract');
+const Contract = require('./contract_maif');
+const Foyer = require('./foyer');
+const Home = require('./home');
 
 module.exports = VendorModel.extend({
 
-  fetchAll: function () {
-    return Promise.all([
+  toFetch: function () {
+    return [
       this.getFiles().fetch(),
       this.getContract().fetch(),
-      // this.getPaymentterms
-    ]);
+      this.getFoyer().fetch(),
+      this.getHome().fetch(),
+    ];
   },
 
   getContract: function () {
     if (!this.contract) {
-      this.contract = new ContractMaif();
+      this.contract = new Contract();
     }
     return this.contract;
+  },
 
+  getFoyer: function () {
+    if (!this.foyer) {
+      this.foyer = new Foyer();
+    }
+    return this.foyer;
+  },
+
+  // todo sinistres
+  getClient: function () {
+    if (!this.client) {
+      this.client = new Client();
+    }
+    return this.client;
+  },
+
+  getHome: function () {
+    if (!this.home) {
+      this.home = new Home();
+    }
+    return this.home;
   },
 
   _computeBudget: function () {
@@ -1564,100 +1640,6 @@ module.exports = Mn.View.extend({
 
 });
 
-require.register("views/houseitems/details_base.js", function(exports, require, module) {
-'use strict';
-
-// const FilesView = require('./files');
-
-module.exports = Mn.View.extend({
-  className: 'row',
-  /*
-  ui: {
-    icon: 'img.objecticon',
-    changeIcon: 'button#changeicon',
-    inputName: 'input[name="name"]',
-    inputDescription: 'textarea[name="description"]',
-  },
-
-  events: {
-    'change @ui.inputName': 'onFormChange', // TODO : update FolderPath on name change.
-    'change @ui.inputDescription': 'onFormChange',
-    'click @ui.changeIcon': 'changeIcon',
-  },
-
-  triggers: {
-    'click .close': 'close',
-  },
-
-  modelEvents: {
-    change: 'render',
-    newIconUrl: 'render',
-
-  },
-
-  regions: {
-    files: '.files',
-
-  },
-
-  initialize: function () {
-    this.model.getFiles().fetch();
-  },
-
-  serializeData: function () {
-    const data = this.model.toJSON();
-    data.iconUrl = this.model.getIconUrl();
-    return data;
-  },
-
-  onRender: function () {
-    this.showChildView('files', new FilesView({ model: this.model, }));
-  },
-
-  onFormChange: function () {
-    this.model.save({
-      name: this.ui.inputName.val(),
-      description: this.ui.inputDescription.val(),
-    });
-  },
-
-  onClose: function () {
-    app.trigger('houseitemdetails:close');
-  },
-
-  // displayIcon: function (iconFile) {
-  //   iconFile.getFileUrl().then((url) => {
-  //     this.iconUrl = url;
-  //     this.ui.icon.attr('src', url);
-  //   });
-  // },
-
-  changeIcon: function () {
-    const files = this.model.getFiltes();
-    //eslint-disable-next-line
-    const imgFiles = files.filter(file => file.has('attributes') && file.get('attributes')['class'] === 'image');
-
-    if (imgFiles.length === 0) { return; }
-
-    const iconFileId = this.model.get('iconFileId');
-    let iconFile = null;
-    let index = 0;
-    if (iconFileId) {
-      iconFile = files.get(iconFileId);
-      index = imgFiles.indexOf(iconFile);
-      index = (index + 1) % imgFiles.length;
-    }
-
-    iconFile = imgFiles[index];
-
-    this.model.setIconFileId(iconFile.get('_id'));
-    this.model.save();
-  },
-*/
-});
-
-});
-
 require.register("views/houseitems/details_edf.js", function(exports, require, module) {
 'use strict';
 
@@ -1692,7 +1674,7 @@ module.exports = DetailsVendorView.extend({
   onRender: function () {
     DetailsVendorView.prototype.onRender.apply(this, arguments);
     this.showChildView('consomation', new ConsomationView());
-    this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'EDF' }));
+    this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'edf' }));
   },
 
 });
@@ -1702,7 +1684,7 @@ module.exports = DetailsVendorView.extend({
 require.register("views/houseitems/details_maif.js", function(exports, require, module) {
 'use strict';
 
-const BaseDetailsView = require('./details_base');
+const DetailsVendorView = require('./details_vendor');
 const template = require('../templates/houseitems/details_maif');
 const ContractMaif = require('../../models/contract');
 const PaymenttermsView = require('./paymentterms');
@@ -1713,60 +1695,43 @@ const SinistreView = require('./sinistre');
 const SinistreCollection = require('collections/sinistre');
 const FilesView = require('./files');
 
-module.exports = BaseDetailsView.extend({
+module.exports = DetailsVendorView.extend({
   template: template,
 
+
   regions: {
-    sinistres: '.sinistres',
-    homeMaif: '.homeMaif',
-    foyerMaif: '.foyerMaif',
-    // societaireMaif: '.societaireMaif',
-    paymentterms: '.paymentterms',
     files: '.files',
-  },
-
-  events: {
-  },
-
-  modelEvents: {
-    change: 'render',
-  },
-
-  triggers: {
-    'click .close': 'close',
-  },
-
-  initialize: function () {
-    this.model.getFiles().fetch();
-    this.contract = new ContractMaif();
-    this.contract.fetchMaif();
-    this.listenTo(this.contract, 'change', this.render);
-    this.sinistres = new SinistreCollection({ vendor: 'Maif' });
-    this.sinistres.fetch();
+    budget: '.budget',
+    sinistres: '.sinistres',
+    paymentterms: '.paymentterms',
+    foyer: '.foyer',
+    home: '.home',
+    // societaireMaif: '.societaireMaif',
   },
 
   serializeData: function () {
-    const data = this.contract.toJSON();
+    const data = this.model.toJSON();
+    data.contract = this.model.getContract().toJSON();
+    // data.
+    // if (this.model.contract) {
+
+    // }
     console.log(data);
     return data;
   },
 
   onRender: function () {
-    this.showChildView('sinistres', new SinistreView({
-      model: new Backbone.Model({ slug: 'Maif' }),
-      collection: this.sinistres,
-    }));
-    this.showChildView('homeMaif', new HomeView());
-    this.showChildView('foyerMaif', new FoyerView());
+    DetailsVendorView.prototype.onRender.apply(this, arguments);
+    this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'maif', contract: this.model.getContract() }));
+    this.showChildView('foyer', new FoyerView({ model: this.model.getFoyer() }));
+    this.showChildView('home', new HomeView({ model: this.model.getHome() }));
+
+    // this.showChildView('sinistres', new SinistreView({
+    //   model: new Backbone.Model({ slug: 'Maif' }),
+    //   collection: this.sinistres,
+    // }));
     // this.showChildView('societaireMaif', new SocietaireView());
-    this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'Maif', contract: this.contract }));
-    this.showChildView('files', new FilesView({ model: this.model, }));
   },
-
-  onClose: function () {
-    app.trigger('houseitemdetails:close');
-  },
-
 });
 
 });
@@ -2015,7 +1980,6 @@ require.register("views/houseitems/foyer_maif.js", function(exports, require, mo
 'use strict';
 
 const template = require('../templates/houseitems/foyer_maif');
-const FoyerMaif = require('../../models/foyer');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -2023,13 +1987,7 @@ module.exports = Mn.View.extend({
   events: {
   },
 
-  modelEvents: {
-    change: 'render',
-  },
-
   initialize: function () {
-    this.model = new FoyerMaif();
-    this.model.fetch();
   },
 
   // getFoyerMaif: function () {
@@ -2057,22 +2015,9 @@ require.register("views/houseitems/home_maif.js", function(exports, require, mod
 'use strict';
 
 const template = require('../templates/houseitems/home_maif');
-const HomeMaif = require('../../models/home');
 
 module.exports = Mn.View.extend({
   template: template,
-
-  events: {
-  },
-
-  modelEvents: {
-    change: 'render',
-  },
-
-  initialize: function () {
-    this.model = new HomeMaif();
-    this.model.fetch();
-  },
 
 });
 
@@ -2175,6 +2120,7 @@ require.register("views/houseitems/paymentterms.js", function(exports, require, 
 
 const template = require('../templates/houseitems/paymentterms');
 const Paymentterms = require('../../models/paymentterms');
+const PaymenttermsMaif = require('../../models/paymentterms_maif');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -2187,28 +2133,26 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function (options) {
-    this.model = new Paymentterms();
-    if (options.vendor === 'EDF') {
+    this.vendor = options.vendor;
+    if (this.vendor === 'edf') {
+      this.model = new Paymentterms();
       this.model.fetchEDF();
-    } else if (options.vendor === 'Maif') {
-      this.model.fetchMaif();
+    } else if (this.vendor === 'maif') {
+      this.model = new PaymenttermsMaif();
+      this.model.fetch();
       this.contract = options.contract;
     }
   },
 
   serializeData: function () {
-    let vendor = this.model.get('vendor');
-    vendor = vendor ? vendor.toLowerCase() : '';
-
     const data = this.model.toJSON();
-    if (vendor === 'edf') {
+    if (this.vendor === 'edf') {
       data.nextPaymentAmount = this.model.getNextPaymentEDF();
       data.lastPaymentAmount = this.model.getLastPaymentEDF();
     }
 
-    if (vendor === 'maif') {
+    if (this.vendor === 'maif') {
       data.annualCost = this.contract.get('montantTarifTtc');
-      // data.nextPaymentAmount = this.contract.get('montantTarifTtc');
     }
     return data;
   },
@@ -2828,8 +2772,22 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (name, societaire, startDate) {
-buf.push("<div class=\"columnbody col-xs-8\"><div class=\"row container_head\"><div class=\"paymentterms\"></div><div class=\"foyerMaif\"></div><div class=\"homeMaif\"></div><div class=\"sinistres\"></div></div><div class=\"files\"></div></div><div class=\"columnright col-xs-4\"><div class=\"contract\"><img src=\"/assets/img/maif_logo_big.png\" class=\"img-thumbnail icon\"/><ul><li><span class=\"label\">Numéro de sociétaire :&ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = societaire) ? "" : jade_interp)) + "</span></li><li><span class=\"label\">Contrat&nbsp</span><span class=\"value\">" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "</span></li><li><span class=\"label\">Début de contrat&nbsp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = startDate) ? "" : jade_interp)) + "</span></li></ul></div><div class=\"contact\"><h4>Contacter la Maif</h4><div><img src=\"/assets/img/tell.svg\"/><span>&nbsp;09 72 72 15 15</span></div></div></div><div class=\"close\">x</div>");}.call(this,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"societaire" in locals_for_with?locals_for_with.societaire:typeof societaire!=="undefined"?societaire:undefined,"startDate" in locals_for_with?locals_for_with.startDate:typeof startDate!=="undefined"?startDate:undefined));;return buf.join("");
+;var locals_for_with = (locals || {});(function (category, contract, login, name, slug) {
+buf.push("<div class=\"col-xs-12\"><h2>Mon fournisseur&ensp;" + (jade.escape(null == (jade_interp = category) ? "" : jade_interp)) + "&ensp;<img" + (jade.attr("src", "/assets/img/icon_konnectors/" + (slug) + ".svg", true, false)) + " class=\"icon\"/></h2></div><div class=\"col-xs-12 frame\"><div class=\"row\"><div class=\"col-xs-4 paymentterms\"></div><div class=\"col-xs-4 foyer\"></div><div class=\"col-xs-4 home\"></div></div><div class=\"row\"><div class=\"col-xs-12 budget\"></div></div><div class=\"row\"><div class=\"col-xs-8 files\"></div><div class=\"col-xs-4 relation\"><h3><i class=\"fa fa-handshake-o\"></i>Ma relation avec&ensp;" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "</h3><div class=\"contract\">");
+if ( contract)
+{
+buf.push("<ul><li><span class=\"label\">Numéro de sociétaire :&ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.societaire) ? "" : jade_interp)) + "</span></li><li><span class=\"label\">Contrat&nbsp</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.name) ? "" : jade_interp)) + "</span></li><li><span class=\"label\">Début de contrat&nbsp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.startDate) ? "" : jade_interp)) + "</span></li></ul>");
+}
+buf.push("</div><div class=\"identifiers\"><h4>Mes identifiants :</h4><ul>");
+if ( login)
+{
+buf.push("<li><span class=\"label\">login web :&ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = login) ? "" : jade_interp)) + "</span></li>");
+}
+if ( contract)
+{
+buf.push("<li><span class=\"label\">Point De Livraison :&ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.societaire) ? "" : jade_interp)) + "</span></li>");
+}
+buf.push("</ul></div><div class=\"contact\"><h4>Contacter la Maif</h4><div><img src=\"/assets/img/tell.svg\"/><span>&nbsp;09 72 72 15 15</span></div></div></div></div></div>");}.call(this,"category" in locals_for_with?locals_for_with.category:typeof category!=="undefined"?category:undefined,"contract" in locals_for_with?locals_for_with.contract:typeof contract!=="undefined"?contract:undefined,"login" in locals_for_with?locals_for_with.login:typeof login!=="undefined"?login:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"slug" in locals_for_with?locals_for_with.slug:typeof slug!=="undefined"?slug:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2940,7 +2898,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (membres, undefined) {
-buf.push("<h4>Membres de foyer:</h4>");
+buf.push("<h3><i class=\"fa fa-users\"></i>Membres de foyer</h3>");
 if ( membres)
 {
 buf.push("<ul>");
@@ -2992,7 +2950,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (natureLieu, nombrePieces, situationJuridiqueLieu) {
-buf.push("<img src=\"/assets/img/home.svg\" class=\"icon\"/><h4>Mon habitat assuré :</h4><ul class=\"details\"><li>" + (jade.escape(null == (jade_interp = natureLieu) ? "" : jade_interp)) + "</li><li>" + (jade.escape(null == (jade_interp = nombrePieces) ? "" : jade_interp)) + "</li><li>" + (jade.escape(null == (jade_interp = situationJuridiqueLieu) ? "" : jade_interp)) + "</li></ul>");}.call(this,"natureLieu" in locals_for_with?locals_for_with.natureLieu:typeof natureLieu!=="undefined"?natureLieu:undefined,"nombrePieces" in locals_for_with?locals_for_with.nombrePieces:typeof nombrePieces!=="undefined"?nombrePieces:undefined,"situationJuridiqueLieu" in locals_for_with?locals_for_with.situationJuridiqueLieu:typeof situationJuridiqueLieu!=="undefined"?situationJuridiqueLieu:undefined));;return buf.join("");
+buf.push("<h3><i class=\"fa fa-home\"></i>Mon habitat assuré</h3><ul class=\"details\"><li>" + (jade.escape(null == (jade_interp = natureLieu) ? "" : jade_interp)) + "</li><li>" + (jade.escape(null == (jade_interp = nombrePieces) ? "" : jade_interp)) + "</li><li>" + (jade.escape(null == (jade_interp = situationJuridiqueLieu) ? "" : jade_interp)) + "</li></ul>");}.call(this,"natureLieu" in locals_for_with?locals_for_with.natureLieu:typeof natureLieu!=="undefined"?natureLieu:undefined,"nombrePieces" in locals_for_with?locals_for_with.nombrePieces:typeof nombrePieces!=="undefined"?nombrePieces:undefined,"situationJuridiqueLieu" in locals_for_with?locals_for_with.situationJuridiqueLieu:typeof situationJuridiqueLieu!=="undefined"?situationJuridiqueLieu:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -3052,11 +3010,11 @@ var jade_interp;
 buf.push("<h3><i class=\"fa fa-money\"></i>Paiements</h3>");
 if ( annualCost)
 {
-buf.push("<div class=\"annualPayment\"><img src=\"/assets/img/payment.svg\" class=\"icon\"/><span class=\"labelamount topleft\">Je paye&nbsp</span><span class=\"amount topright\">" + (jade.escape(null == (jade_interp = annualCost) ? "" : jade_interp)) + "€</span><span class=\"mode bottomleft\">" + (jade.escape(null == (jade_interp = modePaiement) ? "" : jade_interp)) + "</span><span class=\"date bottomright\">par an.</span></div>");
+buf.push("<div class=\"annualPayment\"><span class=\"labelamount\">Je paie&nbsp</span><span class=\"amount\">" + (jade.escape(null == (jade_interp = annualCost) ? "" : jade_interp)) + "€</span><span class=\"mode\">" + (jade.escape(null == (jade_interp = modePaiement) ? "" : jade_interp)) + "</span><span class=\"date\">par an.</span></div>");
 }
 if ( nextPaymentAmount)
 {
-buf.push("<div class=\"nextpayment\"><img src=\"/assets/img/payment.svg\" class=\"icon\"/><span class=\"labelamount topright\">mon prochain paiment</span><span class=\"topleft amount\">" + (jade.escape(null == (jade_interp = nextPaymentAmount.amount) ? "" : jade_interp)) + "€</span><span class=\"bottomright labeldate\">le&nbsp" + (jade.escape(null == (jade_interp = nextPaymentAmount.scheduleDate) ? "" : jade_interp)) + "</span><span class=\"bottomleft date\">dans un mois</span></div>");
+buf.push("<div class=\"nextpayment\"><img src=\"/assets/img/payment.svg\" class=\"icon\"/><span class=\"labelamount topright\">mon prochain paiement</span><span class=\"topleft amount\">" + (jade.escape(null == (jade_interp = nextPaymentAmount.amount) ? "" : jade_interp)) + "€</span><span class=\"bottomright labeldate\">le&nbsp" + (jade.escape(null == (jade_interp = nextPaymentAmount.scheduleDate) ? "" : jade_interp)) + "</span><span class=\"bottomleft date\">dans un mois</span></div>");
 }
 if ( lastPaymentAmount)
 {

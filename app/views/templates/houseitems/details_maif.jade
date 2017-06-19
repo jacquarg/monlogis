@@ -1,42 +1,58 @@
-.columnbody.col-xs-8
-  .row.container_head
-    .paymentterms
+.col-xs-12
+  h2 Mon fournisseur&ensp;
+    = category
+    | &ensp;
+    img.icon(src="/assets/img/icon_konnectors/#{slug}.svg")
 
-    .foyerMaif
-    .homeMaif
+.col-xs-12.frame
+  .row
+    .col-xs-4.paymentterms
+    .col-xs-4.foyer
+    .col-xs-4.home
+
+  .row
+    .col-xs-12.budget
 
 
-    .sinistres
+  .row
+    .col-xs-8.files
 
-    //- .vehicul_assure
-    //-    |Mon véhicul assuré:
-    //-    Button.btn_sinistre_vehicul
-    //-       | Sinistre véhicul
+    .col-xs-4.relation
+      h3
+        i.fa.fa-handshake-o
+        | Ma relation avec&ensp;
+        = name
 
-  .files
 
-.columnright.col-xs-4
-  .contract
-    img.img-thumbnail.icon(src="/assets/img/maif_logo_big.png")
+      .contract
+        if contract
+          ul
+            li
+              span.label Numéro de sociétaire :&ensp;
+              span.value= contract.societaire
+            li
+              span.label Contrat&nbsp
+              span.value= contract.name
 
-    ul
-      li
-        span.label Numéro de sociétaire :&ensp;
-        span.value= societaire
-      li
-        span.label Contrat&nbsp
-        span.value= name
+            li
+              span.label Début de contrat&nbsp;
+              span.value= contract.startDate
 
-      li
-        span.label Début de contrat&nbsp;
-        span.value= startDate
 
-  .contact
-    h4 Contacter la Maif
-    div
-      img(src="/assets/img/tell.svg")
-      span &nbsp;09 72 72 15 15
+      .identifiers
+        h4 Mes identifiants :
+        ul
+          if login
+            li
+              span.label login web :&ensp;
+              span.value= login
+          if contract
+            li
+              span.label Point De Livraison :&ensp;
+              span.value= contract.societaire
 
-  //- .societaireMaif
-
-.close x
+      .contact
+        h4 Contacter la Maif
+        div
+          img(src="/assets/img/tell.svg")
+          span &nbsp;09 72 72 15 15

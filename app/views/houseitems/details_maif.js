@@ -1,6 +1,6 @@
 'use strict';
 
-const BaseDetailsView = require('./details_base');
+const DetailsVendorView = require('./details_vendor');
 const template = require('../templates/houseitems/details_maif');
 const ContractMaif = require('../../models/contract');
 const PaymenttermsView = require('./paymentterms');
@@ -11,58 +11,41 @@ const SinistreView = require('./sinistre');
 const SinistreCollection = require('collections/sinistre');
 const FilesView = require('./files');
 
-module.exports = BaseDetailsView.extend({
+module.exports = DetailsVendorView.extend({
   template: template,
 
+
   regions: {
-    sinistres: '.sinistres',
-    homeMaif: '.homeMaif',
-    foyerMaif: '.foyerMaif',
-    // societaireMaif: '.societaireMaif',
-    paymentterms: '.paymentterms',
     files: '.files',
-  },
-
-  events: {
-  },
-
-  modelEvents: {
-    change: 'render',
-  },
-
-  triggers: {
-    'click .close': 'close',
-  },
-
-  initialize: function () {
-    this.model.getFiles().fetch();
-    this.contract = new ContractMaif();
-    this.contract.fetchMaif();
-    this.listenTo(this.contract, 'change', this.render);
-    this.sinistres = new SinistreCollection({ vendor: 'Maif' });
-    this.sinistres.fetch();
+    budget: '.budget',
+    sinistres: '.sinistres',
+    paymentterms: '.paymentterms',
+    foyer: '.foyer',
+    home: '.home',
+    // societaireMaif: '.societaireMaif',
   },
 
   serializeData: function () {
-    const data = this.contract.toJSON();
+    const data = this.model.toJSON();
+    data.contract = this.model.getContract().toJSON();
+    // data.
+    // if (this.model.contract) {
+
+    // }
     console.log(data);
     return data;
   },
 
   onRender: function () {
-    this.showChildView('sinistres', new SinistreView({
-      model: new Backbone.Model({ slug: 'Maif' }),
-      collection: this.sinistres,
-    }));
-    this.showChildView('homeMaif', new HomeView());
-    this.showChildView('foyerMaif', new FoyerView());
+    DetailsVendorView.prototype.onRender.apply(this, arguments);
+    this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'maif', contract: this.model.getContract() }));
+    this.showChildView('foyer', new FoyerView({ model: this.model.getFoyer() }));
+    this.showChildView('home', new HomeView({ model: this.model.getHome() }));
+
+    // this.showChildView('sinistres', new SinistreView({
+    //   model: new Backbone.Model({ slug: 'Maif' }),
+    //   collection: this.sinistres,
+    // }));
     // this.showChildView('societaireMaif', new SocietaireView());
-    this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'Maif', contract: this.contract }));
-    this.showChildView('files', new FilesView({ model: this.model, }));
   },
-
-  onClose: function () {
-    app.trigger('houseitemdetails:close');
-  },
-
 });

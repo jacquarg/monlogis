@@ -50,13 +50,17 @@
       "description": "Gérer la liste de ses objets.",
       "type": "org.fing.mesinfos.object"
     },
-    "org.fing.mesinfos.foyer": {
+    "Foyer Maif": {
       "description": "TODO",
-      "type": "org.fing.mesinfos.foyer"
+      "type": "fr.maif.maifuser.foyer"
     },
-    "org.fing.mesinfos.paymentterms": {
+    "Payment terms": {
       "description": "TODO",
       "type": "org.fing.mesinfos.paymentterms"
+    },
+    "Payment terms Maif": {
+      "description": "TODO",
+      "type": "fr.maif.maifuser.paymentterms"
     },
     "org.fing.mesinfos.consumptionstatement": {
       "description": "TODO",
@@ -70,13 +74,21 @@
       "description": "TODO",
       "type": "org.fing.mesinfos.client"
     },
-    "org.fing.mesinfos.contract": {
+    "Contract": {
       "description": "TODO",
       "type": "org.fing.mesinfos.contract"
     },
-    "org.fing.mesinfos.home": {
+    "Contract Maif": {
+      "description": "TODO",
+      "type": "fr.maif.maifuser.contrat"
+    },
+    "Home": {
       "description": "TODO",
       "type": "org.fing.mesinfos.home"
+    },
+    "Home Maif": {
+      "description": "TODO",
+      "type": "fr.maif.maifuser.home"
     },
     "org.fing.mesinfos.insuranceclaim": {
       "description": "TODO",

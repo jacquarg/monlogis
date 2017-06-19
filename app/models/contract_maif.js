@@ -4,13 +4,11 @@ const get = require('../lib/walktree_utils').get;
 const CozyModel = require('../lib/backbone_cozysingleton');
 
 module.exports = CozyModel.extend({
-  docType: 'fr.maif.maifuser.home',
+  docType: 'fr.maif.maifuser.contrat',
 
   parse: function () {
     const attr = CozyModel.prototype.parse.apply(this, arguments);
-    $.extend(attr, get(attr, 'home', 0));
-    console.log(attr)
+    $.extend(attr, get(attr, 'contrat', 0));
     return attr
   },
-
 });

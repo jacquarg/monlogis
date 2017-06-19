@@ -2,24 +2,48 @@
 
 const VendorModel = require('./vendor_base');
 
-const Contract = require('./contract');
+const Contract = require('./contract_maif');
+const Foyer = require('./foyer');
+const Home = require('./home');
 
 module.exports = VendorModel.extend({
 
-  fetchAll: function () {
-    return Promise.all([
+  toFetch: function () {
+    return [
       this.getFiles().fetch(),
       this.getContract().fetch(),
-      // this.getPaymentterms
-    ]);
+      this.getFoyer().fetch(),
+      this.getHome().fetch(),
+    ];
   },
 
   getContract: function () {
     if (!this.contract) {
-      this.contract = new ContractMaif();
+      this.contract = new Contract();
     }
     return this.contract;
+  },
 
+  getFoyer: function () {
+    if (!this.foyer) {
+      this.foyer = new Foyer();
+    }
+    return this.foyer;
+  },
+
+  // todo sinistres
+  getClient: function () {
+    if (!this.client) {
+      this.client = new Client();
+    }
+    return this.client;
+  },
+
+  getHome: function () {
+    if (!this.home) {
+      this.home = new Home();
+    }
+    return this.home;
   },
 
   _computeBudget: function () {

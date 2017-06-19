@@ -31,7 +31,7 @@ module.exports = DetailsVendorView.extend({
   onRender: function () {
     DetailsVendorView.prototype.onRender.apply(this, arguments);
     this.showChildView('consomation', new ConsomationView());
-    this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'EDF' }));
+    this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'edf' }));
   },
 
 });

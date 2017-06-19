@@ -2,6 +2,7 @@
 
 const template = require('../templates/houseitems/paymentterms');
 const Paymentterms = require('../../models/paymentterms');
+const PaymenttermsMaif = require('../../models/paymentterms_maif');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -14,28 +15,26 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function (options) {
-    this.model = new Paymentterms();
-    if (options.vendor === 'EDF') {
+    this.vendor = options.vendor;
+    if (this.vendor === 'edf') {
+      this.model = new Paymentterms();
       this.model.fetchEDF();
-    } else if (options.vendor === 'Maif') {
-      this.model.fetchMaif();
+    } else if (this.vendor === 'maif') {
+      this.model = new PaymenttermsMaif();
+      this.model.fetch();
       this.contract = options.contract;
     }
   },
 
   serializeData: function () {
-    let vendor = this.model.get('vendor');
-    vendor = vendor ? vendor.toLowerCase() : '';
-
     const data = this.model.toJSON();
-    if (vendor === 'edf') {
+    if (this.vendor === 'edf') {
       data.nextPaymentAmount = this.model.getNextPaymentEDF();
       data.lastPaymentAmount = this.model.getLastPaymentEDF();
     }
 
-    if (vendor === 'maif') {
+    if (this.vendor === 'maif') {
       data.annualCost = this.contract.get('montantTarifTtc');
-      // data.nextPaymentAmount = this.contract.get('montantTarifTtc');
     }
     return data;
   },

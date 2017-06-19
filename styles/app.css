@@ -168,9 +168,26 @@ main {
   padding: 30px;
 }
 
-.houseitemdetails .frame {
+.frame {
   border: solid 2px #CCC;
 }
+.frame > .row {
+  border-bottom: solid 2px #CCC;
+}
+
+.frame > .row:last-child {
+  border-bottom: none;
+}
+
+
+.frame > .row > div {
+  border-right: solid 2px #CCC;  
+}
+
+.frame > .row > div:last-child {
+  border-right: none;
+}
+
 
 .houseitemdetails .frame h3 {
   font-size: 1.1em;
@@ -196,15 +213,6 @@ main {
 .houseitemdetails .frame h4 {
   font-size: 1em;
 }
-
-.houseitemsdetails .frame .row {
-  border-bottom: solid 2px #CCC;
-}
-
-.houseitemsdetails .frame .row:last-child {
-  border-bottom: none;
-}
-
 
 .houseitemdetails .filestools {
   margin-top: 40px;
@@ -322,8 +330,7 @@ main {
 }
 
 .paymentterms .nextpayment,
-.paymentterms .lastpayment,
-.paymentterms .annualPayment {
+.paymentterms .lastpayment {
   position: relative;
   margin: 20px 0;
   height: 120px;
@@ -331,6 +338,15 @@ main {
 
 .paymentterms .nextpayment {
   height: 120px;
+}
+
+
+.paymentterms .annualPayment {
+  text-align: center;
+}
+.paymentterms .annualPayment > span {
+  display: block;
+  margin: 10px;
 }
 
 .paymentterms .amount {
@@ -368,10 +384,6 @@ main {
 .lastpayment .labelamount {}
 
 /* files */
-.frame .col-xs-8 {
-  border-right: solid 2px #CCC;
-}
-
 .files ul {
   clear: both;
   padding: 0;
