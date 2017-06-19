@@ -13,7 +13,6 @@ module.exports = VendorModel.extend({
       this.getBills().fetch(),
       this.fetchClient(),
       this.fetchContract(),
-      // this.getPaymentterms
     ];
   },
 
@@ -33,7 +32,6 @@ module.exports = VendorModel.extend({
   _computeBudget: function () {
     const bill = this.getBills().last();
     const yearly = Number(bill.get('totalPaymentDue'));
-    console.log(yearly)
     return {
       mensual: yearly / 12,
       daily: yearly / 12 / 30,

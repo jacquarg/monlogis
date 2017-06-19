@@ -445,7 +445,7 @@ require.register("lib/appname_version.js", function(exports, require, module) {
 
 const name = 'monlogis';
 // use brunch-version plugin to populate these.
-const version = '0.0.1';
+const version = '0.1.0';
 
 module.exports = `${name}-${version}`;
 
@@ -615,7 +615,7 @@ module.exports = CozyModel.extend({
 });
 
 require.register("lib/mimetype2fa.js", function(exports, require, module) {
-
+/* eslint-disable */
 var mapping = [
   // Images
   [ 'file-image-o', /^image\// ],
@@ -703,6 +703,7 @@ function mimetype2fa (mimetype, options) {
 }
 
 module.exports = mimetype2fa
+/* eslint-disable */
 
 });
 
@@ -740,6 +741,7 @@ module.exports = CozyModel.extend({
   docType: 'io.cozy.bills',
 
   parse: function () {
+    //eslint-disable-next-line
     const attr = CozyModel.prototype.parse.apply(this, arguments);
     if (attr.vendor === 'EDF') {
       attr.amount = attr.value;
@@ -814,9 +816,10 @@ module.exports = CozyModel.extend({
   docType: 'fr.maif.maifuser.contrat',
 
   parse: function () {
+    //eslint-disable-next-line
     const attr = CozyModel.prototype.parse.apply(this, arguments);
     $.extend(attr, get(attr, 'contrat', 0));
-    return attr
+    return attr;
   },
 });
 
@@ -849,9 +852,10 @@ module.exports = CozyModel.extend({
   docType: 'fr.maif.maifuser.foyer',
 
   parse: function () {
+    //eslint-disable-next-line
     const attr = CozyModel.prototype.parse.apply(this, arguments);
     $.extend(attr, get(attr, 'foyer'));
-    return attr
+    return attr;
   },
 
 });
@@ -868,10 +872,10 @@ module.exports = CozyModel.extend({
   docType: 'fr.maif.maifuser.home',
 
   parse: function () {
+    //eslint-disable-next-line
     const attr = CozyModel.prototype.parse.apply(this, arguments);
     $.extend(attr, get(attr, 'home', 0));
-    console.log(attr)
-    return attr
+    return attr;
   },
 
 });
@@ -1008,6 +1012,7 @@ module.exports = CozyModel.extend({
   docType: 'fr.maif.maifuser.paymentterms',
 
   parse: function () {
+    //eslint-disable-next-line
     const attr = CozyModel.prototype.parse.apply(this, arguments);
     $.extend(attr, get(attr, 'paymentterms'));
     return attr;
@@ -1056,17 +1061,17 @@ require.register("models/vendor.js", function(exports, require, module) {
 
 const VendorBase = require('./vendor_base');
 const VendorEDF = require('./vendor_edf');
-const VendorMaif = new require('./vendor_maif');
+const VendorMaif = require('./vendor_maif');
 
-module.exports = function (attributes, options) {
-    if (attributes) {
-      switch(attributes.slug) {
-        case 'edf': return new VendorEDF(attributes);
-        case 'maif': return new VendorMaif(attributes);
-      }
+module.exports = function (attributes) {
+  if (attributes) {
+    switch (attributes.slug) {
+      case 'edf': return new VendorEDF(attributes);
+      case 'maif': return new VendorMaif(attributes);
+      default: break;
     }
-
-    return new VendorBase(attributes);
+  }
+  return new VendorBase(attributes);
 };
 
 });
@@ -1121,17 +1126,17 @@ module.exports = CozyModel.extend({
     return this.files;
   },
 
-  injectBillsInFiles: function() {
+  injectBillsInFiles: function () {
     this.getBills().each((bill) => {
       const file = this.getFiles().findWhere({ _id: bill.get('file') });
       if (file) {
         file.bill = bill;
       }
-    })
+    });
   },
   // case may vary from a vendor to another...
   _getBillsVendor: function () {
-    return this.get('name')
+    return this.get('name');
   },
 
   getBills: function () {
@@ -1182,7 +1187,6 @@ module.exports = VendorModel.extend({
       this.getBills().fetch(),
       this.fetchClient(),
       this.fetchContract(),
-      // this.getPaymentterms
     ];
   },
 
@@ -1202,7 +1206,6 @@ module.exports = VendorModel.extend({
   _computeBudget: function () {
     const bill = this.getBills().last();
     const yearly = Number(bill.get('totalPaymentDue'));
-    console.log(yearly)
     return {
       mensual: yearly / 12,
       daily: yearly / 12 / 30,
@@ -1247,7 +1250,6 @@ module.exports = VendorModel.extend({
     return this.foyer;
   },
 
-  // todo sinistres
   getClient: function () {
     if (!this.client) {
       this.client = new Client();
@@ -1263,7 +1265,7 @@ module.exports = VendorModel.extend({
   },
 
   _computeBudget: function () {
-    const yearly = this.contract.get('montantTarifTtc'); //TODO !!
+    const yearly = this.contract.get('montantTarifTtc');
     return {
       mensual: yearly / 12,
       daily: yearly / 12 / 30,
@@ -1364,7 +1366,7 @@ require.register("views/app_layout.js", function(exports, require, module) {
 
 const template = require('views/templates/app_layout');
 const MessageView = require('views/message');
-const MystonesView = require('views/mystones');
+// const MystonesView = require('views/mystones');
 const HouseitemDetailsEDFView = require('views/houseitems/details_edf');
 const HouseitemDetailsMaifView = require('views/houseitems/details_maif');
 const HouseitemDetailsVendorView = require('views/houseitems/details_vendor');
@@ -1593,20 +1595,10 @@ const template = require('../templates/houseitems/budget');
 module.exports = Mn.View.extend({
   template: template,
 
-  events: {
-  },
-
-  // modelEvents: {
-  //   change: 'render',
-  // },
-
-  initialize: function (options) {
-  },
-
   serializeData: function () {
     const data = this.model.getBudget();
     data.annualMetaphore = Math.round(data.annual / 100); // dîner gastronomique
-    data.mensualMetaphore = Math.round(data.mensual / 10); //places de cinéma
+    data.mensualMetaphore = Math.round(data.mensual / 10); // places de cinéma
     data.dailyMetaphore = Math.round(data.daily / 0.90); // croissant;
     return data;
   },
@@ -1645,7 +1637,6 @@ require.register("views/houseitems/details_edf.js", function(exports, require, m
 
 const DetailsVendorView = require('./details_vendor');
 const template = require('../templates/houseitems/details_edf');
-// TODO : move to contract edf ; move into this view ?
 const ConsomationView = require('./consomation_edf');
 const PaymenttermsView = require('./paymentterms');
 
@@ -1661,6 +1652,7 @@ module.exports = DetailsVendorView.extend({
   },
 
   serializeData: function () {
+    //eslint-disable-next-line
     const data = DetailsVendorView.prototype.serializeData.apply(this, arguments);
     if (this.model.client) {
       data.client = this.model.client.toJSON();
@@ -1672,6 +1664,7 @@ module.exports = DetailsVendorView.extend({
   },
 
   onRender: function () {
+    //eslint-disable-next-line
     DetailsVendorView.prototype.onRender.apply(this, arguments);
     this.showChildView('consomation', new ConsomationView());
     this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'edf' }));
@@ -1686,18 +1679,15 @@ require.register("views/houseitems/details_maif.js", function(exports, require, 
 
 const DetailsVendorView = require('./details_vendor');
 const template = require('../templates/houseitems/details_maif');
-const ContractMaif = require('../../models/contract');
 const PaymenttermsView = require('./paymentterms');
 // const SocietaireView = require('./societaire_maif');
 const FoyerView = require('./foyer_maif');
 const HomeView = require('./home_maif');
-const SinistreView = require('./sinistre');
-const SinistreCollection = require('collections/sinistre');
-const FilesView = require('./files');
+// const SinistreView = require('./sinistre');
+// const SinistreCollection = require('collections/sinistre');
 
 module.exports = DetailsVendorView.extend({
   template: template,
-
 
   regions: {
     files: '.files',
@@ -1706,21 +1696,16 @@ module.exports = DetailsVendorView.extend({
     paymentterms: '.paymentterms',
     foyer: '.foyer',
     home: '.home',
-    // societaireMaif: '.societaireMaif',
   },
 
   serializeData: function () {
     const data = this.model.toJSON();
     data.contract = this.model.getContract().toJSON();
-    // data.
-    // if (this.model.contract) {
-
-    // }
-    console.log(data);
     return data;
   },
 
   onRender: function () {
+    //eslint-disable-next-line
     DetailsVendorView.prototype.onRender.apply(this, arguments);
     this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'maif', contract: this.model.getContract() }));
     this.showChildView('foyer', new FoyerView({ model: this.model.getFoyer() }));
@@ -1835,11 +1820,8 @@ require.register("views/houseitems/details_vendor.js", function(exports, require
 'use strict';
 
 const template = require('../templates/houseitems/details_vendor');
-// const BillsView = require('./bills');
 const FilesView = require('./files');
 const BudgetView = require('./budget');
-// const BillsCollection = require('collections/bills');
-const FilesCollection = require('collections/files');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -1854,7 +1836,6 @@ module.exports = Mn.View.extend({
   },
 
   regions: {
-    // bills: '.bills',
     files: '.files',
     budget: '.budget',
   },
@@ -1864,19 +1845,9 @@ module.exports = Mn.View.extend({
   },
 
   onRender: function () {
-    // this.showChildView('bills', new BillsView({
-    //   model: this.model,
-    //   collection: this.bills,
-    // }));
-
     this.showChildView('files', new FilesView({ model: this.model }));
     this.showChildView('budget', new BudgetView({ model: this.model }));
   },
-
-  onClose: function () {
-    app.trigger('houseitemdetails:close');
-  },
-
 });
 
 });
@@ -2345,17 +2316,14 @@ const VendorsView = Mn.CollectionView.extend({
 
   showSelected: function (houseItem) {
     this.$('li').toggleClass('selected', false);
-    const item = this.children.findByModel(houseItem)
+    const item = this.children.findByModel(houseItem);
     console.log(item);
     item.$el.toggleClass('selected', true);
-    // const idx = this.collection.indexOf(houseItem);
-
   },
 
 });
 
 module.exports = Mn.View.extend({
-  // className: 'mymovies',
   template: template,
 
   regions: {
@@ -2367,9 +2335,6 @@ module.exports = Mn.View.extend({
 
   triggers: {
     'click .add': 'show:addvendors',
-  },
-
-  initialize: function () {
   },
 
   onRender: function () {
@@ -3271,5 +3236,3 @@ require.register("___globals___", function(exports, require, module) {
   
 });})();require('___globals___');
 
-
-//# sourceMappingURL=app.js.map

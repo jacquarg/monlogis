@@ -1,4 +1,4 @@
-
+/* eslint-disable */
 var mapping = [
   // Images
   [ 'file-image-o', /^image\// ],
@@ -86,3 +86,4 @@ function mimetype2fa (mimetype, options) {
 }
 
 module.exports = mimetype2fa
+/* eslint-disable */

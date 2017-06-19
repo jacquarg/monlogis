@@ -14,17 +14,14 @@ const VendorsView = Mn.CollectionView.extend({
 
   showSelected: function (houseItem) {
     this.$('li').toggleClass('selected', false);
-    const item = this.children.findByModel(houseItem)
+    const item = this.children.findByModel(houseItem);
     console.log(item);
     item.$el.toggleClass('selected', true);
-    // const idx = this.collection.indexOf(houseItem);
-
   },
 
 });
 
 module.exports = Mn.View.extend({
-  // className: 'mymovies',
   template: template,
 
   regions: {
@@ -36,9 +33,6 @@ module.exports = Mn.View.extend({
 
   triggers: {
     'click .add': 'show:addvendors',
-  },
-
-  initialize: function () {
   },
 
   onRender: function () {

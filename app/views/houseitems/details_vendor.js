@@ -1,11 +1,8 @@
 'use strict';
 
 const template = require('../templates/houseitems/details_vendor');
-// const BillsView = require('./bills');
 const FilesView = require('./files');
 const BudgetView = require('./budget');
-// const BillsCollection = require('collections/bills');
-const FilesCollection = require('collections/files');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -20,7 +17,6 @@ module.exports = Mn.View.extend({
   },
 
   regions: {
-    // bills: '.bills',
     files: '.files',
     budget: '.budget',
   },
@@ -30,17 +26,7 @@ module.exports = Mn.View.extend({
   },
 
   onRender: function () {
-    // this.showChildView('bills', new BillsView({
-    //   model: this.model,
-    //   collection: this.bills,
-    // }));
-
     this.showChildView('files', new FilesView({ model: this.model }));
     this.showChildView('budget', new BudgetView({ model: this.model }));
   },
-
-  onClose: function () {
-    app.trigger('houseitemdetails:close');
-  },
-
 });

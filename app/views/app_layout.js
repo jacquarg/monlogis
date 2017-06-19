@@ -2,7 +2,7 @@
 
 const template = require('views/templates/app_layout');
 const MessageView = require('views/message');
-const MystonesView = require('views/mystones');
+// const MystonesView = require('views/mystones');
 const HouseitemDetailsEDFView = require('views/houseitems/details_edf');
 const HouseitemDetailsMaifView = require('views/houseitems/details_maif');
 const HouseitemDetailsVendorView = require('views/houseitems/details_vendor');

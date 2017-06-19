@@ -2,7 +2,6 @@
 
 const DetailsVendorView = require('./details_vendor');
 const template = require('../templates/houseitems/details_edf');
-// TODO : move to contract edf ; move into this view ?
 const ConsomationView = require('./consomation_edf');
 const PaymenttermsView = require('./paymentterms');
 
@@ -18,6 +17,7 @@ module.exports = DetailsVendorView.extend({
   },
 
   serializeData: function () {
+    //eslint-disable-next-line
     const data = DetailsVendorView.prototype.serializeData.apply(this, arguments);
     if (this.model.client) {
       data.client = this.model.client.toJSON();
@@ -29,6 +29,7 @@ module.exports = DetailsVendorView.extend({
   },
 
   onRender: function () {
+    //eslint-disable-next-line
     DetailsVendorView.prototype.onRender.apply(this, arguments);
     this.showChildView('consomation', new ConsomationView());
     this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'edf' }));

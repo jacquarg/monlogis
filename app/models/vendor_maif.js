@@ -31,7 +31,6 @@ module.exports = VendorModel.extend({
     return this.foyer;
   },
 
-  // todo sinistres
   getClient: function () {
     if (!this.client) {
       this.client = new Client();
@@ -47,7 +46,7 @@ module.exports = VendorModel.extend({
   },
 
   _computeBudget: function () {
-    const yearly = this.contract.get('montantTarifTtc'); //TODO !!
+    const yearly = this.contract.get('montantTarifTtc');
     return {
       mensual: yearly / 12,
       daily: yearly / 12 / 30,

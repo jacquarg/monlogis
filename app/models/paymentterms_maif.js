@@ -7,6 +7,7 @@ module.exports = CozyModel.extend({
   docType: 'fr.maif.maifuser.paymentterms',
 
   parse: function () {
+    //eslint-disable-next-line
     const attr = CozyModel.prototype.parse.apply(this, arguments);
     $.extend(attr, get(attr, 'paymentterms'));
     return attr;
