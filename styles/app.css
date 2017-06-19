@@ -29,10 +29,10 @@ body {
     border: 5000px solid rgba(0,0,0, 0.7);
     position: absolute;
     top: 50%;
-    height: 10500px;
+    height: 10600px;
     width: 10700px;
     left: 50%;
-    margin-top: -5250px;
+    margin-top: -5300px;
     margin-left: -5350px;
     z-index: 10000;
   }
@@ -116,20 +116,21 @@ aside .btn {
   background: #CCC;
 }*/
 
-/*
+
 .houseitem {
   height: 80px;
   text-align: center;
   margin: 15px;
   float: left;
   padding: 15px;
+  cursor: pointer;
 }
 
 .houseitem img {
   max-height: 50px;
   max-width: 100px;
   min-height: 50px;
-}*/
+}
 
 
 
@@ -222,16 +223,25 @@ main {
 .budget .illustration {
   max-width: 100%;
   margin-bottom: 15px;
+  max-height: 240px;
+  /*! margin: 0 15px; */
+    display: inline-block;
+
 }
 
+.budge .budgetlines {
+  display: inline-block;
+
+}
 .budget .budgetline {
   position: relative;
-  height: 72px;
+  height: 80px;
 }
 
 .text1 {
   position: absolute;
   left: 0px;
+  line-height:  80px;
 }
 
 .budget .value,
@@ -244,21 +254,24 @@ main {
 }
 
 .budget .equal {
-  margin-left: 150px;
+  position: absolute;
+  left: 150px;
+  top: 50%;
+  margin-top: -10px;
   font-size: 20px;
   font-weight: 700;
 }
 
 .budget .metaphore {
-  margin-left: 20px;
+  position: absolute;
+  left: 180px;
   text-align: center;
-  display: inline-block;
 }
 
 .budget .metaphore img {
   margin-right: 10px;
-  max-width: 32px;
-  max-height: 32px;
+  max-width: 24px;
+  max-height: 24px;
   padding: 1px;
 }
 
@@ -521,11 +534,8 @@ main {
 
 /* relation */
 .relation ul {
-
-}
-
-.relation ul {
-  /*! padding: 0; */
+  list-style: inherit;
+  padding-left: 15px;
 }
 
 .relation li .label {

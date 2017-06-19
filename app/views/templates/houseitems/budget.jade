@@ -16,16 +16,17 @@ mixin period(value, unit, metaphoreCount, metaphoreLabel, metaphoreImg)
 h3
   i.fa.fa-eur
   | Budget
+  |&emsp;-&emsp;
+  | Vos dépenses&ensp;
+  //- = name
+  //-  | &ensp;
+  | représentent :
 
 .row
   .col-xs-5
     img.illustration(src='/assets/img/illustrations/ON40SD0.jpg')
 
-  .col-xs-7
-    h4 Vos dépenses&ensp;
-      = name
-      | &ensp;représentent :
-
+  .col-xs-7.budgetlines
     if daily
       .budgetline.daily
         +period(daily, "€/jour ", dailyMetaphore, " croissants", "/assets/img/croissant.svg")

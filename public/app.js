@@ -2577,7 +2577,7 @@ jade_mixins["vendor"] = jade_interp = function(slug){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
 buf.push("<li" + (jade.attr("data-slug", slug, true, false)) + " class=\"img-thumbnail houseitem objectitem\"><img" + (jade.attr("src", "assets/img/icon_konnectors/" + (slug) + ".svg", true, false)) + (jade.attr("title", name, true, false)) + "/></li>");
 };
-buf.push("<h2>Sélectionnez vos fournisseurs, puis configurez la collect automatique de données (factures, ...)</h2><div class=\"category mesinfos\"><h3>Fournisseurs&ensp;<b>partenaires MesInfos</b></h3><ul>");
+buf.push("<div class=\"col-xs-12\"><h2>Sélectionnez vos fournisseurs, puis configurez la collect automatique de données (factures, ...)</h2></div><div class=\"col-xs-12 frame\"><div class=\"row\"><div class=\"col-xs-12 category mesinfos\"><h3>Fournisseurs&ensp;<b>partenaires MesInfos</b></h3><ul>");
 // iterate mesinfos
 ;(function(){
   var $$obj = mesinfos;
@@ -2600,7 +2600,7 @@ jade_mixins["vendor"](v.slug);
   }
 }).call(this);
 
-buf.push("</ul><div class=\"end\"></div></div><div class=\"category isp\"><h3>Fournisseurs&ensp;<b>Internet</b></h3><ul>");
+buf.push("</ul><div class=\"end\"></div></div><div class=\"col-xs-12 category isp\"><h3>Fournisseurs&ensp;<b>Internet</b></h3><ul>");
 // iterate isp
 ;(function(){
   var $$obj = isp;
@@ -2623,7 +2623,7 @@ jade_mixins["vendor"](v.slug);
   }
 }).call(this);
 
-buf.push("</ul><div class=\"end\"></div></div><div class=\"category telecom\"><h3>Fournisseurs&ensp;<b>Télécom</b></h3><ul>");
+buf.push("</ul><div class=\"end\"></div></div><div class=\"col-xs-12 category telecom\"><h3>Fournisseurs&ensp;<b>Télécom</b></h3><ul>");
 // iterate telecom
 ;(function(){
   var $$obj = telecom;
@@ -2646,7 +2646,7 @@ jade_mixins["vendor"](v.slug);
   }
 }).call(this);
 
-buf.push("</ul><div class=\"end\"></div></div><div class=\"close\">X</div>");}.call(this,"isp" in locals_for_with?locals_for_with.isp:typeof isp!=="undefined"?isp:undefined,"mesinfos" in locals_for_with?locals_for_with.mesinfos:typeof mesinfos!=="undefined"?mesinfos:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"telecom" in locals_for_with?locals_for_with.telecom:typeof telecom!=="undefined"?telecom:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
+buf.push("</ul><div class=\"end\"></div></div></div></div>");}.call(this,"isp" in locals_for_with?locals_for_with.isp:typeof isp!=="undefined"?isp:undefined,"mesinfos" in locals_for_with?locals_for_with.mesinfos:typeof mesinfos!=="undefined"?mesinfos:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"telecom" in locals_for_with?locals_for_with.telecom:typeof telecom!=="undefined"?telecom:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2721,7 +2721,7 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (annual, annualMetaphore, daily, dailyMetaphore, mensual, mensualMetaphore, name) {
+;var locals_for_with = (locals || {});(function (annual, annualMetaphore, daily, dailyMetaphore, mensual, mensualMetaphore) {
 jade_mixins["period"] = jade_interp = function(value, unit, metaphoreCount, metaphoreLabel, metaphoreImg){
 var block = (this && this.block), attributes = (this && this.attributes) || {};
 buf.push("<span class=\"text1\"><span class=\"value\">" + (jade.escape(null == (jade_interp = value.toFixed(2)) ? "" : jade_interp)) + "</span><span class=\"unit\">" + (jade.escape(null == (jade_interp = unit) ? "" : jade_interp)) + "</span></span><span class=\"equal\">=</span><span class=\"metaphore\">");
@@ -2733,7 +2733,7 @@ n++
 }
 buf.push("<div class=\"metaphoreLabel\">" + (jade.escape(null == (jade_interp = metaphoreCount) ? "" : jade_interp)) + (jade.escape(null == (jade_interp = metaphoreLabel) ? "" : jade_interp)) + "</div></span>");
 };
-buf.push("<h3><i class=\"fa fa-eur\"></i>Budget</h3><div class=\"row\"><div class=\"col-xs-5\"><img src=\"/assets/img/illustrations/ON40SD0.jpg\" class=\"illustration\"/></div><div class=\"col-xs-7\"><h4>Vos dépenses&ensp;" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "&ensp;représentent :</h4>");
+buf.push("<h3><i class=\"fa fa-eur\"></i>Budget\n&emsp;-&emsp;\nVos dépenses&ensp;représentent :</h3><div class=\"row\"><div class=\"col-xs-5\"><img src=\"/assets/img/illustrations/ON40SD0.jpg\" class=\"illustration\"/></div><div class=\"col-xs-7 budgetlines\">");
 if ( daily)
 {
 buf.push("<div class=\"budgetline daily\">");
@@ -2752,7 +2752,7 @@ buf.push("<div class=\"budgetline annual\">");
 jade_mixins["period"](annual, "€/an ", annualMetaphore, " dîners gastronomiques", "/assets/img/toque.svg");
 buf.push("</div>");
 }
-buf.push("</div></div>");}.call(this,"annual" in locals_for_with?locals_for_with.annual:typeof annual!=="undefined"?annual:undefined,"annualMetaphore" in locals_for_with?locals_for_with.annualMetaphore:typeof annualMetaphore!=="undefined"?annualMetaphore:undefined,"daily" in locals_for_with?locals_for_with.daily:typeof daily!=="undefined"?daily:undefined,"dailyMetaphore" in locals_for_with?locals_for_with.dailyMetaphore:typeof dailyMetaphore!=="undefined"?dailyMetaphore:undefined,"mensual" in locals_for_with?locals_for_with.mensual:typeof mensual!=="undefined"?mensual:undefined,"mensualMetaphore" in locals_for_with?locals_for_with.mensualMetaphore:typeof mensualMetaphore!=="undefined"?mensualMetaphore:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined));;return buf.join("");
+buf.push("</div></div>");}.call(this,"annual" in locals_for_with?locals_for_with.annual:typeof annual!=="undefined"?annual:undefined,"annualMetaphore" in locals_for_with?locals_for_with.annualMetaphore:typeof annualMetaphore!=="undefined"?annualMetaphore:undefined,"daily" in locals_for_with?locals_for_with.daily:typeof daily!=="undefined"?daily:undefined,"dailyMetaphore" in locals_for_with?locals_for_with.dailyMetaphore:typeof dailyMetaphore!=="undefined"?dailyMetaphore:undefined,"mensual" in locals_for_with?locals_for_with.mensual:typeof mensual!=="undefined"?mensual:undefined,"mensualMetaphore" in locals_for_with?locals_for_with.mensualMetaphore:typeof mensualMetaphore!=="undefined"?mensualMetaphore:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -2793,14 +2793,14 @@ var jade_interp;
 buf.push("<div class=\"col-xs-12\"><h2>Mon fournisseur&ensp;" + (jade.escape(null == (jade_interp = category) ? "" : jade_interp)) + "&ensp;<img" + (jade.attr("src", "/assets/img/icon_konnectors/" + (slug) + ".svg", true, false)) + " class=\"icon\"/></h2></div><div class=\"col-xs-12 frame\"><div class=\"row\"><div class=\"col-xs-8 paymentterms\"></div><div class=\"col-xs-4 consumption\"></div></div><div class=\"row\"><div class=\"col-xs-12 budget\"></div></div><div class=\"row\"><div class=\"col-xs-8 files\"></div><div class=\"col-xs-4 relation\"><h3><i class=\"fa fa-handshake-o\"></i>Ma relation avec&ensp;" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "</h3><div class=\"contract\">");
 if ( contract)
 {
-buf.push("<ul><li><span class=\"label\">Contrat&nbsp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.name) ? "" : jade_interp)) + "&ensp;" + (jade.escape(null == (jade_interp = contract.contractSubcategory1) ? "" : jade_interp)) + "</span></li><li><span class=\"label\">Puissance :&ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.power) ? "" : jade_interp)) + "</span></li><li><span class=\"label\">Point De Livraison :&ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.pdl) ? "" : jade_interp)) + "</span></li></ul>");
+buf.push("<ul><li><span class=\"label\">Contrat&nbsp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.name) ? "" : jade_interp)) + "&ensp;" + (jade.escape(null == (jade_interp = contract.contractSubcategory1) ? "" : jade_interp)) + "</span></li><li><span class=\"label\">Puissance :&ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.power) ? "" : jade_interp)) + "</span></li></ul>");
 }
 buf.push("</div><div class=\"identifiers\"><h4>Mes identifiants :</h4><ul>");
 if ( login)
 {
 buf.push("<li><span class=\"label\">login web :&ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = login) ? "" : jade_interp)) + "</span></li>");
 }
-buf.push("</ul></div><div class=\"contact\"><h4>Contacter EDF</h4><div class=\"phoneTroubleshooting\">");
+buf.push("<li><span class=\"label\">Point De Livraison :&ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.pdl) ? "" : jade_interp)) + "</span></li></ul></div><div class=\"contact\"><h4>Contacter EDF</h4><div class=\"phoneTroubleshooting\">");
 if ( contract)
 {
 buf.push("<img src=\"/assets/img/tell.svg\" class=\"img_tell\"/><span>dépannage :&nbsp</span><span>" + (jade.escape(null == (jade_interp = contract.troubleshootingPhone) ? "" : jade_interp)) + "</span>");
