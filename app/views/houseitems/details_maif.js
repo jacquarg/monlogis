@@ -24,6 +24,7 @@ module.exports = DetailsVendorView.extend({
   serializeData: function () {
     const data = this.model.toJSON();
     data.contract = this.model.getContract().toJSON();
+    // data.appURI = $("#coz-bar a[href*='maif.']").attr('href');
     return data;
   },
 

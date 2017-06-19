@@ -1099,6 +1099,7 @@ module.exports = CozyModel.extend({
 
   fetchAll: function () {
     return Promise.all(this.toFetch())
+    .then(() => this.createDir()).catch(err => console.warn(err))
     .then(() => {
       this.trigger('fetchedall');
     });
@@ -1669,6 +1670,7 @@ module.exports = DetailsVendorView.extend({
     if (this.model.contract) {
       data.contract = this.model.contract.toJSON();
     }
+    // data.appURI = $("#coz-bar a[href*='maif.']").attr('href');
     return data;
   },
 
@@ -1710,6 +1712,7 @@ module.exports = DetailsVendorView.extend({
   serializeData: function () {
     const data = this.model.toJSON();
     data.contract = this.model.getContract().toJSON();
+    // data.appURI = $("#coz-bar a[href*='maif.']").attr('href');
     return data;
   },
 
@@ -1945,6 +1948,14 @@ module.exports = Mn.View.extend({
 
   updateFilesCollection: function (file) {
     this.collection.add(file);
+  },
+
+  serializeData: function () {
+    const data = this.model.toJSON();
+    const driveAppURI = $("#coz-bar a[href*='drive.']").attr('href');
+    data.folderInFilesURI = `${driveAppURI}#/files/${this.model.getDirID()}`;
+
+    return data;
   },
 
   onRender: function () {
@@ -2747,7 +2758,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (category, contract, login, name, slug) {
-buf.push("<div class=\"col-xs-12\"><h2>Mon fournisseur&ensp;" + (jade.escape(null == (jade_interp = category) ? "" : jade_interp)) + "&ensp;<img" + (jade.attr("src", "/assets/img/icon_konnectors/" + (slug) + ".svg", true, false)) + " class=\"icon\"/></h2></div><div class=\"col-xs-12 frame\"><div class=\"row\"><div class=\"col-xs-4 paymentterms\"></div><div class=\"col-xs-4 foyer\"></div><div class=\"col-xs-4 home\"></div></div><div class=\"row\"><div class=\"col-xs-12 budget\"></div></div><div class=\"row\"><div class=\"col-xs-8 files\"></div><div class=\"col-xs-4 relation\"><h3><i class=\"fa fa-handshake-o\"></i>Ma relation avec&ensp;" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "</h3><div class=\"contract\">");
+buf.push("<div class=\"col-xs-12\"><h2>Mon fournisseur&ensp;" + (jade.escape(null == (jade_interp = category) ? "" : jade_interp)) + "&ensp;<img" + (jade.attr("src", "/assets/img/icon_konnectors/" + (slug) + ".svg", true, false)) + " class=\"icon\"/></h2></div><div class=\"col-xs-12 frame\"><div class=\"row\"><div class=\"col-xs-4 paymentterms\"></div><div class=\"col-xs-4 foyer\"></div><div class=\"col-xs-4 home\"></div></div><div class=\"row\"><div class=\"col-xs-12 budget\"></div></div><div class=\"row\"><div class=\"col-xs-8 files\"></div><div class=\"col-xs-4 relation\"><h3><i class=\"fa fa-handshake-o\"></i>Ma relation avec&ensp;" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "\n</h3><div class=\"contract\">");
 if ( contract)
 {
 buf.push("<ul><li><span class=\"label\">Numéro de sociétaire :&ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.societaire) ? "" : jade_interp)) + "</span></li><li><span class=\"label\">Contrat&nbsp</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.name) ? "" : jade_interp)) + "</span></li><li><span class=\"label\">Début de contrat&nbsp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.startDate) ? "" : jade_interp)) + "</span></li></ul>");
@@ -2852,8 +2863,8 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-
-buf.push("<h3><i class=\"fa fa-file-o\"></i>Documents<a src=\"todo\">ouvrir dans files<i class=\"fa fa-external-link\"></i></a></h3><div class=\"addfile\"></div><ul></ul>");;return buf.join("");
+;var locals_for_with = (locals || {});(function (folderInFilesURI) {
+buf.push("<h3><i class=\"fa fa-file-o\"></i>Documents<a" + (jade.attr("href", folderInFilesURI, true, false)) + " target=\"_blank\">ouvrir dans drive<i class=\"fa fa-external-link\"></i></a></h3><div class=\"addfile\"></div><ul></ul>");}.call(this,"folderInFilesURI" in locals_for_with?locals_for_with.folderInFilesURI:typeof folderInFilesURI!=="undefined"?folderInFilesURI:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

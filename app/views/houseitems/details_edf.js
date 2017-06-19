@@ -25,6 +25,7 @@ module.exports = DetailsVendorView.extend({
     if (this.model.contract) {
       data.contract = this.model.contract.toJSON();
     }
+    // data.appURI = $("#coz-bar a[href*='maif.']").attr('href');
     return data;
   },
 

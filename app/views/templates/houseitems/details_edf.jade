@@ -22,7 +22,6 @@
         | Ma relation avec&ensp;
         = name
 
-
       .contract
         if contract
           ul
@@ -48,6 +47,10 @@
             span.value= contract.pdl
       .contact
         h4 Contacter EDF
+        //- .cozyApp
+        //-  a(href=appURI, target='_blank') app EDF
+        //-    i.fa.fa-external-link
+
         .phoneTroubleshooting
           if contract
             img.img_tell(src="/assets/img/tell.svg")

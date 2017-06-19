@@ -11,6 +11,7 @@ module.exports = CozyModel.extend({
 
   fetchAll: function () {
     return Promise.all(this.toFetch())
+    .then(() => this.createDir()).catch(err => console.warn(err))
     .then(() => {
       this.trigger('fetchedall');
     });
