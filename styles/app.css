@@ -22,6 +22,11 @@ body {
   width: 100vw;
 }
 
+/* Cozy bar fixes */
+#coz-bar {
+  font-size: 16px;
+}
+
 
 /* Popin */
 @media(min-width: 768px) {
@@ -51,14 +56,13 @@ body {
 }
 /* END Popin */
 
-
 [role=application] {
   position: absolute;
   width: 100%;
   height: 100%;
   top: 0;
   overflow: hidden;
-  border-top: 35px solid white;
+  border-top: 55px solid white;
   font-family: Lato, sans-serif;
 }
 
@@ -78,19 +82,11 @@ h2 img {
   typycal cozy left bar
 */
 aside {
-  width: 220px;
-  height: 100%;
-  float: left;
   background: #EEE;
   font-family: Lato, sans-serif;
   font-size: 15px;
   padding: 16px;
 }
-
-aside .category {
-  line-height: 48px;
-}
-
 
 aside .selected {
   font-weight: 700;
@@ -98,14 +94,11 @@ aside .selected {
 
 aside ul {
   list-style: none;
-  padding-left: 16px;
 }
 
 aside li {
-  line-height: 30px;
   cursor: pointer;
 }
-
 
 aside .btn {
   border-radius: 100%;
@@ -165,7 +158,6 @@ main {
   /* background-color: #d9edf7; */
   height: 100%;
   overflow-y: auto;
-  padding: 30px;
 }
 
 .frame {
@@ -181,11 +173,20 @@ main {
 
 
 .frame > .row > div {
-  border-right: solid 2px #CCC;  
+  border-right: solid 2px #CCC;
+  border-left: solid 2px #CCC;
+  margin: 0 -1px;
+}
+
+
+.frame > .row > div:first-child {
+  border-left: none;
+  margin-left: 0;
 }
 
 .frame > .row > div:last-child {
   border-right: none;
+  margin-right: 0;
 }
 
 
@@ -227,8 +228,11 @@ main {
 /*
   budget
 */
-
 .budget .illustration {
+  text-align: center;
+}
+
+.budget .illustration img {
   max-width: 100%;
   margin-bottom: 15px;
   max-height: 240px;
@@ -247,9 +251,6 @@ main {
 }
 
 .text1 {
-  position: absolute;
-  left: 0px;
-  line-height:  80px;
 }
 
 .budget .value,
@@ -262,17 +263,11 @@ main {
 }
 
 .budget .equal {
-  position: absolute;
-  left: 150px;
-  top: 50%;
-  margin-top: -10px;
   font-size: 20px;
   font-weight: 700;
 }
 
 .budget .metaphore {
-  position: absolute;
-  left: 180px;
   text-align: center;
 }
 
@@ -554,6 +549,7 @@ main {
   color: black;
   font-weight: normal;
   font-size: 13px;
+  padding: 0;
 }
 
 .relation li .value {
@@ -605,3 +601,121 @@ main {
   clear: both;
 }
 
+/* custom fixes */
+.maif .paymentterms,
+.maif .foyer,
+.maif .home {
+  min-height: 220px;
+}
+
+/* END custom fixes */
+
+/* Responsive */
+
+@media(min-width: 993px) {
+  aside {
+    width: 220px;
+    height: 100%;
+    float: left;
+  }
+
+  main > div {
+      padding: 30px;
+  }
+
+  aside button.bottombar {
+    display: none;
+  }
+
+  aside .category {
+    line-height: 48px;
+  }
+
+  aside ul {
+    padding-left: 16px;
+  }
+
+  aside li {
+    line-height: 30px;
+  }
+}
+
+@media(max-width: 992px) {
+  main {
+    border-bottom: 48px solid white;
+  }
+
+  main > div {
+      padding: 30px 0;
+  }
+
+  aside {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    height: 48px;
+    padding: 8px;
+  }
+
+  aside .category {
+    display: none;
+  }
+
+  aside ul {
+    padding-left: 0;
+  }
+
+  aside li {
+    display: inline-block;
+    line-height: 32px;
+    padding: 0 8px;
+  }
+
+  aside button.bottombar {
+      display: block;
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+  }
+}
+
+@media(max-width: 768px) {
+  [role="application"] {
+    border-top: 48px solid white;
+  }
+}
+
+@media(min-width: 451px) {
+  .text1 {
+    position: absolute;
+    left: 50%;
+    margin-left: -200px;
+    line-height:  80px;
+  }
+
+  .budget .equal {
+    position: absolute;
+    left: 50%;
+    margin-left: -40px;
+    top: 50%;
+    margin-top: -10px;
+  }
+
+  .budget .metaphore {
+    position: absolute;
+    left: 50%;
+    text-align: center;
+  }
+}
+
+@media(max-width: 450px) {
+  .budget {
+    text-align: center;
+  }
+  .budget .text1,
+  .budget .equal,
+  .budget .metaphore {
+    width: 100%;
+  }
+
+}

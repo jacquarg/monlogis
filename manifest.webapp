@@ -1,9 +1,10 @@
 {
-  "version": "0.1.2",
+  "version": "0.1.3",
   "name": "MonLogis",
   "slug": "app",
   "icon": "/assets/img/icon.svg",
   "description": "Le tableau de bord de mon logement",
+  "category": "partners",
   "source": "",
   "developer": {
     "name": "Fing",

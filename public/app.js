@@ -454,7 +454,7 @@ require.register("lib/appname_version.js", function(exports, require, module) {
 
 const name = 'monlogis';
 // use brunch-version plugin to populate these.
-const version = '0.1.1';
+const version = '0.1.3';
 
 module.exports = `${name}-${version}`;
 
@@ -1699,7 +1699,7 @@ const HomeView = require('./home_maif');
 
 module.exports = DetailsVendorView.extend({
   template: template,
-
+  className: 'maif',
   regions: {
     files: '.files',
     budget: '.budget',
@@ -2662,7 +2662,7 @@ n++
 }
 buf.push("<div class=\"metaphoreLabel\">" + (jade.escape(null == (jade_interp = metaphoreCount) ? "" : jade_interp)) + (jade.escape(null == (jade_interp = metaphoreLabel) ? "" : jade_interp)) + "</div></span>");
 };
-buf.push("<h3><i class=\"fa fa-eur\"></i>Budget\n&emsp;-&emsp;\nVos dépenses&ensp;représentent :</h3><div class=\"row\"><div class=\"col-xs-5\"><img src=\"/assets/img/illustrations/ON40SD0.jpg\" class=\"illustration\"/></div><div class=\"col-xs-7 budgetlines\">");
+buf.push("<h3><i class=\"fa fa-eur\"></i>Budget\n&emsp;-&emsp;\nVos dépenses&ensp;représentent :</h3><div class=\"row\"><div class=\"col-md-5 illustration\"><img src=\"/assets/img/illustrations/ON40SD0.jpg\"/></div><div class=\"col-md-7 budgetlines\">");
 if ( daily)
 {
 buf.push("<div class=\"budgetline daily\">");
@@ -2719,7 +2719,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (category, client, contract, login, name, slug) {
-buf.push("<div class=\"col-xs-12\"><h2>Mon fournisseur&ensp;" + (jade.escape(null == (jade_interp = category) ? "" : jade_interp)) + "&ensp;<img" + (jade.attr("src", "/assets/img/icon_konnectors/" + (slug) + ".svg", true, false)) + " class=\"icon\"/></h2></div><div class=\"col-xs-12 frame\"><div class=\"row\"><div class=\"col-xs-8 paymentterms\"></div><div class=\"col-xs-4 consumption\"></div></div><div class=\"row\"><div class=\"col-xs-12 budget\"></div></div><div class=\"row\"><div class=\"col-xs-8 files\"></div><div class=\"col-xs-4 relation\"><h3><i class=\"fa fa-handshake-o\"></i>Ma relation avec&ensp;" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "</h3><div class=\"contract\">");
+buf.push("<div class=\"col-xs-12\"><h2>Mon fournisseur&ensp;" + (jade.escape(null == (jade_interp = category) ? "" : jade_interp)) + "&ensp;<img" + (jade.attr("src", "/assets/img/icon_konnectors/" + (slug) + ".svg", true, false)) + " class=\"icon\"/></h2></div><div class=\"col-xs-12 frame\"><div class=\"row\"><div class=\"col-lg-8 paymentterms\"></div><div class=\"col-lg-4 consumption\"></div></div><div class=\"row\"><div class=\"col-xs-12 budget\"></div></div><div class=\"row\"><div class=\"col-lg-8 files\"></div><div class=\"col-lg-4 relation\"><h3><i class=\"fa fa-handshake-o\"></i>Ma relation avec&ensp;" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "</h3><div class=\"contract\">");
 if ( contract)
 {
 buf.push("<ul><li><span class=\"label\">Contrat&nbsp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.name) ? "" : jade_interp)) + "&ensp;" + (jade.escape(null == (jade_interp = contract.contractSubcategory1) ? "" : jade_interp)) + "</span></li><li><span class=\"label\">Puissance :&ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.power) ? "" : jade_interp)) + "</span></li></ul>");
@@ -2758,10 +2758,14 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (category, contract, login, name, slug) {
-buf.push("<div class=\"col-xs-12\"><h2>Mon fournisseur&ensp;" + (jade.escape(null == (jade_interp = category) ? "" : jade_interp)) + "&ensp;<img" + (jade.attr("src", "/assets/img/icon_konnectors/" + (slug) + ".svg", true, false)) + " class=\"icon\"/></h2></div><div class=\"col-xs-12 frame\"><div class=\"row\"><div class=\"col-xs-4 paymentterms\"></div><div class=\"col-xs-4 foyer\"></div><div class=\"col-xs-4 home\"></div></div><div class=\"row\"><div class=\"col-xs-12 budget\"></div></div><div class=\"row\"><div class=\"col-xs-8 files\"></div><div class=\"col-xs-4 relation\"><h3><i class=\"fa fa-handshake-o\"></i>Ma relation avec&ensp;" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "\n</h3><div class=\"contract\">");
+buf.push("<div class=\"col-xs-12\"><h2>Mon fournisseur&ensp;" + (jade.escape(null == (jade_interp = category) ? "" : jade_interp)) + "&ensp;<img" + (jade.attr("src", "/assets/img/icon_konnectors/" + (slug) + ".svg", true, false)) + " class=\"icon\"/></h2></div><div class=\"col-xs-12 frame\"><div class=\"row\"><div class=\"col-lg-4 paymentterms\"></div><div class=\"col-lg-4 col-sm-6 foyer\"></div><div class=\"col-lg-4 col-sm-6 home\"></div></div><div class=\"row\"><div class=\"col-xs-12 budget\"></div></div><div class=\"row\"><div class=\"col-lg-8 files\"></div><div class=\"col-lg-4 relation\"><h3><i class=\"fa fa-handshake-o\"></i>Ma relation avec&ensp;" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "\n</h3><div class=\"contract\">");
 if ( contract)
 {
-buf.push("<ul><li><span class=\"label\">Numéro de sociétaire :&ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.societaire) ? "" : jade_interp)) + "</span></li><li><span class=\"label\">Contrat&nbsp</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.name) ? "" : jade_interp)) + "</span></li><li><span class=\"label\">Début de contrat&nbsp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.startDate) ? "" : jade_interp)) + "</span></li></ul>");
+buf.push("<ul><li><span class=\"label\">Contrat&nbsp</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.name) ? "" : jade_interp)) + "</span></li><li>");
+if ( contract.startDate)
+{
+}
+buf.push("<span class=\"label\">Début de contrat&nbsp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.startDate.slice(0, 10)) ? "" : jade_interp)) + "</span></li></ul>");
 }
 buf.push("</div><div class=\"identifiers\"><h4>Mes identifiants :</h4><ul>");
 if ( login)
@@ -2770,7 +2774,7 @@ buf.push("<li><span class=\"label\">login web :&ensp;</span><span class=\"value\
 }
 if ( contract)
 {
-buf.push("<li><span class=\"label\">Point De Livraison :&ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.societaire) ? "" : jade_interp)) + "</span></li>");
+buf.push("<li><span class=\"label\">Numéro de sociétaire :&ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.societaire) ? "" : jade_interp)) + "</span></li>");
 }
 buf.push("</ul></div><div class=\"contact\"><h4>Contacter la Maif</h4><div><img src=\"/assets/img/tell.svg\"/><span>&nbsp;09 72 72 15 15</span></div></div></div></div></div>");}.call(this,"category" in locals_for_with?locals_for_with.category:typeof category!=="undefined"?category:undefined,"contract" in locals_for_with?locals_for_with.contract:typeof contract!=="undefined"?contract:undefined,"login" in locals_for_with?locals_for_with.login:typeof login!=="undefined"?login:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"slug" in locals_for_with?locals_for_with.slug:typeof slug!=="undefined"?slug:undefined));;return buf.join("");
 };
@@ -2810,7 +2814,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (category, login, name, slug) {
-buf.push("<div class=\"col-xs-12\"><h2>Mon fournisseur&ensp;" + (jade.escape(null == (jade_interp = category) ? "" : jade_interp)) + "&ensp;<img" + (jade.attr("src", "/assets/img/icon_konnectors/" + (slug) + ".svg", true, false)) + " class=\"icon\"/></h2></div><div class=\"col-xs-12 frame\"><div class=\"row\"><div class=\"col-xs-12 budget\"></div></div><div class=\"row\"><div class=\"col-xs-8 files\"></div><div class=\"col-xs-4 relation\"><h3><i class=\"fa fa-handshake-o\"></i>Ma relation avec&ensp;" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "</h3><div class=\"contract\"></div><div class=\"identifiers\"><h4>Mes identifiants :</h4><ul>");
+buf.push("<div class=\"col-xs-12\"><h2>Mon fournisseur&ensp;" + (jade.escape(null == (jade_interp = category) ? "" : jade_interp)) + "&ensp;<img" + (jade.attr("src", "/assets/img/icon_konnectors/" + (slug) + ".svg", true, false)) + " class=\"icon\"/></h2></div><div class=\"col-xs-12 frame\"><div class=\"row\"><div class=\"col-xs-12 budget\"></div></div><div class=\"row\"><div class=\"col-lg-8 files\"></div><div class=\"col-lg-4 relation\"><h3><i class=\"fa fa-handshake-o\"></i>Ma relation avec&ensp;" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "</h3><div class=\"contract\"></div><div class=\"identifiers\"><h4>Mes identifiants :</h4><ul>");
 if ( login)
 {
 buf.push("<li><span class=\"label\">login web :&ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = login) ? "" : jade_interp)) + "</span></li>");
@@ -3121,7 +3125,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<span class=\"category\">Mes fournisseurs\n&emsp;<button class=\"btn btn-primary btn-sm add\">+</button></span><ul></ul>");;return buf.join("");
+buf.push("<span class=\"category\">Mes fournisseurs\n&emsp;<button class=\"leftbar btn btn-primary btn-sm add\">+</button></span><ul></ul><button class=\"bottombar btn btn-primary btn-sm add\">+</button>");;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

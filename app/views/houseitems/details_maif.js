@@ -11,7 +11,7 @@ const HomeView = require('./home_maif');
 
 module.exports = DetailsVendorView.extend({
   template: template,
-
+  className: 'maif',
   regions: {
     files: '.files',
     budget: '.budget',

@@ -6,18 +6,18 @@
 
 .col-xs-12.frame
   .row
-    .col-xs-4.paymentterms
-    .col-xs-4.foyer
-    .col-xs-4.home
+    .col-lg-4.paymentterms
+    .col-lg-4.col-sm-6.foyer
+    .col-lg-4.col-sm-6.home
 
   .row
     .col-xs-12.budget
 
 
   .row
-    .col-xs-8.files
+    .col-lg-8.files
 
-    .col-xs-4.relation
+    .col-lg-4.relation
       h3
         i.fa.fa-handshake-o
         | Ma relation avec&ensp;
@@ -31,15 +31,13 @@
         if contract
           ul
             li
-              span.label Numéro de sociétaire :&ensp;
-              span.value= contract.societaire
-            li
               span.label Contrat&nbsp
               span.value= contract.name
 
             li
+              if contract.startDate
               span.label Début de contrat&nbsp;
-              span.value= contract.startDate
+              span.value= contract.startDate.slice(0, 10)
 
 
       .identifiers
@@ -51,7 +49,7 @@
               span.value= login
           if contract
             li
-              span.label Point De Livraison :&ensp;
+              span.label Numéro de sociétaire :&ensp;
               span.value= contract.societaire
 
       .contact
