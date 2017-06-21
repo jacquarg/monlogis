@@ -15,7 +15,6 @@ const VendorsView = Mn.CollectionView.extend({
   showSelected: function (houseItem) {
     this.$('li').toggleClass('selected', false);
     const item = this.children.findByModel(houseItem);
-    console.log(item);
     item.$el.toggleClass('selected', true);
   },
 

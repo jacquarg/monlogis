@@ -561,7 +561,7 @@ module.exports = Backbone.Model.extend({
   sync: function (method, model, options) {
     return this.syncPromise(method, model, options)
     .then(options.success, (err) => {
-      console.log(err);
+      console.error(err);
       options.error(err);
     });
   },
@@ -984,26 +984,14 @@ module.exports = CozyModel.extend({
   getNextPaymentEDF: function () {
     const paymentSchedules = this.get('paymentSchedules');
     if (paymentSchedules && paymentSchedules instanceof Array) {
-      //eslint-disable-next-line
-      for (const value of paymentSchedules) {
-        if (value.paid === false) {
-          return value;
-        }
-      }
+      return _.findWhere(paymentSchedules, { paid: false });
     }
   },
 
   getLastPaymentEDF: function () {
     const paymentSchedules = this.get('paymentSchedules');
     if (paymentSchedules && paymentSchedules instanceof Array) {
-      let prec;
-      //eslint-disable-next-line
-      for (const value of paymentSchedules) {
-        if (value.paid === false) {
-          return prec;
-        }
-        prec = value;
-      }
+      return paymentSchedules[_.findLastIndex(paymentSchedules, ps => ps.paid === true)];
     }
   },
 
@@ -1891,7 +1879,6 @@ module.exports = Mn.View.extend({
     if (data.attributes && data.attributes.mime) {
       data.faClass = mimetype2FA(data.attributes.mime);
     }
-    console.log(data);
     return data;
   },
 
@@ -2337,7 +2324,6 @@ const VendorsView = Mn.CollectionView.extend({
   showSelected: function (houseItem) {
     this.$('li').toggleClass('selected', false);
     const item = this.children.findByModel(houseItem);
-    console.log(item);
     item.$el.toggleClass('selected', true);
   },
 
@@ -2764,8 +2750,9 @@ if ( contract)
 buf.push("<ul><li><span class=\"label\">Contrat&nbsp</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.name) ? "" : jade_interp)) + "</span></li><li>");
 if ( contract.startDate)
 {
+buf.push("<span class=\"label\">Début de contrat&nbsp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.startDate.slice(0, 10)) ? "" : jade_interp)) + "</span>");
 }
-buf.push("<span class=\"label\">Début de contrat&nbsp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = contract.startDate.slice(0, 10)) ? "" : jade_interp)) + "</span></li></ul>");
+buf.push("</li></ul>");
 }
 buf.push("</div><div class=\"identifiers\"><h4>Mes identifiants :</h4><ul>");
 if ( login)

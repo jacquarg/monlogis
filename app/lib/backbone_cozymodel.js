@@ -16,7 +16,7 @@ module.exports = Backbone.Model.extend({
   sync: function (method, model, options) {
     return this.syncPromise(method, model, options)
     .then(options.success, (err) => {
-      console.log(err);
+      console.error(err);
       options.error(err);
     });
   },

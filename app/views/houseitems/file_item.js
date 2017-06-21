@@ -24,7 +24,6 @@ module.exports = Mn.View.extend({
     if (data.attributes && data.attributes.mime) {
       data.faClass = mimetype2FA(data.attributes.mime);
     }
-    console.log(data);
     return data;
   },
 
