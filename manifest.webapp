@@ -29,6 +29,11 @@
       "description": "App properties.",
       "type": "org.fing.mesinfos.monlogis.properties"
     },
+    "settings": {
+      "description": "Required by the cozy-bar to display Claudy and know which applications are coming soon",
+      "type": "io.cozy.settings",
+      "verbs": ["GET"]
+    },
     "io.cozy.files": {
       "description": "TODO",
       "type": "io.cozy.files"
