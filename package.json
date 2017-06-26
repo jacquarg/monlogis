@@ -7,7 +7,9 @@
     "build": "eslint -c .eslintrc.json app/ && brunch build --production",
     "lint": "eslint -c .eslintrc.json app/"
   },
-  "dependencies": {},
+  "dependencies": {
+    "cozy-bar": "^3.0.1"
+  },
   "devDependencies": {
     "brunch": "^2.0.0",
     "clean-css-brunch": "^2.0.0",
