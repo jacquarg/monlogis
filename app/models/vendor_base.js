@@ -87,7 +87,7 @@ module.exports = CozyModel.extend({
       bills = bills.slice(billsCount - 12)
     }
 
-    const mensual = bills.reduce((sum, bill) => sum + bill) / bills.length
+    const mensual = bills.reduce((sum, bill) => sum + bill.get('amount'), 0) / bills.length
     return {
       mensual: mensual,
       daily: mensual / 30,

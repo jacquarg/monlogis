@@ -196,7 +196,7 @@ const Application = Mn.Application.extend({
   _fetchAppDriveURI: function () {
     cozy.client.fetchJSON('GET', '/apps/')
     .then((apps) => {
-      this.appDriveURI = _.findWhere(apps, { id: 'io.cozy.apps/drive' }).links.related
+      this.appDriveURI = _.findWhere(apps.data, { id: 'io.cozy.apps/drive' }).links.related
     })
     .catch((err) => {
       console.warn("Can't fetch drive app url. In drive links won't work.", err)
@@ -1218,7 +1218,7 @@ module.exports = CozyModel.extend({
       bills = bills.slice(billsCount - 12)
     }
 
-    const mensual = bills.reduce((sum, bill) => sum + bill) / bills.length
+    const mensual = bills.reduce((sum, bill) => sum + bill.get('amount'), 0) / bills.length
     return {
       mensual: mensual,
       daily: mensual / 30,
