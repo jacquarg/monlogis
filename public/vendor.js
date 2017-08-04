@@ -8326,5 +8326,3 @@ return fr;
 
 })));
 
-
-//# sourceMappingURL=vendor.js.map

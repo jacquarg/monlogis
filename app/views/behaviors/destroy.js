@@ -1,4 +1,4 @@
-'use-strict';
+'use-strict'
 
 module.exports = Mn.Behavior.extend({
   events: {
@@ -7,9 +7,9 @@ module.exports = Mn.Behavior.extend({
 
   destroyObject: function () {
     if (this.options.onDestroy) {
-      this.view[this.options.onDestroy]();
+      this.view[this.options.onDestroy]()
     } else {
-      this.view.model.destroy();
+      this.view.model.destroy()
     }
   },
-});
+})

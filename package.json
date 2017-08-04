@@ -3,8 +3,9 @@
   "version": "0.1.3",
   "description": "Le tableau de bord de mon logement",
   "scripts": {
+    "fetch": "wget -O assets/data/konnectors.json https://raw.githubusercontent.com/cozy/cozy-collect/master/src/config/konnectors.json",
     "watch": "brunch watch",
-    "build": "eslint -c .eslintrc.json app/ && brunch build --production",
+    "build": "eslint -c .eslintrc.json app/ && npm run fetch && brunch build --production",
     "lint": "eslint -c .eslintrc.json app/"
   },
   "dependencies": {},

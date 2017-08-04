@@ -1,13 +1,13 @@
-'use strict';
+'use strict'
 
-const SinistreItemView = require('./sinistre_item');
-const template = require('../templates/houseitems/sinistre');
+const SinistreItemView = require('./sinistre_item')
+const template = require('../templates/houseitems/sinistre')
 
 const SinistreView = Mn.CollectionView.extend({
   tagName: 'ul',
   // className: 'movielibrary',
   childView: SinistreItemView,
-});
+})
 
 module.exports = Mn.View.extend({
   // className: 'mymovies',
@@ -24,7 +24,7 @@ module.exports = Mn.View.extend({
   },
 
   onRender: function () {
-    this.showChildView('collection', new SinistreView({ collection: this.collection }));
+    this.showChildView('collection', new SinistreView({ collection: this.collection }))
   },
 
-});
+})

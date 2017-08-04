@@ -1,4 +1,4 @@
-'use-strict';
+'use-strict'
 
 module.exports = Mn.Behavior.extend({
   triggers: {
@@ -11,22 +11,22 @@ module.exports = Mn.Behavior.extend({
   },
 
   onExpand: function () {
-    this.setExpanded(true);
+    this.setExpanded(true)
   },
 
   onContract: function () {
-    this.setExpanded(false);
+    this.setExpanded(false)
   },
 
   onToggle: function () {
-    this.setExpanded(!(this.$el.attr('aria-expanded') === 'true'));
+    this.setExpanded(!(this.$el.attr('aria-expanded') === 'true'))
   },
 
   setExpanded: function (isExpanded) {
-    this.$el.attr('aria-expanded', isExpanded);
+    this.$el.attr('aria-expanded', isExpanded)
   },
 
   onRender: function () {
-    this.onContract();
+    this.onContract()
   },
-});
+})

@@ -1,6 +1,6 @@
-'use-strict';
+'use-strict'
 
-const template = require('../templates/houseitems/bill_item');
+const template = require('../templates/houseitems/bill_item')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -15,4 +15,4 @@ module.exports = Mn.View.extend({
     change: 'render',
   },
 
-});
+})

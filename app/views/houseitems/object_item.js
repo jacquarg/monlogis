@@ -1,6 +1,6 @@
-'use-strict';
+'use-strict'
 
-const template = require('../templates/houseitems/object_item');
+const template = require('../templates/houseitems/object_item')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -21,22 +21,22 @@ module.exports = Mn.View.extend({
   },
 
   serializeData: function () {
-    const data = this.model.toJSON();
-    data.iconUrl = this.model.getIconUrl();
+    const data = this.model.toJSON()
+    data.iconUrl = this.model.getIconUrl()
     if (!data.iconUrl) {
-      data.iconUrl = '/assets/img/gift_icon.png';
+      data.iconUrl = '/assets/img/gift_icon.png'
     }
-    return data;
+    return data
   },
 
   onRender: function () {
     // this.ui.icon.on('error', (ev) => {
-    //   ev.target.src = 'assets/img/gift_icon.png';
-    // });
+    //   ev.target.src = 'assets/img/gift_icon.png'
+    // })
   },
 
   showDetails: function () {
-    app.trigger('houseitemdetails:show', this.model);
+    app.trigger('houseitemdetails:show', this.model)
   },
 
-});
+})

@@ -1,8 +1,8 @@
-'use strict';
+'use strict'
 
-const template = require('../templates/houseitems/details_vendor');
-const FilesView = require('./files');
-const BudgetView = require('./budget');
+const template = require('../templates/houseitems/details_vendor')
+const FilesView = require('./files')
+const BudgetView = require('./budget')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -22,11 +22,11 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
-    this.model.fetchAll();
+    this.model.fetchAll()
   },
 
   onRender: function () {
-    this.showChildView('files', new FilesView({ model: this.model }));
-    this.showChildView('budget', new BudgetView({ model: this.model }));
+    this.showChildView('files', new FilesView({ model: this.model }))
+    this.showChildView('budget', new BudgetView({ model: this.model }))
   },
-});
+})

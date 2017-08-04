@@ -1,6 +1,6 @@
-'use-strict';
+'use-strict'
 
-const template = require('views/templates/message');
+const template = require('views/templates/message')
 
 module.exports = Mn.View.extend({
   tagName: 'div',
@@ -14,14 +14,14 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
-    this.messages = {};
-    this.listenTo(app, 'message:display', this.onDisplay);
-    this.listenTo(app, 'message:hide', this.onHide);
-    this.listenTo(app, 'message:error', this.onError);
+    this.messages = {}
+    this.listenTo(app, 'message:display', this.onDisplay)
+    this.listenTo(app, 'message:hide', this.onHide)
+    this.listenTo(app, 'message:error', this.onError)
   },
 
   serializeData: function () {
-    return { messages: this.messages };
+    return { messages: this.messages }
   },
 
   onError: function (message) {
@@ -29,8 +29,8 @@ module.exports = Mn.View.extend({
       label: message.toString(),
       type: 'error',
       message: message,
-    }, Math.ceil(Math.random() * 10000));
-    console.error(`Emsg: ${message}`);
+    }, Math.ceil(Math.random() * 10000))
+    console.error(`Emsg: ${message}`)
   },
 
   onDisplay: function (message, id) {
@@ -38,20 +38,20 @@ module.exports = Mn.View.extend({
       type: 'info',
       label: message.toString(),
       message: message,
-    }, id);
+    }, id)
   },
 
   display: function (message, id) {
-    this.messages[id] = message;
-    this.render();
+    this.messages[id] = message
+    this.render()
   },
 
   onClose: function (ev) {
-    this.onHide(ev.currentTarget.dataset.messageid);
+    this.onHide(ev.currentTarget.dataset.messageid)
   },
 
   onHide: function (id) {
-    delete this.messages[id];
-    this.render();
+    delete this.messages[id]
+    this.render()
   },
-});
+})

@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-const template = require('../templates/houseitems/consomation_edf');
-const ConsumptionStatements = require('../../collections/consumptionstatements');
+const template = require('../templates/houseitems/consomation_edf')
+const ConsumptionStatements = require('../../collections/consumptionstatements')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -24,22 +24,20 @@ module.exports = Mn.View.extend({
   serializeData: function () {
     const lastPeriod = this.collection.getLastPeriod()
     const penultimatePeriod = this.collection.getPenultimatePeriod()
-    const data = {};
+    const data = {}
     if (lastPeriod) {
       data.lastPeriod = lastPeriod.toJSON()
       data.lastPeriod.duration = lastPeriod.getPeriodDuration()
     }
     if (penultimatePeriod) {
       data.penultimatePeriod = penultimatePeriod.toJSON()
-      data.penultimatePeriod.duration = penultimatePeriod.getPeriodDuration();
-      const increase = lastPeriod.get('value') - penultimatePeriod.get('value');
+      data.penultimatePeriod.duration = penultimatePeriod.getPeriodDuration()
+      const increase = lastPeriod.get('value') - penultimatePeriod.get('value')
       if (increase < 0) {
-        data.increase = increase / lastPeriod.get('value');
+        data.increase = increase / lastPeriod.get('value')
       }
     }
-
-    console.log(data)
-    return data;
+    return data
   },
 
-});
+})

@@ -1,6 +1,6 @@
-'use-strict';
+'use-strict'
 
-const template = require('./templates/vendor_item');
+const template = require('./templates/vendor_item')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -16,7 +16,7 @@ module.exports = Mn.View.extend({
   },
 
   showDetails: function () {
-    app.trigger('houseitemdetails:show', this.model);
+    app.trigger('houseitemdetails:show', this.model)
   },
 
-});
+})

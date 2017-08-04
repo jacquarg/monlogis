@@ -1,6 +1,6 @@
-'use-strict';
+'use-strict'
 
-const ObjetsCollection = require('./objects');
+const ObjetsCollection = require('./objects')
 
 module.exports = ObjetsCollection.extend({
 
@@ -12,4 +12,4 @@ module.exports = ObjetsCollection.extend({
     type: 'object',
     folderPath: '',
   }),
-});
+})
