@@ -77,11 +77,17 @@ module.exports = CozyModel.extend({
   },
 
   _computeBudget: function () {
-    // assume mensual bills, and always the same value
-    const bill = this.getBills().last();
-    if (!bill) { return {}; }
+    // assume mensual bills,
+    // use mean of last slippery year
+    let bills = this.getBills()
+    const billsCount = bills.length
+    if (billsCount === 0) { return {}; }
 
-    const mensual = bill.get('amount');
+    if (billsCount > 12) {
+      bills = bills.slice(billsCount - 12)
+    }
+
+    const mensual = bills.reduce((sum, bill) => sum + bill) / bills.length
     return {
       mensual: mensual,
       daily: mensual / 30,
