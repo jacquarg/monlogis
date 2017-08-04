@@ -196,7 +196,7 @@ const Application = Mn.Application.extend({
   _fetchAppDriveURI: function () {
     cozy.client.fetchJSON('GET', '/apps/')
     .then((apps) => {
-      this.appDriveURI = _.findWhere(apps.data, { id: 'io.cozy.apps/drive' }).links.related
+      this.appDriveURI = _.findWhere(apps, { _id: 'io.cozy.apps/drive' }).links.related
     })
     .catch((err) => {
       console.warn("Can't fetch drive app url. In drive links won't work.", err)
