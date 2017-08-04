@@ -38,8 +38,7 @@ module.exports = Mn.View.extend({
 
   serializeData: function () {
     const data = this.model.toJSON()
-    const driveAppURI = $("#coz-bar a[href*='drive.']").attr('href')
-    data.folderInFilesURI = `${driveAppURI}#/files/${this.model.getDirID()}`
+    data.folderInFilesURI = `${app.driveAppURI}#/files/${this.model.getDirID()}`
 
     return data
   },
@@ -48,5 +47,4 @@ module.exports = Mn.View.extend({
     this.showChildView('collection', new FilesView({ collection: this.collection }))
     this.showChildView('addFile', new UploadFile({ model: this.model }))
   },
-
 })

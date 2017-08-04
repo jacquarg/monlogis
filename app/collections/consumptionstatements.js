@@ -7,11 +7,11 @@ module.exports = CozyCollection.extend({
   model: Model,
   sort: 'end',
 
-  getFetchIndex: function () { return ['_id', 'statementType'] },
+  getFetchIndex: function () { return ['_id', 'statementCategory'] },
   getFetchQuery: function () {
     return { selector: {
       _id: { $gte: null },
-      statementType: { $ne: 'edelia' } }
+      statementCategory: { $ne: 'edelia' } }
     }
   },
 
