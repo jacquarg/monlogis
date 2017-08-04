@@ -186,10 +186,21 @@ const Application = Mn.Application.extend({
     .then(() => $.getJSON('/assets/data/konnectors.json'))
     .then((data) => { this.konnectors = data })
     .then(() => Promise.all([
+      this._fetchAppDriveURI(),
       this.vendors.init(),
       // this.objects.fetch(),
     ]))
     .then(() => this._defineViews())
+  },
+
+  _fetchAppDriveURI: function () {
+    cozy.client.fetchJSON('GET', '/apps/')
+    .then((apps) => {
+      this.appDriveURI = _.findWhere(apps, { id: 'io.cozy.apps/drive' }).links.related
+    })
+    .catch((err) => {
+      console.warn("Can't fetch drive app url. In drive links won't work.", err)
+    })
   },
 
   prepareInBackground: function () {
@@ -306,11 +317,11 @@ module.exports = CozyCollection.extend({
   model: Model,
   sort: 'end',
 
-  getFetchIndex: function () { return ['_id', 'statementType'] },
+  getFetchIndex: function () { return ['_id', 'statementCategory'] },
   getFetchQuery: function () {
     return { selector: {
       _id: { $gte: null },
-      statementType: { $ne: 'edelia' } }
+      statementCategory: { $ne: 'edelia' } }
     }
   },
 
@@ -2010,8 +2021,7 @@ module.exports = Mn.View.extend({
 
   serializeData: function () {
     const data = this.model.toJSON()
-    const driveAppURI = $("#coz-bar a[href*='drive.']").attr('href')
-    data.folderInFilesURI = `${driveAppURI}#/files/${this.model.getDirID()}`
+    data.folderInFilesURI = `${app.appDriveURI}#/files/${this.model.getDirID()}`
 
     return data
   },
@@ -2020,7 +2030,6 @@ module.exports = Mn.View.extend({
     this.showChildView('collection', new FilesView({ collection: this.collection }))
     this.showChildView('addFile', new UploadFile({ model: this.model }))
   },
-
 })
 
 });

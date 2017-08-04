@@ -38,7 +38,7 @@ module.exports = Mn.View.extend({
 
   serializeData: function () {
     const data = this.model.toJSON()
-    data.folderInFilesURI = `${app.driveAppURI}#/files/${this.model.getDirID()}`
+    data.folderInFilesURI = `${app.appDriveURI}#/files/${this.model.getDirID()}`
 
     return data
   },
