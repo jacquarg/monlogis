@@ -16,7 +16,8 @@ require('views/behaviors');
 const Application = Mn.Application.extend({
 
   prepare: function () {
-    this._splashMessages();
+    this._splashMessages()
+    moment.locale('fr')
 
     const appElem = $('[role=application]')[0];
 

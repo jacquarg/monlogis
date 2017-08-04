@@ -166,7 +166,8 @@ require('views/behaviors');
 const Application = Mn.Application.extend({
 
   prepare: function () {
-    this._splashMessages();
+    this._splashMessages()
+    moment.locale('fr')
 
     const appElem = $('[role=application]')[0];
 
@@ -291,6 +292,40 @@ module.exports = CozyCollection.extend({
     return { selector: { vendor: this.vendor } };
   },
 
+});
+
+});
+
+require.register("collections/consumptionstatements.js", function(exports, require, module) {
+'use-strict';
+
+const CozyCollection = require('../lib/backbone_cozycollection')
+const Model = require('../models/consumptionstatement')
+
+module.exports = CozyCollection.extend({
+  model: Model,
+  sort: 'end',
+
+  getFetchIndex: function () { return ['_id', 'statementType'] },
+  getFetchQuery: function () {
+    return { selector: {
+      _id: { $gte: null},
+      statementType: { $ne: 'edelia' } }
+    }
+  },
+
+
+  getLastPeriod: function () {
+    if (this.length >= 1) {
+      return this.last()
+    }
+  },
+
+  getPenultimatePeriod: function () {
+    if (this.length >= 2) {
+      return this.at(this.length - 2)
+    }
+  },
 });
 
 });
@@ -783,13 +818,22 @@ module.exports = CozyModel.extend({
 
 });
 
-require.register("models/consomation.js", function(exports, require, module) {
+require.register("models/consumptionstatement.js", function(exports, require, module) {
 'use-strict';
 
-const CozySingleton = require('../lib/backbone_cozysingleton');
+const CozyModel = require('../lib/backbone_cozymodel');
 
-module.exports = CozySingleton.extend({
+module.exports = CozyModel.extend({
   docType: 'org.fing.mesinfos.consumptionstatement',
+
+  getPeriodDuration: function () {
+    return moment.duration(moment(this.get('end')) - moment(this.get('start')));
+  },
+
+  getValueAsKGSKE: function () {
+    // https://www.unitjuggler.com/convertir-energy-de-kWh-en-kgSKE.html
+    return get('value') * 0.12283503255128;
+  },
 });
 
 });
@@ -1609,7 +1653,7 @@ require.register("views/houseitems/consomation_edf.js", function(exports, requir
 'use strict';
 
 const template = require('../templates/houseitems/consomation_edf');
-const Consomation = require('../../models/consomation');
+const ConsumptionStatements = require('../../collections/consumptionstatements');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -1617,13 +1661,37 @@ module.exports = Mn.View.extend({
   events: {
   },
 
-  modelEvents: {
-    change: 'render',
+  // modelEvents: {
+  //   change: 'render',
+  // },
+
+  //   change: 'render',
+  // },
+  initialize: function () {
+    this.collection = new ConsumptionStatements()
+    this.listenTo(this.collection, 'add', this.render)
+    this.collection.fetch()
   },
 
-  initialize: function () {
-    this.model = new Consomation();
-    this.model.fetch();
+  serializeData: function () {
+    const lastPeriod = this.collection.getLastPeriod()
+    const penultimatePeriod = this.collection.getPenultimatePeriod()
+    const data = {};
+    if (lastPeriod) {
+      data.lastPeriod = lastPeriod.toJSON()
+      data.lastPeriod.duration = lastPeriod.getPeriodDuration()
+    }
+    if (penultimatePeriod) {
+      data.penultimatePeriod = penultimatePeriod.toJSON()
+      data.penultimatePeriod.duration = penultimatePeriod.getPeriodDuration();
+      const increase = lastPeriod.get('value') - penultimatePeriod.get('value');
+      if (increase < 0) {
+        data.increase = increase / lastPeriod.get('value');
+      }
+    }
+
+    console.log(data)
+    return data;
   },
 
 });
@@ -2685,8 +2753,16 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (value) {
-buf.push("<h3><i class=\"fa fa-lightbulb-o\"></i>Consommation</h3><span class=\"labelperiod top\">Le dernier semestre</span><span class=\"labelconsumption bottomleft\">j'ai consomé</span><span class=\"value bottomright\">" + (jade.escape(null == (jade_interp = value) ? "" : jade_interp)) + "kWh</span>");}.call(this,"value" in locals_for_with?locals_for_with.value:typeof value!=="undefined"?value:undefined));;return buf.join("");
+;var locals_for_with = (locals || {});(function (lastPeriod, penultimatePeriod) {
+buf.push("<h3><i class=\"fa fa-lightbulb-o\"></i>Consommation</h3>");
+if ( lastPeriod)
+{
+buf.push("<div class=\"lastPeriod\"><span class=\"labelperiod top\">Les&ensp;" + (jade.escape(null == (jade_interp = lastPeriod.duration.humanize()) ? "" : jade_interp)) + "&ensp;derniers,</span><span class=\"labelconsumption bottomleft\">j'ai consommé</span><span class=\"value bottomright\">" + (jade.escape(null == (jade_interp = lastPeriod.value) ? "" : jade_interp)) + "kWh</span></div>");
+}
+if ( penultimatePeriod)
+{
+buf.push("<div class=\"penultimatePeriod\"><span class=\"labelperiod top\">Les&ensp;" + (jade.escape(null == (jade_interp = penultimatePeriod.duration.humanize()) ? "" : jade_interp)) + "&ensp; précédents,</span><span class=\"labelconsumption bottomleft\">j'avais consommé</span><span class=\"value bottomright\">" + (jade.escape(null == (jade_interp = penultimatePeriod.value) ? "" : jade_interp)) + "kWh</span></div>");
+}}.call(this,"lastPeriod" in locals_for_with?locals_for_with.lastPeriod:typeof lastPeriod!=="undefined"?lastPeriod:undefined,"penultimatePeriod" in locals_for_with?locals_for_with.penultimatePeriod:typeof penultimatePeriod!=="undefined"?penultimatePeriod:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -3247,3 +3323,5 @@ require.register("___globals___", function(exports, require, module) {
   
 });})();require('___globals___');
 
+
+//# sourceMappingURL=app.js.map

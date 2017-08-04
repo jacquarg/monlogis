@@ -5,9 +5,11 @@
 Open source, développée par la Fing, sous licence AGPL v3.
 
 ## Contribuer !
+[Venez en discuter sur le forum MesInfos](https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions)
 
+## En cours
 
-
+ * Correction Bug : Calcul de la consommation erroné en cas de tarifs heure creuse
 
 ## TODO-list
 
@@ -42,4 +44,3 @@ TODO
 TODO
 ##### App WorkFlow
 TODO
-

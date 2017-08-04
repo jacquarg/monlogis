@@ -435,7 +435,13 @@ main {
 .consumption {
   position: relative;
   height: 290px;
+}
 
+.consumption .lastPeriod,
+.consumption .penultimatePeriod {
+  position: relative;
+  margin: 20px 0;
+  height: 100px;
 }
 
 .consumption .icon {
@@ -476,8 +482,13 @@ main {
   bottom: 51%;
 }
 
-.consumption .value {
-  font-size: 35px;
+.consumption .lastPeriod .value {
+  font-size: 30px;
+  line-height: 1;
+}
+
+.consumption .penultimatePeriod .value {
+  font-size: 25px;
   line-height: 1;
 }
 

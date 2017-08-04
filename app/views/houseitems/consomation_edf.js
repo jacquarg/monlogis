@@ -1,7 +1,7 @@
 'use strict';
 
 const template = require('../templates/houseitems/consomation_edf');
-const Consomation = require('../../models/consomation');
+const ConsumptionStatements = require('../../collections/consumptionstatements');
 
 module.exports = Mn.View.extend({
   template: template,
@@ -9,13 +9,37 @@ module.exports = Mn.View.extend({
   events: {
   },
 
-  modelEvents: {
-    change: 'render',
+  // modelEvents: {
+  //   change: 'render',
+  // },
+
+  //   change: 'render',
+  // },
+  initialize: function () {
+    this.collection = new ConsumptionStatements()
+    this.listenTo(this.collection, 'add', this.render)
+    this.collection.fetch()
   },
 
-  initialize: function () {
-    this.model = new Consomation();
-    this.model.fetch();
+  serializeData: function () {
+    const lastPeriod = this.collection.getLastPeriod()
+    const penultimatePeriod = this.collection.getPenultimatePeriod()
+    const data = {};
+    if (lastPeriod) {
+      data.lastPeriod = lastPeriod.toJSON()
+      data.lastPeriod.duration = lastPeriod.getPeriodDuration()
+    }
+    if (penultimatePeriod) {
+      data.penultimatePeriod = penultimatePeriod.toJSON()
+      data.penultimatePeriod.duration = penultimatePeriod.getPeriodDuration();
+      const increase = lastPeriod.get('value') - penultimatePeriod.get('value');
+      if (increase < 0) {
+        data.increase = increase / lastPeriod.get('value');
+      }
+    }
+
+    console.log(data)
+    return data;
   },
 
 });
