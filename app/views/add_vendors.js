@@ -12,7 +12,6 @@ module.exports = Mn.View.extend({
   },
   events: {
     'click .houseitem': 'fireIntent',
-
   },
 
   initialize: function () {
@@ -32,8 +31,8 @@ module.exports = Mn.View.extend({
     if (this.rawData) {
       data.mesinfos.push(_.findWhere(this.rawData, { slug: 'maif' }))
       data.mesinfos.push(_.findWhere(this.rawData, { slug: 'edf' }))
-      data.mesinfos.push(_.findWhere(this.rawData, { slug: 'orangemobile' }))
-      data.mesinfos.push(_.findWhere(this.rawData, { slug: 'orangelivebox' }))
+      // data.mesinfos.push(_.findWhere(this.rawData, { slug: 'orangemobile' }))
+      // data.mesinfos.push(_.findWhere(this.rawData, { slug: 'orangelivebox' }))
     }
 
     data.isp = _.where(this.rawData, { category: 'isp' })
