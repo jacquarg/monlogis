@@ -1,6 +1,5 @@
 {
-  "testversion": "{!major!}.{!minor!}.{!maintenance!}",
-  "version": "0.1.4-dev",
+  "version": "0.1.4",
   "name": "MonLogis",
   "slug": "app",
   "icon": "/assets/img/icon.svg",
