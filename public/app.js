@@ -500,7 +500,7 @@ module.exports = CozyCollection.extend({
 
 const name = 'monlogis'
 // use brunch-version plugin to populate these.
-const version = '0.1.3'
+const version = '0.1.4'
 
 module.exports = `${name}-${version}`
 
