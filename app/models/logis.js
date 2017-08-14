@@ -58,7 +58,7 @@ module.exports = VendorModel.extend({
       // occupationType Type d'occupation parmi : Proprietaire, Locataire
     }
 
-    if (vendorMaif && vendor.Maif.home) {
+    if (vendorMaif && vendorMaif.home) {
       home = vendorMaif.home.get('home')[0]
     }
 
