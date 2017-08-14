@@ -16,13 +16,17 @@ const VendorsView = Mn.CollectionView.extend({
   showSelected: function (houseItem) {
     this.$('li').toggleClass('selected', false)
     const item = this.children.findByModel(houseItem)
-    item.$el.toggleClass('selected', true)
+    if (item) item.$el.toggleClass('selected', true)
   },
 
 })
 
 module.exports = Mn.View.extend({
   template: template,
+
+  ui: {
+    logisLabel: '.logis > span',
+  },
 
   regions: {
     collection: {
@@ -31,8 +35,16 @@ module.exports = Mn.View.extend({
     },
   },
 
+  events: {
+    'click @ui.logisLabel': () => app.trigger('houseitemdetails:show', app.logis)
+  },
+
   triggers: {
     'click .add': 'show:addvendors',
+  },
+
+  initialize: function () {
+    this.listenTo(app, 'houseitemdetails:show', this.showSelected)
   },
 
   serializeData: function () {
@@ -45,4 +57,9 @@ module.exports = Mn.View.extend({
   onRender: function () {
     this.showChildView('collection', new VendorsView({ collection: this.collection }))
   },
+
+  showSelected: function (houseItem) {
+    this.ui.logisLabel.toggleClass('selected', houseItem === app.logis)
+  },
+
 })

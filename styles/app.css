@@ -96,10 +96,12 @@ aside ul {
   list-style: none;
 }
 
+.logis > span,
 aside li {
   cursor: pointer;
 }
 
+.logis > span:hover,
 aside li:hover {
   color: black;
 }
@@ -461,6 +463,21 @@ main {
   margin-bottom: 15px;
 }
 
+/* 
+  houseitemdetails mon logis
+*/
+.mapcontainer {
+  text-align: center;
+}
+.mapcontainer img {
+  max-height: 160px;
+  
+}
+
+.logis .home {
+  min-height: 160px;
+}
+
 
 /*
   houseitemdetails consumption (EDF)
@@ -673,10 +690,12 @@ main {
 
   aside .category {
     line-height: 48px;
+    padding-left: 8px;
+    font-style: italic;
   }
 
   aside ul {
-    padding-left: 16px;
+    padding-left: 8px;
   }
 
   aside li {
@@ -706,6 +725,7 @@ main {
   }
 
   aside ul {
+    display: inline-block;
     padding-left: 0;
   }
 

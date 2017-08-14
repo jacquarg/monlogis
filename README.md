@@ -8,7 +8,7 @@ Open source, développée par la Fing, sous licence AGPL v3.
 [Venez en discuter sur le forum MesInfos](https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions)
 
 ## En cours
-
+* Écran mon logis
 
 
 ## TODO-list
@@ -17,9 +17,13 @@ Open source, développée par la Fing, sous licence AGPL v3.
 * Correction Bug : Calcul de la consommation erroné en cas de tarifs heures creuses
 
 ### Nouvelles fonctionnalités
+* Gestion de _Plusieurs logis_
 
 ### Changelog
 
+#### V0.1.4
+##### Corrections Bugs :
+##### Évolutions :
 
 #### V0.1.4
 ##### Corrections Bugs :
@@ -29,7 +33,6 @@ Open source, développée par la Fing, sous licence AGPL v3.
 ##### Évolutions :
 
 * Calcul du budget télécoms sur 12 mois de factures.
-
 
 
 ### Howto hack this app

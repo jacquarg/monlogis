@@ -10,6 +10,7 @@ const Properties = require('models/properties')
 const VendorsCollection = require('collections/vendors')
 // const EquipmentsCollection = require('collections/equipments')
 const ObjectsCollection = require('collections/objects')
+const Logis = require('models/logis')
 
 
 require('views/behaviors')
@@ -32,6 +33,7 @@ const Application = Mn.Application.extend({
     this.properties = Properties
     this.vendors = new VendorsCollection()
     this.objects = new ObjectsCollection()
+    this.logis = new Logis()
     this.konnectors = []
     Tracking()
     return this.properties.fetch()
@@ -91,11 +93,14 @@ const Application = Mn.Application.extend({
       Backbone.history.start({ pushState: false })
     }
 
-    if (app.vendors.size() > 0) {
-      app.trigger('houseitemdetails:show', app.vendors.at(0))
-    } else {
-      app.layout.onChildviewShowAddvendors()
-    }
+    // TODO : what appens without data !
+    app.trigger('houseitemdetails:show', this.logis)
+
+    // if (app.vendors.size() > 0) {
+    //   app.trigger('houseitemdetails:show', app.vendors.at(0))
+    // } else {
+    //   app.layout.onChildviewShowAddvendors()
+    // }
   },
 })
 

@@ -1,6 +1,6 @@
 {
   "name": "monlogis",
-  "version": "0.1.4",
+  "version": "0.1.5-dev",
   "description": "Le tableau de bord de mon logement",
   "scripts": {
     "fetch": "wget -O assets/data/konnectors.json https://raw.githubusercontent.com/cozy/cozy-collect/master/src/config/konnectors.json",

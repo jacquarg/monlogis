@@ -7,10 +7,10 @@ const HouseitemDetailsEDFView = require('views/houseitems/details_edf')
 const HouseitemDetailsMaifView = require('views/houseitems/details_maif')
 const HouseitemDetailsVendorView = require('views/houseitems/details_vendor')
 const HouseitemDetailsObjectView = require('views/houseitems/details_object')
+const LogisView = require('views/houseitems/logis')
 const MenuView = require('views/menu')
 // const ObjectsView = require('views/houseitems/objects')
 const AddVendorsView = require('views/add_vendors')
-
 
 module.exports = Mn.View.extend({
   template: template,
@@ -58,6 +58,8 @@ module.exports = Mn.View.extend({
       } else {
         ViewClass = HouseitemDetailsVendorView
       }
+    } else if (docType === 'org.fing.mesinfos.logis') {
+      ViewClass = LogisView
     } else if (docType === 'org.fing.mesinfos.object') {
       const type = houseItem.get('type')
       if (type === 'object') {

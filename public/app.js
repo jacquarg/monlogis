@@ -159,6 +159,7 @@ const Properties = require('models/properties')
 const VendorsCollection = require('collections/vendors')
 // const EquipmentsCollection = require('collections/equipments')
 const ObjectsCollection = require('collections/objects')
+const Logis = require('models/logis')
 
 
 require('views/behaviors')
@@ -181,6 +182,7 @@ const Application = Mn.Application.extend({
     this.properties = Properties
     this.vendors = new VendorsCollection()
     this.objects = new ObjectsCollection()
+    this.logis = new Logis()
     this.konnectors = []
     return this.properties.fetch()
     .then(() => $.getJSON('/assets/data/konnectors.json'))
@@ -239,11 +241,14 @@ const Application = Mn.Application.extend({
       Backbone.history.start({ pushState: false })
     }
 
-    if (app.vendors.size() > 0) {
-      app.trigger('houseitemdetails:show', app.vendors.at(0))
-    } else {
-      app.layout.onChildviewShowAddvendors()
-    }
+    // TODO : what appens without data !
+    app.trigger('houseitemdetails:show', this.logis)
+
+    // if (app.vendors.size() > 0) {
+    //   app.trigger('houseitemdetails:show', app.vendors.at(0))
+    // } else {
+    //   app.layout.onChildviewShowAddvendors()
+    // }
   },
 })
 
@@ -500,7 +505,7 @@ module.exports = CozyCollection.extend({
 
 const name = 'monlogis'
 // use brunch-version plugin to populate these.
-const version = '0.1.4'
+const version = '0.1.5'
 
 module.exports = `${name}-${version}`
 
@@ -941,6 +946,79 @@ module.exports = CozyModel.extend({
     $.extend(attr, get(attr, 'home', 0))
     return attr
   },
+
+})
+
+});
+
+;require.register("models/logis.js", function(exports, require, module) {
+'use-strict'
+
+const VendorModel = require('./vendor_base')
+
+module.exports = VendorModel.extend({
+  docType: 'org.fing.mesinfos.logis',
+
+  toFetch: function () {
+    return [
+      this.getFiles().fetch(),
+      this._computeBudget(),
+    ]
+  },
+
+  // deactivate this, as no bills field.
+  injectBillsInFiles: () => undefined,
+
+  _getBillsVendor: () => 'logis',
+
+  getFolderPath: function () {
+    return '/Administration/Mon Logis'
+  },
+
+  getBudget: function () {
+    return this.budget || {}
+  },
+
+  _computeBudget: function () {
+    return Promise.all(app.vendors.map(vendor => vendor.fetchAll()))
+    .then(() => {
+      const mensual = app.vendors
+        .map(vendor => vendor.getBudget())
+        .reduce((sum, budget) => sum + (budget.mensual || 0), 0)
+
+      this.budget = {
+        mensual: mensual,
+        daily: mensual / 30,
+        annual: mensual * 12,
+      }
+      return this.budget
+    })
+  },
+
+  getHome: function () {
+    const vendorEDF = app.vendors.findWhere({ slug: 'edf' })
+    const vendorMaif = app.vendors.findWhere({ slug: 'maif' })
+
+    let home = {
+      address: {}
+    }
+
+    if (vendorEDF) {
+      home.address = vendorEDF.client.get('address')
+
+      // if (vendorEDF.home) // TODO !
+      // housingType Type de logement parmi : Appartement, Maison
+      // residenceType Type de résidence parmi : Principale, Secondaire
+      // occupationType Type d'occupation parmi : Proprietaire, Locataire
+    }
+
+    if (vendorMaif && vendor.Maif.home) {
+      home = vendorMaif.home.get('home')[0]
+    }
+
+    return home
+  },
+
 
 })
 
@@ -1429,10 +1507,10 @@ const HouseitemDetailsEDFView = require('views/houseitems/details_edf')
 const HouseitemDetailsMaifView = require('views/houseitems/details_maif')
 const HouseitemDetailsVendorView = require('views/houseitems/details_vendor')
 const HouseitemDetailsObjectView = require('views/houseitems/details_object')
+const LogisView = require('views/houseitems/logis')
 const MenuView = require('views/menu')
 // const ObjectsView = require('views/houseitems/objects')
 const AddVendorsView = require('views/add_vendors')
-
 
 module.exports = Mn.View.extend({
   template: template,
@@ -1480,6 +1558,8 @@ module.exports = Mn.View.extend({
       } else {
         ViewClass = HouseitemDetailsVendorView
       }
+    } else if (docType === 'org.fing.mesinfos.logis') {
+      ViewClass = LogisView
     } else if (docType === 'org.fing.mesinfos.object') {
       const type = houseItem.get('type')
       if (type === 'object') {
@@ -2081,6 +2161,50 @@ module.exports = Mn.View.extend({
 
 });
 
+;require.register("views/houseitems/logis.js", function(exports, require, module) {
+'use strict'
+
+const DetailsVendorView = require('./details_vendor')
+// const template = require('../templates/houseitems/logis')
+const template = require('../templates/houseitems/logis')
+
+// const HomeView = require('./home_maif')
+
+module.exports = DetailsVendorView.extend({
+  template: template,
+  className: 'logis',
+  regions: {
+    files: '.files',
+    budget: '.budget',
+    // foyer: '.foyer',
+    // home: '.home',
+  },
+
+  serializeData: function () {
+    const data = {
+      home: this.model.getHome()
+    }
+    return data
+  },
+
+  //
+  // onRender: function () {
+  //   //eslint-disable-next-line
+  //   DetailsVendorView.prototype.onRender.apply(this, arguments)
+  //   this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'maif', contract: this.model.getContract() }))
+  //   this.showChildView('foyer', new FoyerView({ model: this.model.getFoyer() }))
+  //   this.showChildView('home', new HomeView({ model: this.model.getHome() }))
+  //
+  //   // this.showChildView('sinistres', new SinistreView({
+  //   //   model: new Backbone.Model({ slug: 'Maif' }),
+  //   //   collection: this.sinistres,
+  //   // }))
+  //   // this.showChildView('societaireMaif', new SocietaireView())
+  // },
+})
+
+});
+
 ;require.register("views/houseitems/object_item.js", function(exports, require, module) {
 'use-strict'
 
@@ -2405,13 +2529,17 @@ const VendorsView = Mn.CollectionView.extend({
   showSelected: function (houseItem) {
     this.$('li').toggleClass('selected', false)
     const item = this.children.findByModel(houseItem)
-    item.$el.toggleClass('selected', true)
+    if (item) item.$el.toggleClass('selected', true)
   },
 
 })
 
 module.exports = Mn.View.extend({
   template: template,
+
+  ui: {
+    logisLabel: '.logis > span',
+  },
 
   regions: {
     collection: {
@@ -2420,8 +2548,16 @@ module.exports = Mn.View.extend({
     },
   },
 
+  events: {
+    'click @ui.logisLabel': () => app.trigger('houseitemdetails:show', app.logis)
+  },
+
   triggers: {
     'click .add': 'show:addvendors',
+  },
+
+  initialize: function () {
+    this.listenTo(app, 'houseitemdetails:show', this.showSelected)
   },
 
   serializeData: function () {
@@ -2434,6 +2570,11 @@ module.exports = Mn.View.extend({
   onRender: function () {
     this.showChildView('collection', new VendorsView({ collection: this.collection }))
   },
+
+  showSelected: function (houseItem) {
+    this.ui.logisLabel.toggleClass('selected', houseItem === app.logis)
+  },
+
 })
 
 });
@@ -3035,6 +3176,30 @@ if (typeof define === 'function' && define.amd) {
 }
 });
 
+;require.register("views/templates/houseitems/logis.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (home, natureLieu, nombrePieces, situationJuridiqueLieu) {
+buf.push("<div class=\"col-xs-12\"><div class=\"row\"><div class=\"col-lg-6 mapcontainer\"><img src=\"assets/img/icon.svg\"/></div><div class=\"col-lg-6 frame\"><div class=\"row\"><div class=\"col-xs-12 home\"><h3><i class=\"fa fa-home\"></i>Mon Logis</h3>");
+if ( home.address)
+{
+buf.push("<div class=\"address\">" + (jade.escape(null == (jade_interp = home.address.street) ? "" : jade_interp)) + "&ensp;" + (jade.escape(null == (jade_interp = home.address.city) ? "" : jade_interp)) + "</div>");
+}
+buf.push("<ul class=\"details\"><li>" + (jade.escape(null == (jade_interp = natureLieu) ? "" : jade_interp)) + "</li><li>" + (jade.escape(null == (jade_interp = nombrePieces) ? "" : jade_interp)) + "</li><li>" + (jade.escape(null == (jade_interp = situationJuridiqueLieu) ? "" : jade_interp)) + "</li></ul></div></div></div></div></div><div class=\"col-xs-12 frame\"><div class=\"row\"><div class=\"col-xs-12 budget\"></div></div><div class=\"row\"><div class=\"col-lg-12 files\"></div></div></div>");}.call(this,"home" in locals_for_with?locals_for_with.home:typeof home!=="undefined"?home:undefined,"natureLieu" in locals_for_with?locals_for_with.natureLieu:typeof natureLieu!=="undefined"?natureLieu:undefined,"nombrePieces" in locals_for_with?locals_for_with.nombrePieces:typeof nombrePieces!=="undefined"?nombrePieces:undefined,"situationJuridiqueLieu" in locals_for_with?locals_for_with.situationJuridiqueLieu:typeof situationJuridiqueLieu!=="undefined"?situationJuridiqueLieu:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
 ;require.register("views/templates/houseitems/object_item.jade", function(exports, require, module) {
 var __templateData = function template(locals) {
 var buf = [];
@@ -3208,7 +3373,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (nameVersion) {
-buf.push("<span class=\"category\">Mes fournisseurs\n&emsp;<button title=\"ajouter un fournisseur\" class=\"leftbar btn btn-primary btn-sm add\"><i class=\"fa fa-plus\"></i></button></span><ul></ul><div class=\"codesign\"><a href=\"https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions\" title=\"un peu d'aide pour bien utiliser l'application ?\" target=\"_blank\" class=\"help\"><i class=\"fa fa-question-circle\"></i><span class=\"leftbar\">&ensp;Aide</span></a><a href=\"https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions\" title=\"suggestion pour améliorer l'application,\nrapports de bugs, ...\" target=\"_blank\" class=\"feedback\"><i class=\"fa fa-comments\"></i><span class=\"leftbar\">&ensp;Suggestions</span></a><a href=\"https://github.com/jacquarg/monlogis\" title=\"code source de l'application\" target=\"_blank\" class=\"code\"><i class=\"fa fa-code\"></i><span class=\"leftbar\">&ensp;" + (jade.escape(null == (jade_interp = nameVersion) ? "" : jade_interp)) + "</span></a></div><button class=\"bottombar btn btn-primary btn-sm add\"><i class=\"fa fa-plus\"></i></button>");}.call(this,"nameVersion" in locals_for_with?locals_for_with.nameVersion:typeof nameVersion!=="undefined"?nameVersion:undefined));;return buf.join("");
+buf.push("<div class=\"logis\"><span>Mon Logis</span><div class=\"category\">Mes fournisseurs\n&ensp;<button title=\"ajouter un fournisseur\" class=\"leftbar btn btn-primary btn-sm add\"><i class=\"fa fa-plus\"></i></button></div><ul></ul></div><div class=\"codesign\"><a href=\"https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions\" title=\"un peu d'aide pour bien utiliser l'application ?\" target=\"_blank\" class=\"help\"><i class=\"fa fa-question-circle\"></i><span class=\"leftbar\">&ensp;Aide</span></a><a href=\"https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions\" title=\"suggestion pour améliorer l'application,\nrapports de bugs, ...\" target=\"_blank\" class=\"feedback\"><i class=\"fa fa-comments\"></i><span class=\"leftbar\">&ensp;Suggestions</span></a><a href=\"https://github.com/jacquarg/monlogis\" title=\"code source de l'application\" target=\"_blank\" class=\"code\"><i class=\"fa fa-code\"></i><span class=\"leftbar\">&ensp;" + (jade.escape(null == (jade_interp = nameVersion) ? "" : jade_interp)) + "</span></a></div><button class=\"bottombar btn btn-primary btn-sm add\"><i class=\"fa fa-plus\"></i></button>");}.call(this,"nameVersion" in locals_for_with?locals_for_with.nameVersion:typeof nameVersion!=="undefined"?nameVersion:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
