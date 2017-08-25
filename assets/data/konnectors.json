@@ -33,7 +33,7 @@
     "vendorLink":"https://secure.digiposte.fr",
     "category":"other",
     "color":{"hex":"#FBC32C","css":"linear-gradient(90deg, #EF0001 0%, #FBC32C 100%)"},
-    "dataType":["bill"],
+    "dataType":["document"],
     "fields":{"email":{"type":"text"},"password":{"type":"password"},"folderPath":{"type":"folder","advanced":true}},
     "source": "git://github.com/cozy/cozy-konnector-digiposte.git#build"
   },
@@ -100,9 +100,10 @@
     "vendorLink":"maif.fr",
     "category":"insurance",
     "color":{"hex":"#007858","css":"#007858"},
-    "fields":{"access_token":{"type":"hidden"},"folderPath":{"type":"folder","advanced":true}},
+    "fields":{"access_token":{"type":"hidden"}},
     "dataType":["profile", "contract", "home", "family", "sinister"],
-    "source": "git://github.com/cozy/cozy-konnector-maif.git#build"
+    "source": "git://github.com/cozy/cozy-konnector-maif.git#build",
+    "oauth_scope": "openid+profile+offline_access"
   },
   {
     "accounts":[],
@@ -205,13 +206,81 @@
   },
   {
     "accounts":[],
-    "slug":"uber",
-    "name":"Uber",
-    "vendorLink":"https://uber.com",
-    "category":"transport",
-    "color":{"hex":"#000203","css":"#000203"},
-    "fields":{"login":{"type":"text"},"password":{"type":"password"},"folderPath":{"type":"folder","advanced":true}},
+    "slug":"orange",
+    "name":"Orange",
+    "vendorLink":"https://www.orange.fr/",
+    "category":"telecom",
+    "color":{"hex":"#FF6122","css":"#FF6122"},
     "dataType":["bill"],
-    "source": "git://github.com/cozy/cozy-konnector-uber.git#build"
+    "fields":{
+      "login": {
+        "type":"text"
+      },
+      "password": {
+        "type":"password"
+       },
+       "folderPath": {
+          "type":"folder",
+          "advanced":true
+        }
+    },
+    "additionnalSuccessMessage": {
+      "message": "connector.orange.message.delay"
+    },
+    "source": "git://github.com/cozy/cozy-konnector-orange.git#build"
+  },
+  {
+    "accounts":[],
+    "oauth": true,
+    "slug":"orangemobile",
+    "name":"Orange Mobile",
+    "vendorLink":"https://www.orange.fr/",
+    "category":"telecom",
+    "color":{
+      "hex":"#FF6122",
+      "css":"#FF6122"
+    },
+    "dataType":["geopoint", "phonecommunicationlog"],
+    "fields":{
+        "access_token":{"type":"hidden"},
+        "folderPath":{"type":"folder","advanced":true},
+        "agreement": {"type": "checkbox", "hasDescription": true}
+    },
+    "additionnalSuccessMessage": {
+      "message": "connector.orange.message.delay"
+    },
+    "hasDescriptions": {
+      "service": true,
+      "connector": true
+    },
+    "source": "git://gitlab.cozycloud.cc/gjacquart/cozy-konnector-orangemobile.git#build",
+    "oauth_scope": "M"
+  },
+  {
+    "accounts":[],
+    "oauth": true,
+    "slug":"orangelivebox",
+    "name":"Orange Livebox",
+    "vendorLink":"https://www.orange.fr/",
+    "category":"isp",
+    "color":{"hex": "#FF6122", "css": "#FF6122"},
+    "dataType":["videostream"],
+    "fields": {
+      "access_token": {
+        "type":"hidden"
+      },
+      "folderPath":{
+        "type": "folder",
+        "advanced":true
+      }
+    },
+    "additionnalSuccessMessage": {
+      "message": "connector.orange.message.delay"
+    },
+    "hasDescriptions": {
+      "service": true
+    },
+    "source": "git://github.com/cozy/cozy-konnector-orangevod.git#build",
+    "oauth_scope": "I"
   }
 ]
