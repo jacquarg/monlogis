@@ -148,157 +148,203 @@ var __makeRelativeRequire = function(require, mappings, pref) {
   }
 };
 require.register("application.js", function(exports, require, module) {
-'use-strict';
+'use-strict'
 
 // Main application that create a Mn.Application singleton and
 // exposes it.
-const Router = require('router');
-const AppLayout = require('views/app_layout');
-const Properties = require('models/properties');
+const Router = require('router')
+const AppLayout = require('views/app_layout')
+const Properties = require('models/properties')
 
-const VendorsCollection = require('collections/vendors');
-// const EquipmentsCollection = require('collections/equipments');
-const ObjectsCollection = require('collections/objects');
+const VendorsCollection = require('collections/vendors')
+// const EquipmentsCollection = require('collections/equipments')
+const ObjectsCollection = require('collections/objects')
 
 
-require('views/behaviors');
+require('views/behaviors')
 
 const Application = Mn.Application.extend({
 
   prepare: function () {
-    this._splashMessages();
+    this._splashMessages()
+    moment.locale('fr')
 
-    const appElem = $('[role=application]')[0];
+    const appElem = $('[role=application]')[0]
 
-    this.cozyDomain = appElem.dataset.cozyDomain;
+    this.cozyDomain = appElem.dataset.cozyDomain
     cozy.client.init({
       cozyURL: `//${this.cozyDomain}`,
       token: appElem.dataset.cozyToken,
-    });
-    cozy.bar.init({ appName: 'Mon Logis' });
+    })
+    cozy.bar.init({ appName: 'Mon Logis' })
 
-    this.properties = Properties;
-    this.vendors = new VendorsCollection();
-    this.objects = new ObjectsCollection();
-    this.konnectors = [];
+    this.properties = Properties
+    this.vendors = new VendorsCollection()
+    this.objects = new ObjectsCollection()
+    this.konnectors = []
     return this.properties.fetch()
     .then(() => $.getJSON('/assets/data/konnectors.json'))
-    .then((data) => { this.konnectors = data; })
+    .then((data) => { this.konnectors = data })
     .then(() => Promise.all([
+      this._fetchAppDriveURI(),
       this.vendors.init(),
       // this.objects.fetch(),
     ]))
-    .then(() => this._defineViews());
+    .then(() => this._defineViews())
+  },
+
+  _fetchAppDriveURI: function () {
+    cozy.client.fetchJSON('GET', '/apps/')
+    .then((apps) => {
+      this.appDriveURI = _.findWhere(apps, { _id: 'io.cozy.apps/drive' }).links.related
+    })
+    .catch((err) => {
+      console.warn("Can't fetch drive app url. In drive links won't work.", err)
+    })
   },
 
   prepareInBackground: function () {
   //   return Promise.resolve()
-  //   .catch(err => this.trigger('message:error', err));
+  //   .catch(err => this.trigger('message:error', err))
   },
 
   _splashMessages: function () {
     this.listenTo(this, 'message:display message:error',
-      message => $('#splashmessage').html(message));
+      message => $('#splashmessage').html(message))
   },
 
   _defineViews: function () {
-    this.trigger('message:display', "Préparation de l'application", 'defineviews');
+    this.trigger('message:display', "Préparation de l'application", 'defineviews')
     return Promise.all([])
     .then(() => this.trigger('message:hide', 'defineviews'))
     .catch((err) => {
-      console.err(err);
-      this.trigger('message:error', 'Erreur à la définition des vues.');
-    });
+      console.err(err)
+      this.trigger('message:error', 'Erreur à la définition des vues.')
+    })
   },
 
   onBeforeStart: function () {
-    this.layout = new AppLayout();
-    this.router = new Router();
+    this.layout = new AppLayout()
+    this.router = new Router()
 
     if (typeof Object.freeze === 'function') {
-      Object.freeze(this);
+      Object.freeze(this)
     }
   },
 
   onStart: function () {
-    this.layout.render();
+    this.layout.render()
     // prohibit pushState because URIs mapped from cozy-home rely on fragment
     if (Backbone.history) {
-      Backbone.history.start({ pushState: false });
+      Backbone.history.start({ pushState: false })
     }
 
     if (app.vendors.size() > 0) {
-      app.trigger('houseitemdetails:show', app.vendors.at(0));
+      app.trigger('houseitemdetails:show', app.vendors.at(0))
     } else {
-      app.layout.onChildviewShowAddvendors();
+      app.layout.onChildviewShowAddvendors()
     }
   },
-});
+})
 
-const application = new Application();
+const application = new Application()
 
-module.exports = application;
-window.app = application;
+module.exports = application
+window.app = application
 
 document.addEventListener('DOMContentLoaded', () => {
   application.prepare()
   .catch((err) => {
-    const msg = "Erreur pendant la préparation de l'application";
-    console.error(msg);
-    console.error(err);
-    application.trigger('message:error', msg);
+    const msg = "Erreur pendant la préparation de l'application"
+    console.error(msg)
+    console.error(err)
+    application.trigger('message:error', msg)
   })
   .then(() => application.prepareInBackground())
   .then(() => application.start())
   .catch((err) => {
-    const msg = "Erreur au lancement de l'application";
-    console.error(msg);
-    console.error(err);
-    application.trigger('message:error', msg);
-  });
-});
+    const msg = "Erreur au lancement de l'application"
+    console.error(msg)
+    console.error(err)
+    application.trigger('message:error', msg)
+  })
+})
 
 });
 
-require.register("collections/accounts.js", function(exports, require, module) {
-'use-strict';
+;require.register("collections/accounts.js", function(exports, require, module) {
+'use-strict'
 
-const CozyCollection = require('../lib/backbone_cozycollection');
-const Model = require('models/account');
+const CozyCollection = require('../lib/backbone_cozycollection')
+const Model = require('models/account')
 
 module.exports = CozyCollection.extend({
   model: Model,
-});
+})
 
 });
 
-require.register("collections/bills.js", function(exports, require, module) {
-'use-strict';
+;require.register("collections/bills.js", function(exports, require, module) {
+'use-strict'
 
-const CozyCollection = require('../lib/backbone_cozycollection');
-const Bill = require('models/bill');
+const CozyCollection = require('../lib/backbone_cozycollection')
+const Bill = require('models/bill')
 
 module.exports = CozyCollection.extend({
   model: Bill,
 
   sort: 'date',
   initialize: function (options) {
-    this.vendor = options.vendor;
+    this.vendor = options.vendor
   },
 
-  getFetchIndex: function () { return ['vendor', 'date']; },
+  getFetchIndex: function () { return ['vendor', 'date'] },
   getFetchQuery: function () {
-    return { selector: { vendor: this.vendor } };
+    return { selector: { vendor: this.vendor } }
   },
 
-});
+})
 
 });
 
-require.register("collections/equipments.js", function(exports, require, module) {
-'use-strict';
+;require.register("collections/consumptionstatements.js", function(exports, require, module) {
+'use-strict'
 
-const ObjetsCollection = require('./objects');
+const CozyCollection = require('../lib/backbone_cozycollection')
+const Model = require('../models/consumptionstatement')
+
+module.exports = CozyCollection.extend({
+  model: Model,
+  sort: 'end',
+
+  getFetchIndex: function () { return ['_id', 'statementCategory'] },
+  getFetchQuery: function () {
+    return { selector: {
+      _id: { $gte: null },
+      statementCategory: { $ne: 'edelia' } }
+    }
+  },
+
+
+  getLastPeriod: function () {
+    if (this.length >= 1) {
+      return this.last()
+    }
+  },
+
+  getPenultimatePeriod: function () {
+    if (this.length >= 2) {
+      return this.at(this.length - 2)
+    }
+  },
+})
+
+});
+
+;require.register("collections/equipments.js", function(exports, require, module) {
+'use-strict'
+
+const ObjetsCollection = require('./objects')
 
 module.exports = ObjetsCollection.extend({
 
@@ -310,51 +356,51 @@ module.exports = ObjetsCollection.extend({
     type: 'object',
     folderPath: '',
   }),
-});
+})
 
 });
 
-require.register("collections/files.js", function(exports, require, module) {
-'use-strict';
+;require.register("collections/files.js", function(exports, require, module) {
+'use-strict'
 
-const File = require('models/file');
+const File = require('models/file')
 
 module.exports = Backbone.Collection.extend({
   model: File,
 
   initialize: function (options) {
-    this.folderPath = options.folderPath;
+    this.folderPath = options.folderPath
   },
 
   sync: function (method, collection, options) {
     if (method !== 'read') {
-      console.error('Only read is available on this collection.');
+      console.error('Only read is available on this collection.')
       if (options.error) {
-        options.error('Only read is available on this collection.');
+        options.error('Only read is available on this collection.')
       }
-      return;
+      return
     }
 
     return cozy.client.files.statByPath(this.folderPath)
     .then(dir => dir.relations('contents'))
-    .then(options.success, options.error);
+    .then(options.success, options.error)
   },
-});
+})
 
 });
 
-require.register("collections/objects.js", function(exports, require, module) {
-'use-strict';
+;require.register("collections/objects.js", function(exports, require, module) {
+'use-strict'
 
-const CozyCollection = require('../lib/backbone_cozycollection');
-const AnObject = require('models/object');
+const CozyCollection = require('../lib/backbone_cozycollection')
+const AnObject = require('models/object')
 
 module.exports = CozyCollection.extend({
   model: AnObject,
 
   initialize: function () {
-    // this.addDummyItem();
-    // this.listenTo(this, 'all', this.addDummyItem);
+    // this.addDummyItem()
+    // this.listenTo(this, 'all', this.addDummyItem)
   },
 
   getDummyItemAttrs: () => ({
@@ -365,46 +411,46 @@ module.exports = CozyCollection.extend({
   }),
 
   addDummyItem: function () {
-    if (this.some(el => el.isNew())) { return; }
+    if (this.some(el => el.isNew())) { return }
 
-    this.add(new AnObject(this.getDummyItemAttrs()));
+    this.add(new AnObject(this.getDummyItemAttrs()))
   },
 
   getFetchIndex: () => ['type'],
   getFetchQuery: () => ({ selector: { type: { $gt: 'equipment' } } }),
-});
+})
 
 });
 
-require.register("collections/sinistre.js", function(exports, require, module) {
-'use-strict';
+;require.register("collections/sinistre.js", function(exports, require, module) {
+'use-strict'
 
-const CozyCollection = require('../lib/backbone_cozycollection');
-const Sinistre = require('models/sinistre');
+const CozyCollection = require('../lib/backbone_cozycollection')
+const Sinistre = require('models/sinistre')
 
 module.exports = CozyCollection.extend({
   model: Sinistre,
 
   initialize: function (options) {
-    this.type = options.type;
+    this.type = options.type
   },
 
-  getFetchIndex: function () { return ['type']; },
+  getFetchIndex: function () { return ['type'] },
   getFetchQuery: function () {
-    return { selector: { type: 'Habitation' } };
+    return { selector: { type: 'Habitation' } }
   },
 
-});
+})
 
 });
 
-require.register("collections/vendors.js", function(exports, require, module) {
-'use-strict';
+;require.register("collections/vendors.js", function(exports, require, module) {
+'use-strict'
 
-const CozyCollection = require('../lib/backbone_cozycollection');
+const CozyCollection = require('../lib/backbone_cozycollection')
 
-const AccountsCollection = require('./accounts');
-const Vendor = require('models/vendor');
+const AccountsCollection = require('./accounts')
+const Vendor = require('models/vendor')
 
 module.exports = CozyCollection.extend({
   model: Vendor,
@@ -415,137 +461,137 @@ module.exports = CozyCollection.extend({
     // * saved vendors in db
     // * accounts
     // * examples ?
-    this.accounts = new AccountsCollection();
+    this.accounts = new AccountsCollection()
     return Promise.all([
       this.fetch(),
       this.accounts.fetch(),
     ])
     .then(() => {
-      const konnectorsBySlug = _.indexBy(app.konnectors, 'slug');
+      const konnectorsBySlug = _.indexBy(app.konnectors, 'slug')
       this.accounts.filter((account) => {
-        const konnector = konnectorsBySlug[account.get('account_type')];
+        const konnector = konnectorsBySlug[account.get('account_type')]
         return konnector
           && ['isp', 'telecom', 'energy', 'insurance'].indexOf(konnector.category) !== -1
-          && ['orangemobile', 'orangelivebox'].indexOf((konnector.slug)) === -1;
+          && ['orangemobile', 'orangelivebox'].indexOf((konnector.slug)) === -1
       })
       .forEach((account) => {
-        if (this.some(v => v.get('slug') === account.get('account_type'))) { return; }
+        if (this.some(v => v.get('slug') === account.get('account_type'))) { return }
 
-        const konnector = konnectorsBySlug[account.get('account_type')];
+        const konnector = konnectorsBySlug[account.get('account_type')]
         const vendor = new Vendor({
           slug: konnector.slug,
           name: konnector.name,
           folderPath: account.has('auth') ? account.get('auth').folderPath : '',
           login: account.has('auth') ? account.get('auth').login : '',
           domain: konnector.domain,
-        });
+        })
 
-        this.add(vendor);
-        vendor.save(); // TODO
-      });
-    });
+        this.add(vendor)
+        vendor.save() // TODO
+      })
+    })
   },
-});
+})
 
 });
 
-require.register("lib/appname_version.js", function(exports, require, module) {
-'use-strict';
+;require.register("lib/appname_version.js", function(exports, require, module) {
+'use-strict'
 
-const name = 'monlogis';
+const name = 'monlogis'
 // use brunch-version plugin to populate these.
-const version = '0.1.3';
+const version = '0.1.4'
 
-module.exports = `${name}-${version}`;
+module.exports = `${name}-${version}`
 
 });
 
-require.register("lib/async_promise.js", function(exports, require, module) {
-'use-strict';
+;require.register("lib/async_promise.js", function(exports, require, module) {
+'use-strict'
 
 module.exports.series = function (iterable, callback, self) {
-  const results = [];
+  const results = []
 
   return iterable.reduce((sequence, id, index, array) => {
     return sequence.then((res) => {
-      results.push(res);
-      return callback.call(self, id, index, array);
-    });
+      results.push(res)
+      return callback.call(self, id, index, array)
+    })
   }, Promise.resolve(true))
   .then(res => new Promise((resolve) => { // don't handle reject there.
-    results.push(res);
-    resolve(results.slice(1));
-  }));
-};
+    results.push(res)
+    resolve(results.slice(1))
+  }))
+}
 
 const waitPromise = function (period) {
   return new Promise((resolve) => { // this promise always resolve :)
-    setTimeout(resolve, period);
-  });
-};
+    setTimeout(resolve, period)
+  })
+}
 
 module.exports.find = function (iterable, predicate, period) {
   const recursive = (list) => {
-    const current = list.shift();
-    if (current === undefined) { return Promise.resolve(undefined); }
+    const current = list.shift()
+    if (current === undefined) { return Promise.resolve(undefined) }
 
     return predicate(current)
     .then((res) => {
       if (res === false) {
-        return waitPromise(period).then(() => recursive(list));
+        return waitPromise(period).then(() => recursive(list))
       }
 
-      return res;
-    });
-  };
+      return res
+    })
+  }
 
-  return recursive(iterable.slice());
-};
+  return recursive(iterable.slice())
+}
 
 module.exports.backbone2Promise = function (obj, method, options) {
   return new Promise((resolve, reject) => {
-    options = options || {};
-    options = $.extend(options, { success: resolve, error: reject });
-    method.call(obj, options);
-  });
-};
+    options = options || {}
+    options = $.extend(options, { success: resolve, error: reject })
+    method.call(obj, options)
+  })
+}
 
 });
 
-require.register("lib/backbone_cozycollection.js", function(exports, require, module) {
-'use-strict';
+;require.register("lib/backbone_cozycollection.js", function(exports, require, module) {
+'use-strict'
 
 module.exports = Backbone.Collection.extend({
 
-  getFetchIndex: function () { return ['_id']; },
+  getFetchIndex: function () { return ['_id'] },
 
-  getFetchQuery: function () { return { selector: { _id: { $gt: null } } }; },
+  getFetchQuery: function () { return { selector: { _id: { $gt: null } } } },
 
   sync: function (method, collection, options) {
     if (method !== 'read') {
-      console.error('Only read is available on this collection.');
+      console.error('Only read is available on this collection.')
       if (options.error) {
-        options.error('Only read is available on this collection.');
+        options.error('Only read is available on this collection.')
       }
-      return;
+      return
     }
 
     //eslint-disable-next-line
-    const docType = new this.model().docType.toLowerCase();
+    const docType = new this.model().docType.toLowerCase()
 
     return cozy.client.data.defineIndex(docType, this.getFetchIndex())
     .then(index => cozy.client.data.query(index, this.getFetchQuery()))
-    .then(options.success, options.error);
+    .then(options.success, options.error)
   },
 
-});
+})
 
 });
 
-require.register("lib/backbone_cozymodel.js", function(exports, require, module) {
-'use-strict';
+;require.register("lib/backbone_cozymodel.js", function(exports, require, module) {
+'use-strict'
 
-const appName = require('../lib/appname_version');
+const appName = require('../lib/appname_version')
 
 module.exports = Backbone.Model.extend({
   docType: '',
@@ -554,76 +600,76 @@ module.exports = Backbone.Model.extend({
   },
 
   parse: function (raw) {
-    raw.id = raw._id;
-    return raw;
+    raw.id = raw._id
+    return raw
   },
 
   sync: function (method, model, options) {
     return this.syncPromise(method, model, options)
     .then(options.success, (err) => {
-      console.error(err);
-      options.error(err);
-    });
+      console.error(err)
+      options.error(err)
+    })
   },
 
   syncPromise: function (method, model, options) {
     if (method === 'create') {
-      return cozy.client.data.create(this.docType, model.attributes);
+      return cozy.client.data.create(this.docType, model.attributes)
     } else if (method === 'update') {
       // TODO !!
-      return cozy.client.data.update(this.docType, model.attributes, model.attributes);
+      return cozy.client.data.update(this.docType, model.attributes, model.attributes)
     } else if (method === 'patch') {
       // TODO !!
-      return cozy.client.data.updateAttributes(this.docType, model.attributes_id, model.attributes);
+      return cozy.client.data.updateAttributes(this.docType, model.attributes_id, model.attributes)
     } else if (method === 'delete') {
-      return cozy.client.data.delete(this.docType, model.attributes);
+      return cozy.client.data.delete(this.docType, model.attributes)
     } else if (method === 'read') {
       if (options.indexName && options.indexName !== '') {
-        return this._fetchFirstWithSelector(options.indexName, options.index, options.selector);
+        return this._fetchFirstWithSelector(options.indexName, options.index, options.selector)
       }
 
-      return cozy.client.data.find(this.docType, model.attributes._id);
+      return cozy.client.data.find(this.docType, model.attributes._id)
     }
   },
 
 
   _fetchFirstWithSelector: function (name, index, selector) {
-    const propName = `index${name}`;
-    this[propName] = this[propName] || cozy.client.data.defineIndex(this.getDocType(), index);
+    const propName = `index${name}`
+    this[propName] = this[propName] || cozy.client.data.defineIndex(this.getDocType(), index)
 
     return this[propName]
       .then(index => cozy.client.data.query(index, { selector: selector, limit: 1 }))
-      .then(res => ((res && res.length !== 0) ? res[0] : {}));
+      .then(res => ((res && res.length !== 0) ? res[0] : {}))
   },
 
   getDocType: function () {
-    return Object.getPrototypeOf(this).docType;
+    return Object.getPrototypeOf(this).docType
   }
-});
+})
 
 });
 
-require.register("lib/backbone_cozysingleton.js", function(exports, require, module) {
-'use-strict';
+;require.register("lib/backbone_cozysingleton.js", function(exports, require, module) {
+'use-strict'
 
-const CozyModel = require('./backbone_cozymodel');
+const CozyModel = require('./backbone_cozymodel')
 
 module.exports = CozyModel.extend({
 
   sync: function (method, model, options) {
     if (method === 'read' && model.isNew() && !options.indexName) {
-      options.indexName = 'Singleton';
-      options.index = ['_id'];
-      options.selector = { _id: { $gt: null } };
+      options.indexName = 'Singleton'
+      options.index = ['_id']
+      options.selector = { _id: { $gt: null } }
     }
 
-    return CozyModel.prototype.sync.call(this, method, model, options);
+    return CozyModel.prototype.sync.call(this, method, model, options)
   },
-});
+})
 
 });
 
-require.register("lib/mimetype2fa.js", function(exports, require, module) {
+;require.register("lib/mimetype2fa.js", function(exports, require, module) {
 /* eslint-disable */
 var mapping = [
   // Images
@@ -717,188 +763,197 @@ module.exports = mimetype2fa
 });
 
 ;require.register("lib/walktree_utils.js", function(exports, require, module) {
-'use_strict';
+'use_strict'
 
 module.exports.get = function (obj, ...prop) {
-  return prop.reduce((current, key) => (current ? current[key] : undefined), obj);
-};
+  return prop.reduce((current, key) => (current ? current[key] : undefined), obj)
+}
 
 module.exports.getFirst = function (obj) {
-  return obj[Object.keys(obj)[0]];
-};
+  return obj[Object.keys(obj)[0]]
+}
 
 });
 
-require.register("models/account.js", function(exports, require, module) {
-'use-strict';
+;require.register("models/account.js", function(exports, require, module) {
+'use-strict'
 
-const CozyModel = require('../lib/backbone_cozymodel');
+const CozyModel = require('../lib/backbone_cozymodel')
 
 module.exports = CozyModel.extend({
   docType: 'io.cozy.accounts',
 
-});
+})
 
 });
 
-require.register("models/bill.js", function(exports, require, module) {
-'use-strict';
+;require.register("models/bill.js", function(exports, require, module) {
+'use-strict'
 
-const CozyModel = require('../lib/backbone_cozymodel');
+const CozyModel = require('../lib/backbone_cozymodel')
 
 module.exports = CozyModel.extend({
   docType: 'io.cozy.bills',
 
   parse: function () {
     //eslint-disable-next-line
-    const attr = CozyModel.prototype.parse.apply(this, arguments);
+    const attr = CozyModel.prototype.parse.apply(this, arguments)
     if (attr.vendor === 'EDF') {
-      attr.amount = attr.value;
+      attr.amount = attr.value
     }
-    return attr;
+    return attr
   },
-});
+})
 
 });
 
-require.register("models/client.js", function(exports, require, module) {
-'use-strict';
+;require.register("models/client.js", function(exports, require, module) {
+'use-strict'
 
-const CozyModel = require('../lib/backbone_cozymodel');
+const CozyModel = require('../lib/backbone_cozymodel')
 
 module.exports = CozyModel.extend({
   docType: 'org.fing.mesinfos.client',
 
   fetchEDF: function () {
     // TODO : check that data are coherent against one contract !
-    return this.fetch({ indexName: 'EDF', index: ['vendor'], selector: { vendor: 'EDF' } });
+    return this.fetch({ indexName: 'EDF', index: ['vendor'], selector: { vendor: 'EDF' } })
   },
 
   fetchMaif: function () {
     // TODO : check that data are coherent against one contract !
-    return this.fetch({ indexName: 'Maif', index: ['vendor'], selector: { vendor: 'maif' } });
+    return this.fetch({ indexName: 'Maif', index: ['vendor'], selector: { vendor: 'maif' } })
   },
 
-});
+})
 
 });
 
-require.register("models/consomation.js", function(exports, require, module) {
-'use-strict';
+;require.register("models/consumptionstatement.js", function(exports, require, module) {
+'use-strict'
 
-const CozySingleton = require('../lib/backbone_cozysingleton');
+const CozyModel = require('../lib/backbone_cozymodel')
 
-module.exports = CozySingleton.extend({
+module.exports = CozyModel.extend({
   docType: 'org.fing.mesinfos.consumptionstatement',
-});
+
+  getPeriodDuration: function () {
+    return moment.duration(moment(this.get('end')) - moment(this.get('start')))
+  },
+
+  getValueAsKGSKE: function () {
+    // https://www.unitjuggler.com/convertir-energy-de-kWh-en-kgSKE.html
+    return get('value') * 0.12283503255128
+  },
+})
 
 });
 
-require.register("models/contract.js", function(exports, require, module) {
-'use-strict';
+;require.register("models/contract.js", function(exports, require, module) {
+'use-strict'
 
-const CozyModel = require('../lib/backbone_cozymodel');
+const CozyModel = require('../lib/backbone_cozymodel')
 
 module.exports = CozyModel.extend({
   docType: 'org.fing.mesinfos.contract',
 
   fetchEDF: function () {
     // TODO : check that data are coherent against one contract !
-    return this.fetch({ indexName: 'EDF', index: ['vendor'], selector: { vendor: 'EDF' } });
+    return this.fetch({ indexName: 'EDF', index: ['vendor'], selector: { vendor: 'EDF' } })
   },
 
   fetchMaif: function () {
     // TODO : check that data are coherent against one contract !
-    return this.fetch({ indexName: 'Maif', index: ['vendor'], selector: { vendor: 'Maif' } });
+    return this.fetch({ indexName: 'Maif', index: ['vendor'], selector: { vendor: 'Maif' } })
   },
-});
+})
 
 });
 
-require.register("models/contract_maif.js", function(exports, require, module) {
-'use-strict';
+;require.register("models/contract_maif.js", function(exports, require, module) {
+'use-strict'
 
-const get = require('../lib/walktree_utils').get;
-const CozyModel = require('../lib/backbone_cozysingleton');
+const get = require('../lib/walktree_utils').get
+const CozyModel = require('../lib/backbone_cozysingleton')
 
 module.exports = CozyModel.extend({
   docType: 'fr.maif.maifuser.contrat',
 
   parse: function () {
     //eslint-disable-next-line
-    const attr = CozyModel.prototype.parse.apply(this, arguments);
-    $.extend(attr, get(attr, 'contrat', 0));
-    return attr;
+    const attr = CozyModel.prototype.parse.apply(this, arguments)
+    $.extend(attr, get(attr, 'contrat', 0))
+    return attr
   },
-});
+})
 
 });
 
-require.register("models/file.js", function(exports, require, module) {
-'use-strict';
+;require.register("models/file.js", function(exports, require, module) {
+'use-strict'
 
-const CozyModel = require('../lib/backbone_cozymodel');
+const CozyModel = require('../lib/backbone_cozymodel')
 
 module.exports = CozyModel.extend({
   docType: 'io.cozy.files',
 
   getFileUrl: function () {
     return cozy.client.files.getDownloadLinkById(this.get('_id'))
-    .then(absolutePath => `//${app.cozyDomain}${absolutePath}`);
+    .then(absolutePath => `//${app.cozyDomain}${absolutePath}`)
   },
 
-});
+})
 
 });
 
-require.register("models/foyer.js", function(exports, require, module) {
-'use-strict';
+;require.register("models/foyer.js", function(exports, require, module) {
+'use-strict'
 
-const get = require('../lib/walktree_utils').get;
-const CozyModel = require('../lib/backbone_cozysingleton');
+const get = require('../lib/walktree_utils').get
+const CozyModel = require('../lib/backbone_cozysingleton')
 
 module.exports = CozyModel.extend({
   docType: 'fr.maif.maifuser.foyer',
 
   parse: function () {
     //eslint-disable-next-line
-    const attr = CozyModel.prototype.parse.apply(this, arguments);
-    $.extend(attr, get(attr, 'foyer'));
-    return attr;
+    const attr = CozyModel.prototype.parse.apply(this, arguments)
+    $.extend(attr, get(attr, 'foyer'))
+    return attr
   },
 
-});
+})
 
 });
 
-require.register("models/home.js", function(exports, require, module) {
-'use-strict';
+;require.register("models/home.js", function(exports, require, module) {
+'use-strict'
 
-const get = require('../lib/walktree_utils').get;
-const CozyModel = require('../lib/backbone_cozysingleton');
+const get = require('../lib/walktree_utils').get
+const CozyModel = require('../lib/backbone_cozysingleton')
 
 module.exports = CozyModel.extend({
   docType: 'fr.maif.maifuser.home',
 
   parse: function () {
     //eslint-disable-next-line
-    const attr = CozyModel.prototype.parse.apply(this, arguments);
-    $.extend(attr, get(attr, 'home', 0));
-    return attr;
+    const attr = CozyModel.prototype.parse.apply(this, arguments)
+    $.extend(attr, get(attr, 'home', 0))
+    return attr
   },
 
-});
+})
 
 });
 
-require.register("models/object.js", function(exports, require, module) {
-'use-strict';
+;require.register("models/object.js", function(exports, require, module) {
+'use-strict'
 
-const CozyModel = require('../lib/backbone_cozymodel');
-const FileModel = require('./file');
-const FilesCollection = require('collections/files');
+const CozyModel = require('../lib/backbone_cozymodel')
+const FileModel = require('./file')
+const FilesCollection = require('collections/files')
 
-const BASE_DIR = '/Administration/objets/';
+const BASE_DIR = '/Administration/objets/'
 
 module.exports = CozyModel.extend({
   docType: 'org.fing.mesinfos.object',
@@ -908,121 +963,121 @@ module.exports = CozyModel.extend({
   }),
 
   getFolderPath: function () {
-    return `${BASE_DIR}${this.get('name')}`;
+    return `${BASE_DIR}${this.get('name')}`
   },
 
   createDir: function () {
     if (this.has('dirID')) {
-      return Promise.resolve();
+      return Promise.resolve()
     }
 
     return cozy.client.files.createDirectoryByPath(this.getFolderPath())
-    .then(dir => this.set('dirID', dir._id));
+    .then(dir => this.set('dirID', dir._id))
   },
 
   getFiles: function () {
     if (!this.files) {
-      this.files = new FilesCollection({ folderPath: this.getFolderPath() });
+      this.files = new FilesCollection({ folderPath: this.getFolderPath() })
     }
-    return this.files;
+    return this.files
   },
 
   setIconFileId: function (iconFileId) {
-    this.set('iconFileId', iconFileId);
-    this.iconFile = null;
-    this.iconUrl = null;
+    this.set('iconFileId', iconFileId)
+    this.iconFile = null
+    this.iconUrl = null
   },
 
   getIconUrl: function () {
     if (this.iconUrl) {
-      return this.iconUrl;
+      return this.iconUrl
     }
 
     this._fetchIcon()
     .catch((err) => {
-      console.error(err);
+      console.error(err)
 
-      this.unset('iconFileId');
-    });
+      this.unset('iconFileId')
+    })
   },
 
   _fetchIcon: function () {
-    const iconId = this.get('iconFileId');
+    const iconId = this.get('iconFileId')
 
-    if (!iconId) { return Promise.reject(); }
+    if (!iconId) { return Promise.reject() }
 
-    this.iconFile = new FileModel({ _id: iconId });
+    this.iconFile = new FileModel({ _id: iconId })
     return this.iconFile.fetch()
     .then(() => this.iconFile.getFileUrl())
     .then((fileUrl) => {
-      this.iconUrl = fileUrl;
-      this.trigger('newIconUrl');
-    });
+      this.iconUrl = fileUrl
+      this.trigger('newIconUrl')
+    })
   },
-});
+})
 
 });
 
-require.register("models/paymentterms.js", function(exports, require, module) {
-'use-strict';
+;require.register("models/paymentterms.js", function(exports, require, module) {
+'use-strict'
 
-const CozyModel = require('../lib/backbone_cozymodel');
+const CozyModel = require('../lib/backbone_cozymodel')
 
 module.exports = CozyModel.extend({
   docType: 'org.fing.mesinfos.paymentterms',
 
   fetchEDF: function () {
     // TODO : check that data are coherent against one contract !
-    return this.fetch({ indexName: 'EDF', index: ['vendor'], selector: { vendor: 'EDF' } });
+    return this.fetch({ indexName: 'EDF', index: ['vendor'], selector: { vendor: 'EDF' } })
   },
 
   fetchMaif: function () {
     // TODO : check that data are coherent against one contract !
-    return this.fetch({ indexName: 'Maif', index: ['vendor'], selector: { vendor: 'maif' } });
+    return this.fetch({ indexName: 'Maif', index: ['vendor'], selector: { vendor: 'maif' } })
   },
 
   getNextPaymentEDF: function () {
-    const paymentSchedules = this.get('paymentSchedules');
+    const paymentSchedules = this.get('paymentSchedules')
     if (paymentSchedules && paymentSchedules instanceof Array) {
-      return _.findWhere(paymentSchedules, { paid: false });
+      return _.findWhere(paymentSchedules, { paid: false })
     }
   },
 
   getLastPaymentEDF: function () {
-    const paymentSchedules = this.get('paymentSchedules');
+    const paymentSchedules = this.get('paymentSchedules')
     if (paymentSchedules && paymentSchedules instanceof Array) {
-      return paymentSchedules[_.findLastIndex(paymentSchedules, ps => ps.paid === true)];
+      return paymentSchedules[_.findLastIndex(paymentSchedules, ps => ps.paid === true)]
     }
   },
 
-});
+})
 
 });
 
-require.register("models/paymentterms_maif.js", function(exports, require, module) {
-'use-strict';
+;require.register("models/paymentterms_maif.js", function(exports, require, module) {
+'use-strict'
 
-const get = require('../lib/walktree_utils').get;
-const CozyModel = require('../lib/backbone_cozysingleton');
+const get = require('../lib/walktree_utils').get
+const CozyModel = require('../lib/backbone_cozysingleton')
 
 module.exports = CozyModel.extend({
   docType: 'fr.maif.maifuser.paymentterms',
 
   parse: function () {
     //eslint-disable-next-line
-    const attr = CozyModel.prototype.parse.apply(this, arguments);
-    $.extend(attr, get(attr, 'paymentterms'));
-    return attr;
+    const attr = CozyModel.prototype.parse.apply(this, arguments)
+    $.extend(attr, get(attr, 'paymentterms'))
+    return attr
   },
 
-});
+})
 
 });
 
-require.register("models/properties.js", function(exports, require, module) {
-'use-strict';
+;require.register("models/properties.js", function(exports, require, module) {
+'use-strict'
 
-const CozySingleton = require('../lib/backbone_cozysingleton');
+const CozySingleton = require('../lib/backbone_cozysingleton')
 
 const Properties = CozySingleton.extend({
   docType: 'org.fing.mesinfos.monlogis.properties',
@@ -1032,54 +1087,54 @@ const Properties = CozySingleton.extend({
 
   _promiseSave: function (attributes) {
     return new Promise((resolve, reject) => {
-      this.save(attributes, { success: resolve, error: reject });
-    });
+      this.save(attributes, { success: resolve, error: reject })
+    })
   },
 
+})
+
+module.exports = new Properties()
+
 });
 
-module.exports = new Properties();
+;require.register("models/sinistre.js", function(exports, require, module) {
+'use-strict'
 
-});
-
-require.register("models/sinistre.js", function(exports, require, module) {
-'use-strict';
-
-const CozyModel = require('../lib/backbone_cozymodel');
+const CozyModel = require('../lib/backbone_cozymodel')
 
 module.exports = CozyModel.extend({
   docType: 'org.fing.mesinfos.insuranceclaim',
-});
+})
 
 });
 
-require.register("models/vendor.js", function(exports, require, module) {
-'use-strict';
+;require.register("models/vendor.js", function(exports, require, module) {
+'use-strict'
 
-const VendorBase = require('./vendor_base');
-const VendorEDF = require('./vendor_edf');
-const VendorMaif = require('./vendor_maif');
+const VendorBase = require('./vendor_base')
+const VendorEDF = require('./vendor_edf')
+const VendorMaif = require('./vendor_maif')
 
 module.exports = function (attributes) {
   if (attributes) {
     switch (attributes.slug) {
-      case 'edf': return new VendorEDF(attributes);
-      case 'maif': return new VendorMaif(attributes);
-      default: break;
+      case 'edf': return new VendorEDF(attributes)
+      case 'maif': return new VendorMaif(attributes)
+      default: break
     }
   }
-  return new VendorBase(attributes);
-};
+  return new VendorBase(attributes)
+}
 
 });
 
-require.register("models/vendor_base.js", function(exports, require, module) {
-'use-strict';
+;require.register("models/vendor_base.js", function(exports, require, module) {
+'use-strict'
 
-const CozyModel = require('../lib/backbone_cozymodel');
+const CozyModel = require('../lib/backbone_cozymodel')
 
-const BillsCollection = require('../collections/bills');
-const FilesCollection = require('../collections/files');
+const BillsCollection = require('../collections/bills')
+const FilesCollection = require('../collections/files')
 
 
 module.exports = CozyModel.extend({
@@ -1089,92 +1144,98 @@ module.exports = CozyModel.extend({
     return Promise.all(this.toFetch())
     .then(() => this.createDir()).catch(err => console.warn(err))
     .then(() => {
-      this.trigger('fetchedall');
-    });
+      this.trigger('fetchedall')
+    })
   },
 
   toFetch: function () {
     return [
       this.getFiles().fetch(),
       this.getBills().fetch(),
-    ];
+    ]
   },
 
   createDir: function () {
-    if (this.dirID) { return Promise.resolve(); }
+    if (this.dirID) { return Promise.resolve() }
 
     return cozy.client.files.createDirectoryByPath(this.getFolderPath())
     .then((dir) => {
-      this.dirID = dir._id;
-    });
+      this.dirID = dir._id
+    })
   },
 
   getDirID: function () {
-    return this.dirID;
+    return this.dirID
   },
 
   getFolderPath: function () {
-    return this.get('folderPath');
+    return this.get('folderPath')
   },
 
   getFiles: function () {
     if (!this.files) {
-      this.files = new FilesCollection({ folderPath: this.getFolderPath() });
+      this.files = new FilesCollection({ folderPath: this.getFolderPath() })
     }
-    return this.files;
+    return this.files
   },
 
   injectBillsInFiles: function () {
     this.getBills().each((bill) => {
-      const file = this.getFiles().findWhere({ _id: bill.get('file') });
+      const file = this.getFiles().findWhere({ _id: bill.get('file') })
       if (file) {
-        file.bill = bill;
+        file.bill = bill
       }
-    });
+    })
   },
   // case may vary from a vendor to another...
   _getBillsVendor: function () {
-    return this.get('name');
+    return this.get('name')
   },
 
   getBills: function () {
     if (!this.bills) {
-      this.bills = new BillsCollection({ vendor: this._getBillsVendor() });
+      this.bills = new BillsCollection({ vendor: this._getBillsVendor() })
     }
-    return this.bills;
+    return this.bills
   },
 
   getBudget: function () {
     // if (!this.budget) {
-    //   this.budget = this._computeBudget();
+    //   this.budget = this._computeBudget()
     // }
-    // return this.budget;
-    return this._computeBudget();
+    // return this.budget
+    return this._computeBudget()
   },
 
   _computeBudget: function () {
-    // assume mensual bills, and always the same value
-    const bill = this.getBills().last();
-    if (!bill) { return {}; }
+    // assume mensual bills,
+    // use mean of last slippery year
+    let bills = this.getBills()
+    const billsCount = bills.length
+    if (billsCount === 0) { return {} }
 
-    const mensual = bill.get('amount');
+    if (billsCount > 12) {
+      bills = bills.slice(billsCount - 12)
+    }
+
+    const mensual = bills.reduce((sum, bill) => sum + bill.get('amount'), 0) / bills.length
     return {
       mensual: mensual,
       daily: mensual / 30,
       annual: mensual * 12,
-    };
+    }
   },
 
-});
+})
 
 });
 
-require.register("models/vendor_edf.js", function(exports, require, module) {
-'use-strict';
+;require.register("models/vendor_edf.js", function(exports, require, module) {
+'use-strict'
 
-const VendorModel = require('./vendor_base');
-const Client = require('./client');
-const Contract = require('./contract');
+const VendorModel = require('./vendor_base')
+const Client = require('./client')
+const Contract = require('./contract')
 
 
 module.exports = VendorModel.extend({
@@ -1185,43 +1246,43 @@ module.exports = VendorModel.extend({
       this.getBills().fetch(),
       this.fetchClient(),
       this.fetchContract(),
-    ];
+    ]
   },
 
 
   fetchClient: function () {
-    this.client = new Client();
-    return this.client.fetchEDF();
+    this.client = new Client()
+    return this.client.fetchEDF()
   },
 
   fetchContract: function () {
-    this.contract = new Contract();
-    return this.contract.fetchEDF();
+    this.contract = new Contract()
+    return this.contract.fetchEDF()
   },
 
   _getBillsVendor: () => 'EDF',
 
   _computeBudget: function () {
-    const bill = this.getBills().last();
-    const yearly = Number(bill.get('totalPaymentDue'));
+    const bill = this.getBills().last()
+    const yearly = Number(bill.get('totalPaymentDue'))
     return {
       mensual: yearly / 12,
       daily: yearly / 12 / 30,
       annual: yearly,
-    };
+    }
   },
-});
+})
 
 });
 
-require.register("models/vendor_maif.js", function(exports, require, module) {
-'use-strict';
+;require.register("models/vendor_maif.js", function(exports, require, module) {
+'use-strict'
 
-const VendorModel = require('./vendor_base');
+const VendorModel = require('./vendor_base')
 
-const Contract = require('./contract_maif');
-const Foyer = require('./foyer');
-const Home = require('./home');
+const Contract = require('./contract_maif')
+const Foyer = require('./foyer')
+const Home = require('./home')
 
 module.exports = VendorModel.extend({
 
@@ -1231,65 +1292,65 @@ module.exports = VendorModel.extend({
       this.getContract().fetch(),
       this.getFoyer().fetch(),
       this.getHome().fetch(),
-    ];
+    ]
   },
 
   getContract: function () {
     if (!this.contract) {
-      this.contract = new Contract();
+      this.contract = new Contract()
     }
-    return this.contract;
+    return this.contract
   },
 
   getFoyer: function () {
     if (!this.foyer) {
-      this.foyer = new Foyer();
+      this.foyer = new Foyer()
     }
-    return this.foyer;
+    return this.foyer
   },
 
   getClient: function () {
     if (!this.client) {
-      this.client = new Client();
+      this.client = new Client()
     }
-    return this.client;
+    return this.client
   },
 
   getHome: function () {
     if (!this.home) {
-      this.home = new Home();
+      this.home = new Home()
     }
-    return this.home;
+    return this.home
   },
 
   _computeBudget: function () {
-    const yearly = this.contract.get('montantTarifTtc');
+    const yearly = this.contract.get('montantTarifTtc')
     return {
       mensual: yearly / 12,
       daily: yearly / 12 / 30,
       annual: yearly,
-    };
+    }
   },
 
-});
+})
 
 });
 
-require.register("router.js", function(exports, require, module) {
-'use-strict';
+;require.register("router.js", function(exports, require, module) {
+'use-strict'
 
 module.exports = Backbone.Router.extend({
   routes: {
     '': 'index',
   },
-});
+})
 
 });
 
-require.register("views/add_vendors.js", function(exports, require, module) {
-'use strict';
+;require.register("views/add_vendors.js", function(exports, require, module) {
+'use strict'
 
-const template = require('./templates/add_vendors');
+const template = require('./templates/add_vendors')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -1301,53 +1362,52 @@ module.exports = Mn.View.extend({
   },
   events: {
     'click .houseitem': 'fireIntent',
-
   },
 
   initialize: function () {
     $.getJSON('/assets/data/konnectors.json')
-    .then(this._parseData.bind(this));
+    .then(this._parseData.bind(this))
   },
 
   _parseData: function (data) {
-    this.rawData = data;
+    this.rawData = data
     // TODO use events !
-    this.render();
+    this.render()
   },
 
   serializeData: function () {
-    const data = {};
-    data.mesinfos = [];
+    const data = {}
+    data.mesinfos = []
     if (this.rawData) {
-      data.mesinfos.push(_.findWhere(this.rawData, { slug: 'maif' }));
-      data.mesinfos.push(_.findWhere(this.rawData, { slug: 'edf' }));
-      data.mesinfos.push(_.findWhere(this.rawData, { slug: 'orangemobile' }));
-      data.mesinfos.push(_.findWhere(this.rawData, { slug: 'orangelivebox' }));
+      data.mesinfos.push(_.findWhere(this.rawData, { slug: 'maif' }))
+      data.mesinfos.push(_.findWhere(this.rawData, { slug: 'edf' }))
+      // data.mesinfos.push(_.findWhere(this.rawData, { slug: 'orangemobile' }))
+      // data.mesinfos.push(_.findWhere(this.rawData, { slug: 'orangelivebox' }))
     }
 
     data.isp = _.where(this.rawData, { category: 'isp' })
-      .filter(k => k.slug !== 'orangelivebox');
+      .filter(k => k.slug !== 'orangelivebox')
     data.telecom = _.where(this.rawData, { category: 'telecom' })
-      .filter(k => k.slug !== 'orangemobile');
+      .filter(k => k.slug !== 'orangemobile')
 
-    return data;
+    return data
   },
 
   fireIntent: function (ev) {
-    const slug = ev.currentTarget.dataset.slug;
+    const slug = ev.currentTarget.dataset.slug
     cozy.client.intents.create('CREATE', 'io.cozy.accounts', { slug })
     .start(document.getElementById('popin'))
     .catch((err) => {
-      const msg = `Erreur lors de l'activation du connecteur ${slug}`;
-      console.error(msg);
-      console.error(err);
-      app.trigger('message:error', msg);
-    });
+      const msg = `Erreur lors de l'activation du connecteur ${slug}`
+      console.error(msg)
+      console.error(err)
+      app.trigger('message:error', msg)
+    })
   },
 
 
   onClose: function () {
-    app.trigger('houseitemdetails:close');
+    app.trigger('houseitemdetails:close')
   },
 
   // onRender: function () {
@@ -1355,23 +1415,23 @@ module.exports = Mn.View.extend({
   // },
 
 
-});
+})
 
 });
 
-require.register("views/app_layout.js", function(exports, require, module) {
-'use-strict';
+;require.register("views/app_layout.js", function(exports, require, module) {
+'use-strict'
 
-const template = require('views/templates/app_layout');
-const MessageView = require('views/message');
-// const MystonesView = require('views/mystones');
-const HouseitemDetailsEDFView = require('views/houseitems/details_edf');
-const HouseitemDetailsMaifView = require('views/houseitems/details_maif');
-const HouseitemDetailsVendorView = require('views/houseitems/details_vendor');
-const HouseitemDetailsObjectView = require('views/houseitems/details_object');
-const MenuView = require('views/menu');
-// const ObjectsView = require('views/houseitems/objects');
-const AddVendorsView = require('views/add_vendors');
+const template = require('views/templates/app_layout')
+const MessageView = require('views/message')
+// const MystonesView = require('views/mystones')
+const HouseitemDetailsEDFView = require('views/houseitems/details_edf')
+const HouseitemDetailsMaifView = require('views/houseitems/details_maif')
+const HouseitemDetailsVendorView = require('views/houseitems/details_vendor')
+const HouseitemDetailsObjectView = require('views/houseitems/details_object')
+const MenuView = require('views/menu')
+// const ObjectsView = require('views/houseitems/objects')
+const AddVendorsView = require('views/add_vendors')
 
 
 module.exports = Mn.View.extend({
@@ -1390,78 +1450,78 @@ module.exports = Mn.View.extend({
 
 
   initialize: function () {
-    this.listenTo(app, 'houseitemdetails:show', this.showHouseitemDetails);
-    // this.listenTo(app, 'houseitemdetails:close', this._closeMain);
+    this.listenTo(app, 'houseitemdetails:show', this.showHouseitemDetails)
+    // this.listenTo(app, 'houseitemdetails:close', this._closeMain)
   },
 
   onRender: function () {
-    this.showChildView('message', new MessageView());
-    // this.showChildView('myStones', new MystonesView());
-    this.showChildView('menu', new MenuView({ collection: app.vendors }));
+    this.showChildView('message', new MessageView())
+    // this.showChildView('myStones', new MystonesView())
+    this.showChildView('menu', new MenuView({ collection: app.vendors }))
     // this.showChildView('equipments', new ObjectsView({
     //   model: new Backbone.Model({ title: 'Mes équipements' }),
     //   collection: app.equipments,
-    // }));
+    // }))
     // this.showChildView('objects', new ObjectsView({
     //   model: new Backbone.Model({ title: 'Mes objets' }),
     //   collection: app.objects,
-    // }));
+    // }))
   },
 
   showHouseitemDetails: function (houseItem) {
-    const docType = houseItem.getDocType();
-    const slug = houseItem.get('slug');
-    let ViewClass = null;
+    const docType = houseItem.getDocType()
+    const slug = houseItem.get('slug')
+    let ViewClass = null
     if (docType === 'org.fing.mesinfos.vendor') {
       if (slug === 'edf') {
-        ViewClass = HouseitemDetailsEDFView;
+        ViewClass = HouseitemDetailsEDFView
       } else if (slug === 'maif') {
-        ViewClass = HouseitemDetailsMaifView;
+        ViewClass = HouseitemDetailsMaifView
       } else {
-        ViewClass = HouseitemDetailsVendorView;
+        ViewClass = HouseitemDetailsVendorView
       }
     } else if (docType === 'org.fing.mesinfos.object') {
-      const type = houseItem.get('type');
+      const type = houseItem.get('type')
       if (type === 'object') {
-        ViewClass = HouseitemDetailsObjectView;
+        ViewClass = HouseitemDetailsObjectView
       }
     } else {
-      ViewClass = HouseitemDetailsObjectView;
+      ViewClass = HouseitemDetailsObjectView
     }
 
-    this._showMain(new ViewClass({ model: houseItem }));
+    this._showMain(new ViewClass({ model: houseItem }))
   },
 
   _showMain: function (view) {
-    this.showChildView('main', view);
+    this.showChildView('main', view)
 
     // // TODO : something cleaner !
-    // this.$('.mystones').hide();
-    // this.$('.houseitems').toggleClass('col-xs-8', false);
-    // this.$('.houseitems').toggleClass('col-xs-3', true);
-    // this.$('Main').show();
-    // this.$('Main').toggleClass('col-xs-9', true);
+    // this.$('.mystones').hide()
+    // this.$('.houseitems').toggleClass('col-xs-8', false)
+    // this.$('.houseitems').toggleClass('col-xs-3', true)
+    // this.$('Main').show()
+    // this.$('Main').toggleClass('col-xs-9', true)
   },
 
   _closeMain: function () {
-    this.getRegion('main').empty();
+    this.getRegion('main').empty()
 
-    // this.$('.mystones').show();
-    // this.$('.houseitems').toggleClass('col-xs-8', true);
-    // this.$('.houseitems').toggleClass('col-xs-3', false);
-    // this.$('Main').hide();
-    // this.$('Main').toggleClass('col-xs-9', false);
+    // this.$('.mystones').show()
+    // this.$('.houseitems').toggleClass('col-xs-8', true)
+    // this.$('.houseitems').toggleClass('col-xs-3', false)
+    // this.$('Main').hide()
+    // this.$('Main').toggleClass('col-xs-9', false)
   },
 
   onChildviewShowAddvendors: function () {
-    this._showMain(new AddVendorsView());
+    this._showMain(new AddVendorsView())
   },
-});
+})
 
 });
 
-require.register("views/behaviors/destroy.js", function(exports, require, module) {
-'use-strict';
+;require.register("views/behaviors/destroy.js", function(exports, require, module) {
+'use-strict'
 
 module.exports = Mn.Behavior.extend({
   events: {
@@ -1470,31 +1530,31 @@ module.exports = Mn.Behavior.extend({
 
   destroyObject: function () {
     if (this.options.onDestroy) {
-      this.view[this.options.onDestroy]();
+      this.view[this.options.onDestroy]()
     } else {
-      this.view.model.destroy();
+      this.view.model.destroy()
     }
   },
-});
+})
 
 });
 
-require.register("views/behaviors/index.js", function(exports, require, module) {
-'use-strict';
+;require.register("views/behaviors/index.js", function(exports, require, module) {
+'use-strict'
 
-Mn.Behaviors.behaviorsLookup = () => window.Behaviors;
+Mn.Behaviors.behaviorsLookup = () => window.Behaviors
 
 window.Behaviors = {
   //eslint-disable-next-line
   Toggle: require('views/behaviors/toggle'),
   //eslint-disable-next-line
   Destroy: require('views/behaviors/destroy'),
-};
+}
 
 });
 
-require.register("views/behaviors/toggle.js", function(exports, require, module) {
-'use-strict';
+;require.register("views/behaviors/toggle.js", function(exports, require, module) {
+'use-strict'
 
 module.exports = Mn.Behavior.extend({
   triggers: {
@@ -1507,32 +1567,32 @@ module.exports = Mn.Behavior.extend({
   },
 
   onExpand: function () {
-    this.setExpanded(true);
+    this.setExpanded(true)
   },
 
   onContract: function () {
-    this.setExpanded(false);
+    this.setExpanded(false)
   },
 
   onToggle: function () {
-    this.setExpanded(!(this.$el.attr('aria-expanded') === 'true'));
+    this.setExpanded(!(this.$el.attr('aria-expanded') === 'true'))
   },
 
   setExpanded: function (isExpanded) {
-    this.$el.attr('aria-expanded', isExpanded);
+    this.$el.attr('aria-expanded', isExpanded)
   },
 
   onRender: function () {
-    this.onContract();
+    this.onContract()
   },
-});
+})
 
 });
 
-require.register("views/houseitems/bill_item.js", function(exports, require, module) {
-'use-strict';
+;require.register("views/houseitems/bill_item.js", function(exports, require, module) {
+'use-strict'
 
-const template = require('../templates/houseitems/bill_item');
+const template = require('../templates/houseitems/bill_item')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -1547,21 +1607,21 @@ module.exports = Mn.View.extend({
     change: 'render',
   },
 
-});
+})
 
 });
 
-require.register("views/houseitems/bills.js", function(exports, require, module) {
-'use strict';
+;require.register("views/houseitems/bills.js", function(exports, require, module) {
+'use strict'
 
-const BillItemView = require('./bill_item');
-const template = require('../templates/houseitems/bills');
+const BillItemView = require('./bill_item')
+const template = require('../templates/houseitems/bills')
 
 const BillsView = Mn.CollectionView.extend({
   tagName: 'ul',
   // className: 'movielibrary',
   childView: BillItemView,
-});
+})
 
 module.exports = Mn.View.extend({
   // className: 'mymovies',
@@ -1578,38 +1638,38 @@ module.exports = Mn.View.extend({
   },
 
   onRender: function () {
-    this.showChildView('collection', new BillsView({ collection: this.collection }));
+    this.showChildView('collection', new BillsView({ collection: this.collection }))
   },
 
-});
+})
 
 });
 
-require.register("views/houseitems/budget.js", function(exports, require, module) {
-'use strict';
+;require.register("views/houseitems/budget.js", function(exports, require, module) {
+'use strict'
 
-const template = require('../templates/houseitems/budget');
+const template = require('../templates/houseitems/budget')
 
 module.exports = Mn.View.extend({
   template: template,
 
   serializeData: function () {
-    const data = this.model.getBudget();
-    data.annualMetaphore = Math.round(data.annual / 100); // dîner gastronomique
-    data.mensualMetaphore = Math.round(data.mensual / 10); // places de cinéma
-    data.dailyMetaphore = Math.round(data.daily / 0.90); // croissant;
-    return data;
+    const data = this.model.getBudget()
+    data.annualMetaphore = Math.round(data.annual / 100) // dîner gastronomique
+    data.mensualMetaphore = Math.round(data.mensual / 10) // places de cinéma
+    data.dailyMetaphore = Math.round(data.daily / 0.90) // croissant
+    return data
   },
 
-});
+})
 
 });
 
-require.register("views/houseitems/consomation_edf.js", function(exports, require, module) {
-'use strict';
+;require.register("views/houseitems/consomation_edf.js", function(exports, require, module) {
+'use strict'
 
-const template = require('../templates/houseitems/consomation_edf');
-const Consomation = require('../../models/consomation');
+const template = require('../templates/houseitems/consomation_edf')
+const ConsumptionStatements = require('../../collections/consumptionstatements')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -1617,26 +1677,48 @@ module.exports = Mn.View.extend({
   events: {
   },
 
-  modelEvents: {
-    change: 'render',
-  },
+  // modelEvents: {
+  //   change: 'render',
+  // },
 
+  //   change: 'render',
+  // },
   initialize: function () {
-    this.model = new Consomation();
-    this.model.fetch();
+    this.collection = new ConsumptionStatements()
+    this.listenTo(this.collection, 'add', this.render)
+    this.collection.fetch()
   },
 
-});
+  serializeData: function () {
+    const lastPeriod = this.collection.getLastPeriod()
+    const penultimatePeriod = this.collection.getPenultimatePeriod()
+    const data = {}
+    if (lastPeriod) {
+      data.lastPeriod = lastPeriod.toJSON()
+      data.lastPeriod.duration = lastPeriod.getPeriodDuration()
+    }
+    if (penultimatePeriod) {
+      data.penultimatePeriod = penultimatePeriod.toJSON()
+      data.penultimatePeriod.duration = penultimatePeriod.getPeriodDuration()
+      const increase = lastPeriod.get('value') - penultimatePeriod.get('value')
+      if (increase < 0) {
+        data.increase = increase / lastPeriod.get('value')
+      }
+    }
+    return data
+  },
+
+})
 
 });
 
-require.register("views/houseitems/details_edf.js", function(exports, require, module) {
-'use strict';
+;require.register("views/houseitems/details_edf.js", function(exports, require, module) {
+'use strict'
 
-const DetailsVendorView = require('./details_vendor');
-const template = require('../templates/houseitems/details_edf');
-const ConsomationView = require('./consomation_edf');
-const PaymenttermsView = require('./paymentterms');
+const DetailsVendorView = require('./details_vendor')
+const template = require('../templates/houseitems/details_edf')
+const ConsomationView = require('./consomation_edf')
+const PaymenttermsView = require('./paymentterms')
 
 
 module.exports = DetailsVendorView.extend({
@@ -1651,39 +1733,39 @@ module.exports = DetailsVendorView.extend({
 
   serializeData: function () {
     //eslint-disable-next-line
-    const data = DetailsVendorView.prototype.serializeData.apply(this, arguments);
+    const data = DetailsVendorView.prototype.serializeData.apply(this, arguments)
     if (this.model.client) {
-      data.client = this.model.client.toJSON();
+      data.client = this.model.client.toJSON()
     }
     if (this.model.contract) {
-      data.contract = this.model.contract.toJSON();
+      data.contract = this.model.contract.toJSON()
     }
-    // data.appURI = $("#coz-bar a[href*='maif.']").attr('href');
-    return data;
+    // data.appURI = $("#coz-bar a[href*='maif.']").attr('href')
+    return data
   },
 
   onRender: function () {
     //eslint-disable-next-line
-    DetailsVendorView.prototype.onRender.apply(this, arguments);
-    this.showChildView('consomation', new ConsomationView());
-    this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'edf' }));
+    DetailsVendorView.prototype.onRender.apply(this, arguments)
+    this.showChildView('consomation', new ConsomationView())
+    this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'edf' }))
   },
 
-});
+})
 
 });
 
-require.register("views/houseitems/details_maif.js", function(exports, require, module) {
-'use strict';
+;require.register("views/houseitems/details_maif.js", function(exports, require, module) {
+'use strict'
 
-const DetailsVendorView = require('./details_vendor');
-const template = require('../templates/houseitems/details_maif');
-const PaymenttermsView = require('./paymentterms');
-// const SocietaireView = require('./societaire_maif');
-const FoyerView = require('./foyer_maif');
-const HomeView = require('./home_maif');
-// const SinistreView = require('./sinistre');
-// const SinistreCollection = require('collections/sinistre');
+const DetailsVendorView = require('./details_vendor')
+const template = require('../templates/houseitems/details_maif')
+const PaymenttermsView = require('./paymentterms')
+// const SocietaireView = require('./societaire_maif')
+const FoyerView = require('./foyer_maif')
+const HomeView = require('./home_maif')
+// const SinistreView = require('./sinistre')
+// const SinistreCollection = require('collections/sinistre')
 
 module.exports = DetailsVendorView.extend({
   template: template,
@@ -1698,34 +1780,34 @@ module.exports = DetailsVendorView.extend({
   },
 
   serializeData: function () {
-    const data = this.model.toJSON();
-    data.contract = this.model.getContract().toJSON();
-    // data.appURI = $("#coz-bar a[href*='maif.']").attr('href');
-    return data;
+    const data = this.model.toJSON()
+    data.contract = this.model.getContract().toJSON()
+    // data.appURI = $("#coz-bar a[href*='maif.']").attr('href')
+    return data
   },
 
   onRender: function () {
     //eslint-disable-next-line
-    DetailsVendorView.prototype.onRender.apply(this, arguments);
-    this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'maif', contract: this.model.getContract() }));
-    this.showChildView('foyer', new FoyerView({ model: this.model.getFoyer() }));
-    this.showChildView('home', new HomeView({ model: this.model.getHome() }));
+    DetailsVendorView.prototype.onRender.apply(this, arguments)
+    this.showChildView('paymentterms', new PaymenttermsView({ vendor: 'maif', contract: this.model.getContract() }))
+    this.showChildView('foyer', new FoyerView({ model: this.model.getFoyer() }))
+    this.showChildView('home', new HomeView({ model: this.model.getHome() }))
 
     // this.showChildView('sinistres', new SinistreView({
     //   model: new Backbone.Model({ slug: 'Maif' }),
     //   collection: this.sinistres,
-    // }));
-    // this.showChildView('societaireMaif', new SocietaireView());
+    // }))
+    // this.showChildView('societaireMaif', new SocietaireView())
   },
-});
+})
 
 });
 
-require.register("views/houseitems/details_object.js", function(exports, require, module) {
-'use strict';
+;require.register("views/houseitems/details_object.js", function(exports, require, module) {
+'use strict'
 
-const template = require('../templates/houseitems/details_object');
-const FilesView = require('./files');
+const template = require('../templates/houseitems/details_object')
+const FilesView = require('./files')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -1759,69 +1841,69 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
-    this.model.getFiles().fetch();
+    this.model.getFiles().fetch()
   },
 
   serializeData: function () {
-    const data = this.model.toJSON();
-    data.iconUrl = this.model.getIconUrl();
-    return data;
+    const data = this.model.toJSON()
+    data.iconUrl = this.model.getIconUrl()
+    return data
   },
 
   onRender: function () {
-    this.showChildView('files', new FilesView({ model: this.model, }));
+    this.showChildView('files', new FilesView({ model: this.model, }))
   },
 
   onFormChange: function () {
     this.model.save({
       name: this.ui.inputName.val(),
       description: this.ui.inputDescription.val(),
-    });
+    })
   },
 
   onClose: function () {
-    app.trigger('houseitemdetails:close');
+    app.trigger('houseitemdetails:close')
   },
 
   // displayIcon: function (iconFile) {
   //   iconFile.getFileUrl().then((url) => {
-  //     this.iconUrl = url;
-  //     this.ui.icon.attr('src', url);
-  //   });
+  //     this.iconUrl = url
+  //     this.ui.icon.attr('src', url)
+  //   })
   // },
 
   changeIcon: function () {
-    const files = this.model.getFiltes();
+    const files = this.model.getFiltes()
     //eslint-disable-next-line
-    const imgFiles = files.filter(file => file.has('attributes') && file.get('attributes')['class'] === 'image');
+    const imgFiles = files.filter(file => file.has('attributes') && file.get('attributes')['class'] === 'image')
 
-    if (imgFiles.length === 0) { return; }
+    if (imgFiles.length === 0) { return }
 
-    const iconFileId = this.model.get('iconFileId');
-    let iconFile = null;
-    let index = 0;
+    const iconFileId = this.model.get('iconFileId')
+    let iconFile = null
+    let index = 0
     if (iconFileId) {
-      iconFile = files.get(iconFileId);
-      index = imgFiles.indexOf(iconFile);
-      index = (index + 1) % imgFiles.length;
+      iconFile = files.get(iconFileId)
+      index = imgFiles.indexOf(iconFile)
+      index = (index + 1) % imgFiles.length
     }
 
-    iconFile = imgFiles[index];
+    iconFile = imgFiles[index]
 
-    this.model.setIconFileId(iconFile.get('_id'));
-    this.model.save();
+    this.model.setIconFileId(iconFile.get('_id'))
+    this.model.save()
   },
 
-});
+})
 
 });
 
-require.register("views/houseitems/details_vendor.js", function(exports, require, module) {
-'use strict';
+;require.register("views/houseitems/details_vendor.js", function(exports, require, module) {
+'use strict'
 
-const template = require('../templates/houseitems/details_vendor');
-const FilesView = require('./files');
-const BudgetView = require('./budget');
+const template = require('../templates/houseitems/details_vendor')
+const FilesView = require('./files')
+const BudgetView = require('./budget')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -1841,22 +1923,22 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
-    this.model.fetchAll();
+    this.model.fetchAll()
   },
 
   onRender: function () {
-    this.showChildView('files', new FilesView({ model: this.model }));
-    this.showChildView('budget', new BudgetView({ model: this.model }));
+    this.showChildView('files', new FilesView({ model: this.model }))
+    this.showChildView('budget', new BudgetView({ model: this.model }))
   },
-});
+})
 
 });
 
-require.register("views/houseitems/file_item.js", function(exports, require, module) {
-'use-strict';
+;require.register("views/houseitems/file_item.js", function(exports, require, module) {
+'use-strict'
 
-const template = require('../templates/houseitems/file_item');
-const mimetype2FA = require('lib/mimetype2fa')({ prefix: 'fa-' });
+const template = require('../templates/houseitems/file_item')
+const mimetype2FA = require('lib/mimetype2fa')({ prefix: 'fa-' })
 
 module.exports = Mn.View.extend({
   template: template,
@@ -1871,46 +1953,46 @@ module.exports = Mn.View.extend({
   },
 
   serializeData: function () {
-    const data = this.model.toJSON();
+    const data = this.model.toJSON()
     if (this.model.bill) {
-      data.bill = this.model.bill.toJSON();
-      data.bill.date = data.bill.date.slice(0, 10);
+      data.bill = this.model.bill.toJSON()
+      data.bill.date = data.bill.date.slice(0, 10)
     }
     if (data.attributes && data.attributes.mime) {
-      data.faClass = mimetype2FA(data.attributes.mime);
+      data.faClass = mimetype2FA(data.attributes.mime)
     }
-    return data;
+    return data
   },
 
 
   openFile: function () {
     this.model.getFileUrl()
     .then((url) => {
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = this.model.get('name');
-      document.body.appendChild(link);
-      link.click();
-    });
+      const link = document.createElement('a')
+      link.href = url
+      link.download = this.model.get('name')
+      document.body.appendChild(link)
+      link.click()
+    })
   },
 
-});
+})
 
 });
 
-require.register("views/houseitems/files.js", function(exports, require, module) {
-'use strict';
+;require.register("views/houseitems/files.js", function(exports, require, module) {
+'use strict'
 
-const UploadFile = require('./upload_file');
+const UploadFile = require('./upload_file')
 
-const FileItemView = require('./file_item');
-const template = require('../templates/houseitems/files');
+const FileItemView = require('./file_item')
+const template = require('../templates/houseitems/files')
 
 const FilesView = Mn.CollectionView.extend({
   tagName: 'ul',
   // className: 'movielibrary',
   childView: FileItemView,
-});
+})
 
 module.exports = Mn.View.extend({
   // className: 'row',
@@ -1929,35 +2011,33 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
-    this.collection = this.model.getFiles();
-    this.model.injectBillsInFiles();
+    this.collection = this.model.getFiles()
+    this.model.injectBillsInFiles()
   },
 
   updateFilesCollection: function (file) {
-    this.collection.add(file);
+    this.collection.add(file)
   },
 
   serializeData: function () {
-    const data = this.model.toJSON();
-    const driveAppURI = $("#coz-bar a[href*='drive.']").attr('href');
-    data.folderInFilesURI = `${driveAppURI}#/files/${this.model.getDirID()}`;
+    const data = this.model.toJSON()
+    data.folderInFilesURI = `${app.appDriveURI}#/files/${this.model.getDirID()}`
 
-    return data;
+    return data
   },
 
   onRender: function () {
-    this.showChildView('collection', new FilesView({ collection: this.collection }));
-    this.showChildView('addFile', new UploadFile({ model: this.model }));
+    this.showChildView('collection', new FilesView({ collection: this.collection }))
+    this.showChildView('addFile', new UploadFile({ model: this.model }))
   },
+})
 
 });
 
-});
+;require.register("views/houseitems/foyer_maif.js", function(exports, require, module) {
+'use strict'
 
-require.register("views/houseitems/foyer_maif.js", function(exports, require, module) {
-'use strict';
-
-const template = require('../templates/houseitems/foyer_maif');
+const template = require('../templates/houseitems/foyer_maif')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -1969,42 +2049,42 @@ module.exports = Mn.View.extend({
   },
 
   // getFoyerMaif: function () {
-  //   const membres = this.get('membres');
+  //   const membres = this.get('membres')
   //   if (membres && membres instanceof Array) {
   //     //eslint-disable-next-line
   //     for (const value of membres) {
-  //       return `${value.name.prefix} ${value.name.family}  ${value.name.given}`;
+  //       return `${value.name.prefix} ${value.name.family}  ${value.name.given}`
   //     }
   //   }
   // },
 
 
   // serializeData: function () {
-  //   const data = this.model.toJSON();
-  //   data.foyerMaif = this.model.getFoyerMaif();
-  //   return data;
+  //   const data = this.model.toJSON()
+  //   data.foyerMaif = this.model.getFoyerMaif()
+  //   return data
   // },
 
-});
+})
 
 });
 
-require.register("views/houseitems/home_maif.js", function(exports, require, module) {
-'use strict';
+;require.register("views/houseitems/home_maif.js", function(exports, require, module) {
+'use strict'
 
-const template = require('../templates/houseitems/home_maif');
+const template = require('../templates/houseitems/home_maif')
 
 module.exports = Mn.View.extend({
   template: template,
 
-});
+})
 
 });
 
-require.register("views/houseitems/object_item.js", function(exports, require, module) {
-'use-strict';
+;require.register("views/houseitems/object_item.js", function(exports, require, module) {
+'use-strict'
 
-const template = require('../templates/houseitems/object_item');
+const template = require('../templates/houseitems/object_item')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -2025,41 +2105,41 @@ module.exports = Mn.View.extend({
   },
 
   serializeData: function () {
-    const data = this.model.toJSON();
-    data.iconUrl = this.model.getIconUrl();
+    const data = this.model.toJSON()
+    data.iconUrl = this.model.getIconUrl()
     if (!data.iconUrl) {
-      data.iconUrl = '/assets/img/gift_icon.png';
+      data.iconUrl = '/assets/img/gift_icon.png'
     }
-    return data;
+    return data
   },
 
   onRender: function () {
     // this.ui.icon.on('error', (ev) => {
-    //   ev.target.src = 'assets/img/gift_icon.png';
-    // });
+    //   ev.target.src = 'assets/img/gift_icon.png'
+    // })
   },
 
   showDetails: function () {
-    app.trigger('houseitemdetails:show', this.model);
+    app.trigger('houseitemdetails:show', this.model)
   },
 
-});
+})
 
 });
 
-require.register("views/houseitems/objects.js", function(exports, require, module) {
-'use strict';
+;require.register("views/houseitems/objects.js", function(exports, require, module) {
+'use strict'
 
-const ObjectItemView = require('./object_item');
-const template = require('../templates/houseitems/objects');
+const ObjectItemView = require('./object_item')
+const template = require('../templates/houseitems/objects')
 
-const ObjectModel = require('models/object');
+const ObjectModel = require('models/object')
 
 const ObjectsView = Mn.CollectionView.extend({
   tagName: 'ul',
   // className: 'movielibrary',
   childView: ObjectItemView,
-});
+})
 
 module.exports = Mn.View.extend({
   // className: 'mymovies',
@@ -2082,23 +2162,23 @@ module.exports = Mn.View.extend({
   },
 
   onRender: function () {
-    this.showChildView('collection', new ObjectsView({ collection: this.collection }));
+    this.showChildView('collection', new ObjectsView({ collection: this.collection }))
     // this.showChildView('newItem', new ObjectItemView({ model: new this.collection.model()}))
   },
 
   onShowNewobject: function () {
-    app.trigger('houseitemdetails:show', new ObjectModel());
+    app.trigger('houseitemdetails:show', new ObjectModel())
   },
-});
+})
 
 });
 
-require.register("views/houseitems/paymentterms.js", function(exports, require, module) {
-'use strict';
+;require.register("views/houseitems/paymentterms.js", function(exports, require, module) {
+'use strict'
 
-const template = require('../templates/houseitems/paymentterms');
-const Paymentterms = require('../../models/paymentterms');
-const PaymenttermsMaif = require('../../models/paymentterms_maif');
+const template = require('../templates/houseitems/paymentterms')
+const Paymentterms = require('../../models/paymentterms')
+const PaymenttermsMaif = require('../../models/paymentterms_maif')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -2111,45 +2191,45 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function (options) {
-    this.vendor = options.vendor;
+    this.vendor = options.vendor
     if (this.vendor === 'edf') {
-      this.model = new Paymentterms();
-      this.model.fetchEDF();
+      this.model = new Paymentterms()
+      this.model.fetchEDF()
     } else if (this.vendor === 'maif') {
-      this.model = new PaymenttermsMaif();
-      this.model.fetch();
-      this.contract = options.contract;
+      this.model = new PaymenttermsMaif()
+      this.model.fetch()
+      this.contract = options.contract
     }
   },
 
   serializeData: function () {
-    const data = this.model.toJSON();
+    const data = this.model.toJSON()
     if (this.vendor === 'edf') {
-      data.nextPaymentAmount = this.model.getNextPaymentEDF();
-      data.lastPaymentAmount = this.model.getLastPaymentEDF();
+      data.nextPaymentAmount = this.model.getNextPaymentEDF()
+      data.lastPaymentAmount = this.model.getLastPaymentEDF()
     }
 
     if (this.vendor === 'maif') {
-      data.annualCost = this.contract.get('montantTarifTtc');
+      data.annualCost = this.contract.get('montantTarifTtc')
     }
-    return data;
+    return data
   },
 
-});
+})
 
 });
 
-require.register("views/houseitems/sinistre.js", function(exports, require, module) {
-'use strict';
+;require.register("views/houseitems/sinistre.js", function(exports, require, module) {
+'use strict'
 
-const SinistreItemView = require('./sinistre_item');
-const template = require('../templates/houseitems/sinistre');
+const SinistreItemView = require('./sinistre_item')
+const template = require('../templates/houseitems/sinistre')
 
 const SinistreView = Mn.CollectionView.extend({
   tagName: 'ul',
   // className: 'movielibrary',
   childView: SinistreItemView,
-});
+})
 
 module.exports = Mn.View.extend({
   // className: 'mymovies',
@@ -2166,17 +2246,17 @@ module.exports = Mn.View.extend({
   },
 
   onRender: function () {
-    this.showChildView('collection', new SinistreView({ collection: this.collection }));
+    this.showChildView('collection', new SinistreView({ collection: this.collection }))
   },
 
-});
+})
 
 });
 
-require.register("views/houseitems/sinistre_item.js", function(exports, require, module) {
-'use-strict';
+;require.register("views/houseitems/sinistre_item.js", function(exports, require, module) {
+'use-strict'
 
-const template = require('../templates/houseitems/sinistre_item');
+const template = require('../templates/houseitems/sinistre_item')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -2191,15 +2271,15 @@ module.exports = Mn.View.extend({
     change: 'render',
   },
 
-});
+})
 
 });
 
-require.register("views/houseitems/societaire_maif.js", function(exports, require, module) {
-'use strict';
+;require.register("views/houseitems/societaire_maif.js", function(exports, require, module) {
+'use strict'
 
-const template = require('../templates/houseitems/societaire_maif');
-const SocietaireMaif = require('../../models/client');
+const template = require('../templates/houseitems/societaire_maif')
+const SocietaireMaif = require('../../models/client')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -2212,19 +2292,19 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
-    this.model = new SocietaireMaif();
-    this.model.fetchMaif();
+    this.model = new SocietaireMaif()
+    this.model.fetchMaif()
   },
 
-});
+})
 
 });
 
-require.register("views/houseitems/upload_file.js", function(exports, require, module) {
-'use-strict';
+;require.register("views/houseitems/upload_file.js", function(exports, require, module) {
+'use-strict'
 
-const template = require('../templates/houseitems/upload_file');
-const get = require('../../lib/walktree_utils').get;
+const template = require('../templates/houseitems/upload_file')
+const get = require('../../lib/walktree_utils').get
 
 module.exports = Mn.View.extend({
   template: template,
@@ -2245,42 +2325,42 @@ module.exports = Mn.View.extend({
 
   setDefaultName: function () {
     if (!this.ui.inputFileName.val()) {
-      const name = get(this.ui.inputFile, 0, 'files', 0, 'name');
-      this.ui.inputFileName.val(name);
+      const name = get(this.ui.inputFile, 0, 'files', 0, 'name')
+      this.ui.inputFileName.val(name)
     }
   },
 
   uploadFile: function () {
-    const file = get(this.ui.inputFile, 0, 'files', 0);
-    const name = this.ui.inputFileName.val();
+    const file = get(this.ui.inputFile, 0, 'files', 0)
+    const name = this.ui.inputFileName.val()
 
     if (file && name !== null) {
-      app.trigger('message:display', 'Création du répertoire en cours ...', 'upload_file');
+      app.trigger('message:display', 'Création du répertoire en cours ...', 'upload_file')
       this.model.createDir()
       .then(() => app.trigger('message:display', 'Téléversement du fichier en cours ...', 'upload_file'))
       .then(() => cozy.client.files.create(file, { name: name, dirID: this.model.getDirID() }))
       .then((file) => {
-        app.trigger('message:hide', 'upload_file');
-        this.model.trigger('newFile', file);
+        app.trigger('message:hide', 'upload_file')
+        this.model.trigger('newFile', file)
       })
       .catch((err) => {
-        app.trigger('message:hide', 'upload_file');
-        app.trigger('message:error', 'Erreur lors du téléversement du fichier.');
-        console.error(err);
-      });
+        app.trigger('message:hide', 'upload_file')
+        app.trigger('message:error', 'Erreur lors du téléversement du fichier.')
+        console.error(err)
+      })
     } else {
-      app.trigger('message:error', 'Fichier invalide, ou nom incomplet.');
+      app.trigger('message:error', 'Fichier invalide, ou nom incomplet.')
     }
   },
-});
+})
 
 });
 
-require.register("views/infos_client.js", function(exports, require, module) {
-'use strict';
+;require.register("views/infos_client.js", function(exports, require, module) {
+'use strict'
 
-const template = require('./templates/infos_client');
-const Client = require('../models/client');
+const template = require('./templates/infos_client')
+const Client = require('../models/client')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -2293,8 +2373,8 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
-    this.model = new Client();
-    this.model.fetch();
+    this.model = new Client()
+    this.model.fetch()
   },
 
   // onRender: function () {
@@ -2302,15 +2382,16 @@ module.exports = Mn.View.extend({
   // },
 
 
-});
+})
 
 });
 
-require.register("views/menu.js", function(exports, require, module) {
-'use strict';
+;require.register("views/menu.js", function(exports, require, module) {
+'use strict'
 
-const VendorItemView = require('./vendor_item');
-const template = require('./templates/menu');
+const VendorItemView = require('./vendor_item')
+const template = require('./templates/menu')
+const nameVersion = require('lib/appname_version')
 
 const VendorsView = Mn.CollectionView.extend({
   tagName: 'ul',
@@ -2318,16 +2399,16 @@ const VendorsView = Mn.CollectionView.extend({
   childView: VendorItemView,
 
   initialize: function () {
-    this.listenTo(app, 'houseitemdetails:show', this.showSelected);
+    this.listenTo(app, 'houseitemdetails:show', this.showSelected)
   },
 
   showSelected: function (houseItem) {
-    this.$('li').toggleClass('selected', false);
-    const item = this.children.findByModel(houseItem);
-    item.$el.toggleClass('selected', true);
+    this.$('li').toggleClass('selected', false)
+    const item = this.children.findByModel(houseItem)
+    item.$el.toggleClass('selected', true)
   },
 
-});
+})
 
 module.exports = Mn.View.extend({
   template: template,
@@ -2343,17 +2424,24 @@ module.exports = Mn.View.extend({
     'click .add': 'show:addvendors',
   },
 
-  onRender: function () {
-    this.showChildView('collection', new VendorsView({ collection: this.collection }));
+  serializeData: function () {
+    //eslint-disable-next-line
+    const data = Mn.View.prototype.serializeData.call(arguments)
+    data.nameVersion = nameVersion
+    return data
   },
-});
+
+  onRender: function () {
+    this.showChildView('collection', new VendorsView({ collection: this.collection }))
+  },
+})
 
 });
 
-require.register("views/message.js", function(exports, require, module) {
-'use-strict';
+;require.register("views/message.js", function(exports, require, module) {
+'use-strict'
 
-const template = require('views/templates/message');
+const template = require('views/templates/message')
 
 module.exports = Mn.View.extend({
   tagName: 'div',
@@ -2367,14 +2455,14 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
-    this.messages = {};
-    this.listenTo(app, 'message:display', this.onDisplay);
-    this.listenTo(app, 'message:hide', this.onHide);
-    this.listenTo(app, 'message:error', this.onError);
+    this.messages = {}
+    this.listenTo(app, 'message:display', this.onDisplay)
+    this.listenTo(app, 'message:hide', this.onHide)
+    this.listenTo(app, 'message:error', this.onError)
   },
 
   serializeData: function () {
-    return { messages: this.messages };
+    return { messages: this.messages }
   },
 
   onError: function (message) {
@@ -2382,8 +2470,8 @@ module.exports = Mn.View.extend({
       label: message.toString(),
       type: 'error',
       message: message,
-    }, Math.ceil(Math.random() * 10000));
-    console.error(`Emsg: ${message}`);
+    }, Math.ceil(Math.random() * 10000))
+    console.error(`Emsg: ${message}`)
   },
 
   onDisplay: function (message, id) {
@@ -2391,31 +2479,31 @@ module.exports = Mn.View.extend({
       type: 'info',
       label: message.toString(),
       message: message,
-    }, id);
+    }, id)
   },
 
   display: function (message, id) {
-    this.messages[id] = message;
-    this.render();
+    this.messages[id] = message
+    this.render()
   },
 
   onClose: function (ev) {
-    this.onHide(ev.currentTarget.dataset.messageid);
+    this.onHide(ev.currentTarget.dataset.messageid)
   },
 
   onHide: function (id) {
-    delete this.messages[id];
-    this.render();
+    delete this.messages[id]
+    this.render()
   },
-});
+})
 
 });
 
-require.register("views/mystones.js", function(exports, require, module) {
-'use strict';
+;require.register("views/mystones.js", function(exports, require, module) {
+'use strict'
 
-const template = require('./templates/mystones');
-const Home = require('../models/home');
+const template = require('./templates/mystones')
+const Home = require('../models/home')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -2428,28 +2516,28 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
-    this.model = new Home();
-    this.model.fetch();
+    this.model = new Home()
+    this.model.fetch()
   },
 
   onBeforeRender: function () {
-    console.log('here');
-    console.log(this.model.toJSON());
+    console.log('here')
+    console.log(this.model.toJSON())
   },
 
   geocode: function () {
-    const address = this.model.get('address');
-    address.formated = `${address.street}+${address.city}+${address.country}`;
+    const address = this.model.get('address')
+    address.formated = `${address.street}+${address.city}+${address.country}`
     return $.get(`//nominatim.openstreetmap.org/search?format=json&q=${address.formated}`)
     .then((res) => {
-      console.log(res);
-      address.point = res[0];
-      return address.point;
-    });
+      console.log(res)
+      address.point = res[0]
+      return address.point
+    })
   },
 
   onRender: function () {
-    if (this.model.isNew()) { return; }
+    if (this.model.isNew()) { return }
     this.geocode()
     .then((point) => {
       const osmb = new OSMBuildings({
@@ -2463,26 +2551,26 @@ module.exports = Mn.View.extend({
         tilt: 180,
         rotation: 0,
         // fast: true,
-      });
+      })
 
-      osmb.appendTo('map');
+      osmb.appendTo('map')
 
       osmb.addMapTiles('https://{s}.tiles.mapbox.com/v3/osmbuildings.kbpalbpk/{z}/{x}/{y}.png',
         {
           attribution: '© Data <a href="http://openstreetmap.org/copyright/">OpenStreetMap</a> · © Map <a href="http://mapbox.com">Mapbox</a>'
-        });
+        })
 
-      osmb.addGeoJSONTiles('http://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json');
-      osmb.highlight(point.osm_id, '#f08000');
-      osmb.highlight(point.place_id, '#f08000');
-    });
+      osmb.addGeoJSONTiles('http://{s}.data.osmbuildings.org/0.2/anonymous/tile/{z}/{x}/{y}.json')
+      osmb.highlight(point.osm_id, '#f08000')
+      osmb.highlight(point.place_id, '#f08000')
+    })
   }
 
-});
+})
 
 });
 
-require.register("views/templates/add_vendors.jade", function(exports, require, module) {
+;require.register("views/templates/add_vendors.jade", function(exports, require, module) {
 var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
@@ -2685,8 +2773,16 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (value) {
-buf.push("<h3><i class=\"fa fa-lightbulb-o\"></i>Consommation</h3><span class=\"labelperiod top\">Le dernier semestre</span><span class=\"labelconsumption bottomleft\">j'ai consomé</span><span class=\"value bottomright\">" + (jade.escape(null == (jade_interp = value) ? "" : jade_interp)) + "kWh</span>");}.call(this,"value" in locals_for_with?locals_for_with.value:typeof value!=="undefined"?value:undefined));;return buf.join("");
+;var locals_for_with = (locals || {});(function (lastPeriod, penultimatePeriod) {
+buf.push("<h3><i class=\"fa fa-lightbulb-o\"></i>Consommation</h3>");
+if ( lastPeriod)
+{
+buf.push("<div class=\"lastPeriod\"><span class=\"labelperiod top\">Les&ensp;" + (jade.escape(null == (jade_interp = lastPeriod.duration.humanize()) ? "" : jade_interp)) + "&ensp;derniers,</span><span class=\"labelconsumption bottomleft\">j'ai consommé</span><span class=\"value bottomright\">" + (jade.escape(null == (jade_interp = lastPeriod.value) ? "" : jade_interp)) + "kWh</span></div>");
+}
+if ( penultimatePeriod)
+{
+buf.push("<div class=\"penultimatePeriod\"><span class=\"labelperiod top\">Les&ensp;" + (jade.escape(null == (jade_interp = penultimatePeriod.duration.humanize()) ? "" : jade_interp)) + "&ensp; précédents,</span><span class=\"labelconsumption bottomleft\">j'avais consommé</span><span class=\"value bottomright\">" + (jade.escape(null == (jade_interp = penultimatePeriod.value) ? "" : jade_interp)) + "kWh</span></div>");
+}}.call(this,"lastPeriod" in locals_for_with?locals_for_with.lastPeriod:typeof lastPeriod!=="undefined"?lastPeriod:undefined,"penultimatePeriod" in locals_for_with?locals_for_with.penultimatePeriod:typeof penultimatePeriod!=="undefined"?penultimatePeriod:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -3111,8 +3207,8 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-
-buf.push("<span class=\"category\">Mes fournisseurs\n&emsp;<button class=\"leftbar btn btn-primary btn-sm add\">+</button></span><ul></ul><button class=\"bottombar btn btn-primary btn-sm add\">+</button>");;return buf.join("");
+;var locals_for_with = (locals || {});(function (nameVersion) {
+buf.push("<span class=\"category\">Mes fournisseurs\n&emsp;<button title=\"ajouter un fournisseur\" class=\"leftbar btn btn-primary btn-sm add\"><i class=\"fa fa-plus\"></i></button></span><ul></ul><div class=\"codesign\"><a href=\"https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions\" title=\"un peu d'aide pour bien utiliser l'application ?\" target=\"_blank\" class=\"help\"><i class=\"fa fa-question-circle\"></i><span class=\"leftbar\">&ensp;Aide</span></a><a href=\"https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions\" title=\"suggestion pour améliorer l'application,\nrapports de bugs, ...\" target=\"_blank\" class=\"feedback\"><i class=\"fa fa-comments\"></i><span class=\"leftbar\">&ensp;Suggestions</span></a><a href=\"https://github.com/jacquarg/monlogis\" title=\"code source de l'application\" target=\"_blank\" class=\"code\"><i class=\"fa fa-code\"></i><span class=\"leftbar\">&ensp;" + (jade.escape(null == (jade_interp = nameVersion) ? "" : jade_interp)) + "</span></a></div><button class=\"bottombar btn btn-primary btn-sm add\"><i class=\"fa fa-plus\"></i></button>");}.call(this,"nameVersion" in locals_for_with?locals_for_with.nameVersion:typeof nameVersion!=="undefined"?nameVersion:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
@@ -3218,9 +3314,9 @@ if (typeof define === 'function' && define.amd) {
 });
 
 ;require.register("views/vendor_item.js", function(exports, require, module) {
-'use-strict';
+'use-strict'
 
-const template = require('./templates/vendor_item');
+const template = require('./templates/vendor_item')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -3236,14 +3332,14 @@ module.exports = Mn.View.extend({
   },
 
   showDetails: function () {
-    app.trigger('houseitemdetails:show', this.model);
+    app.trigger('houseitemdetails:show', this.model)
   },
 
-});
+})
 
 });
 
-require.register("___globals___", function(exports, require, module) {
+;require.register("___globals___", function(exports, require, module) {
   
 });})();require('___globals___');
 

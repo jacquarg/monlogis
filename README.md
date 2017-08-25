@@ -5,19 +5,31 @@
 Open source, développée par la Fing, sous licence AGPL v3.
 
 ## Contribuer !
+[Venez en discuter sur le forum MesInfos](https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions)
 
+## En cours
 
 
 
 ## TODO-list
 
 ### Bug
+* Correction Bug : Calcul de la consommation erroné en cas de tarifs heures creuses
 
 ### Nouvelles fonctionnalités
 
 ### Changelog
 
-#### v0.0.1
+
+#### V0.1.4
+##### Corrections Bugs :
+
+* Calcul de la consommation erroné (non testé sur un tarif heures creuses.).
+
+##### Évolutions :
+
+* Calcul du budget télécoms sur 12 mois de factures.
+
 
 
 ### Howto hack this app
@@ -42,4 +54,3 @@ TODO
 TODO
 ##### App WorkFlow
 TODO
-

@@ -1,10 +1,10 @@
-'use-strict';
+'use-strict'
 
-const VendorModel = require('./vendor_base');
+const VendorModel = require('./vendor_base')
 
-const Contract = require('./contract_maif');
-const Foyer = require('./foyer');
-const Home = require('./home');
+const Contract = require('./contract_maif')
+const Foyer = require('./foyer')
+const Home = require('./home')
 
 module.exports = VendorModel.extend({
 
@@ -14,44 +14,44 @@ module.exports = VendorModel.extend({
       this.getContract().fetch(),
       this.getFoyer().fetch(),
       this.getHome().fetch(),
-    ];
+    ]
   },
 
   getContract: function () {
     if (!this.contract) {
-      this.contract = new Contract();
+      this.contract = new Contract()
     }
-    return this.contract;
+    return this.contract
   },
 
   getFoyer: function () {
     if (!this.foyer) {
-      this.foyer = new Foyer();
+      this.foyer = new Foyer()
     }
-    return this.foyer;
+    return this.foyer
   },
 
   getClient: function () {
     if (!this.client) {
-      this.client = new Client();
+      this.client = new Client()
     }
-    return this.client;
+    return this.client
   },
 
   getHome: function () {
     if (!this.home) {
-      this.home = new Home();
+      this.home = new Home()
     }
-    return this.home;
+    return this.home
   },
 
   _computeBudget: function () {
-    const yearly = this.contract.get('montantTarifTtc');
+    const yearly = this.contract.get('montantTarifTtc')
     return {
       mensual: yearly / 12,
       daily: yearly / 12 / 30,
       annual: yearly,
-    };
+    }
   },
 
-});
+})

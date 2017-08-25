@@ -1,6 +1,24 @@
 span.category Mes fournisseurs
   | &emsp;
-  button.leftbar.btn.btn-primary.btn-sm.add +
+  button.leftbar.btn.btn-primary.btn-sm.add(title="ajouter un fournisseur")
+    i.fa.fa-plus
 
 ul
-button.bottombar.btn.btn-primary.btn-sm.add +
+
+.codesign
+  a.help(href="https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions", title="un peu d'aide pour bien utiliser l'application ?", target="_blank")
+    i.fa.fa-question-circle
+    span.leftbar &ensp;Aide
+
+  a.feedback(href="https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions", title="suggestion pour améliorer l'application,\nrapports de bugs, ...", target="_blank")
+      i.fa.fa-comments
+      span.leftbar &ensp;Suggestions
+
+
+  a.code(href="https://github.com/jacquarg/monlogis", title="code source de l'application", target="_blank")
+    i.fa.fa-code
+    span.leftbar &ensp;
+      = nameVersion
+
+button.bottombar.btn.btn-primary.btn-sm.add
+  i.fa.fa-plus

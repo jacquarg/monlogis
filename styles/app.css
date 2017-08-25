@@ -100,6 +100,9 @@ aside li {
   cursor: pointer;
 }
 
+aside li:hover {
+  color: black;
+}
 aside .btn {
   border-radius: 100%;
 }
@@ -125,7 +128,37 @@ aside .btn {
   min-height: 50px;
 }
 
+.codesign {
+  position: absolute;
+  bottom: 0px;
+}
 
+.codesign a:hover {
+  color: #000;
+  text-decoration: unset;
+}
+
+.code,
+.help,
+.feedback {
+  display: block;
+  color: #333;
+  font-size: 15px;
+  text-align: left;
+  line-height: 2.5;
+}
+
+
+.help i.fa,
+.feedback i.fa {
+  font-size: 120%;
+}
+
+
+.code {
+  color: #666666;
+  font-size: 80%;
+}
 
 /* END left bar */
 
@@ -435,7 +468,13 @@ main {
 .consumption {
   position: relative;
   height: 290px;
+}
 
+.consumption .lastPeriod,
+.consumption .penultimatePeriod {
+  position: relative;
+  margin: 20px 0;
+  height: 100px;
 }
 
 .consumption .icon {
@@ -476,8 +515,13 @@ main {
   bottom: 51%;
 }
 
-.consumption .value {
-  font-size: 35px;
+.consumption .lastPeriod .value {
+  font-size: 30px;
+  line-height: 1;
+}
+
+.consumption .penultimatePeriod .value {
+  font-size: 25px;
   line-height: 1;
 }
 
@@ -676,6 +720,19 @@ main {
       position: absolute;
       right: 8px;
       bottom: 8px;
+  }
+  
+  aside .leftbar {
+    display: none;
+  }
+  
+  aside .codesign > a {
+    display: inline-block;
+    padding: 4px 8px;
+  }
+  
+  aside .codesign {
+    right: 50px;
   }
 }
 

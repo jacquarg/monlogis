@@ -1,13 +1,13 @@
-'use strict';
+'use strict'
 
-const BillItemView = require('./bill_item');
-const template = require('../templates/houseitems/bills');
+const BillItemView = require('./bill_item')
+const template = require('../templates/houseitems/bills')
 
 const BillsView = Mn.CollectionView.extend({
   tagName: 'ul',
   // className: 'movielibrary',
   childView: BillItemView,
-});
+})
 
 module.exports = Mn.View.extend({
   // className: 'mymovies',
@@ -24,7 +24,7 @@ module.exports = Mn.View.extend({
   },
 
   onRender: function () {
-    this.showChildView('collection', new BillsView({ collection: this.collection }));
+    this.showChildView('collection', new BillsView({ collection: this.collection }))
   },
 
-});
+})

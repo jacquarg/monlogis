@@ -1,7 +1,7 @@
-'use strict';
+'use strict'
 
-const template = require('../templates/houseitems/societaire_maif');
-const SocietaireMaif = require('../../models/client');
+const template = require('../templates/houseitems/societaire_maif')
+const SocietaireMaif = require('../../models/client')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -14,8 +14,8 @@ module.exports = Mn.View.extend({
   },
 
   initialize: function () {
-    this.model = new SocietaireMaif();
-    this.model.fetchMaif();
+    this.model = new SocietaireMaif()
+    this.model.fetchMaif()
   },
 
-});
+})

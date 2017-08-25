@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-const template = require('../templates/houseitems/foyer_maif');
+const template = require('../templates/houseitems/foyer_maif')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -12,20 +12,20 @@ module.exports = Mn.View.extend({
   },
 
   // getFoyerMaif: function () {
-  //   const membres = this.get('membres');
+  //   const membres = this.get('membres')
   //   if (membres && membres instanceof Array) {
   //     //eslint-disable-next-line
   //     for (const value of membres) {
-  //       return `${value.name.prefix} ${value.name.family}  ${value.name.given}`;
+  //       return `${value.name.prefix} ${value.name.family}  ${value.name.given}`
   //     }
   //   }
   // },
 
 
   // serializeData: function () {
-  //   const data = this.model.toJSON();
-  //   data.foyerMaif = this.model.getFoyerMaif();
-  //   return data;
+  //   const data = this.model.toJSON()
+  //   data.foyerMaif = this.model.getFoyerMaif()
+  //   return data
   // },
 
-});
+})

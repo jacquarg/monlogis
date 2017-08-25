@@ -3,10 +3,21 @@ h3
   | Consommation
 
 //- img.icon(src="/assets/img/energy.svg")
+if lastPeriod
+  .lastPeriod
+    span.labelperiod.top Les&ensp;
+      = lastPeriod.duration.humanize()
+      |&ensp;derniers,
+    span.labelconsumption.bottomleft j'ai consommé
+    span.value.bottomright= lastPeriod.value
+      |kWh
 
-span.labelperiod.top Le dernier semestre
-span.labelconsumption.bottomleft j'ai consomé
-span.value.bottomright= value
-  |kWh
-
+if penultimatePeriod
+  .penultimatePeriod
+    span.labelperiod.top Les&ensp;
+      = penultimatePeriod.duration.humanize()
+      |&ensp; précédents,
+    span.labelconsumption.bottomleft j'avais consommé
+    span.value.bottomright= penultimatePeriod.value
+      |kWh
 //- span.period.bottomright= period

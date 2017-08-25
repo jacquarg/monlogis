@@ -1,5 +1,5 @@
 {
-  "version": "0.1.3",
+  "version": "0.1.4",
   "name": "MonLogis",
   "slug": "app",
   "icon": "/assets/img/icon.svg",
@@ -41,12 +41,16 @@
     "apps": {
       "description": "Required by the cozy-bar to display the icons of the apps",
       "type": "io.cozy.apps",
-      "verbs": ["GET"]
+      "verbs": [
+        "GET"
+      ]
     },
     "accounts": {
       "description": "Détecter et afficher vos fournisseurs.",
       "type": "io.cozy.accounts",
-      "verbs": ["GET"]
+      "verbs": [
+        "GET"
+      ]
     },
     "Vendors": {
       "description": "Gérer la liste de ses fournisseurs.",

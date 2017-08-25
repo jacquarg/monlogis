@@ -1,6 +1,6 @@
-'use-strict';
+'use-strict'
 
-const CozySingleton = require('../lib/backbone_cozysingleton');
+const CozySingleton = require('../lib/backbone_cozysingleton')
 
 const Properties = CozySingleton.extend({
   docType: 'org.fing.mesinfos.monlogis.properties',
@@ -10,10 +10,10 @@ const Properties = CozySingleton.extend({
 
   _promiseSave: function (attributes) {
     return new Promise((resolve, reject) => {
-      this.save(attributes, { success: resolve, error: reject });
-    });
+      this.save(attributes, { success: resolve, error: reject })
+    })
   },
 
-});
+})
 
-module.exports = new Properties();
+module.exports = new Properties()

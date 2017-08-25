@@ -1,7 +1,7 @@
-'use-strict';
+'use-strict'
 
-const name = 'monlogis';
+const name = 'monlogis'
 // use brunch-version plugin to populate these.
-const version = '{!major!}.{!minor!}.{!maintenance!}';
+const version = '{!major!}.{!minor!}.{!maintenance!}'
 
-module.exports = `${name}-${version}`;
+module.exports = `${name}-${version}`

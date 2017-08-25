@@ -1,18 +1,18 @@
-'use-strict';
+'use-strict'
 
-const CozyModel = require('../lib/backbone_cozymodel');
+const CozyModel = require('../lib/backbone_cozymodel')
 
 module.exports = CozyModel.extend({
   docType: 'org.fing.mesinfos.client',
 
   fetchEDF: function () {
     // TODO : check that data are coherent against one contract !
-    return this.fetch({ indexName: 'EDF', index: ['vendor'], selector: { vendor: 'EDF' } });
+    return this.fetch({ indexName: 'EDF', index: ['vendor'], selector: { vendor: 'EDF' } })
   },
 
   fetchMaif: function () {
     // TODO : check that data are coherent against one contract !
-    return this.fetch({ indexName: 'Maif', index: ['vendor'], selector: { vendor: 'maif' } });
+    return this.fetch({ indexName: 'Maif', index: ['vendor'], selector: { vendor: 'maif' } })
   },
 
-});
+})
