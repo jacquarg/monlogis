@@ -9,7 +9,6 @@
     "lint": "eslint -c .eslintrc.json app/"
   },
   "dependencies": {
-    "cozy-bar": "^3.0.1"
   },
   "devDependencies": {
     "brunch": "^2.0.0",

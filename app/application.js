@@ -2,6 +2,7 @@
 
 // Main application that create a Mn.Application singleton and
 // exposes it.
+const Tracking = require('lib/cozy_tracking')
 const Router = require('router')
 const AppLayout = require('views/app_layout')
 const Properties = require('models/properties')
@@ -32,6 +33,7 @@ const Application = Mn.Application.extend({
     this.vendors = new VendorsCollection()
     this.objects = new ObjectsCollection()
     this.konnectors = []
+    Tracking()
     return this.properties.fetch()
     .then(() => $.getJSON('/assets/data/konnectors.json'))
     .then((data) => { this.konnectors = data })
