@@ -3,9 +3,12 @@
   "version": "0.1.5-dev",
   "description": "Le tableau de bord de mon logement",
   "scripts": {
-    "fetch": "wget -O assets/data/konnectors.json https://raw.githubusercontent.com/cozy/cozy-collect/master/src/config/konnectors.json",
+    "update": "npm run update:konnectorlist && npm run update:cozy_usetracker",
     "watch": "brunch watch",
-    "build": "eslint -c .eslintrc.json app/ && npm run fetch && brunch build --production",
+    "build": "eslint -c .eslintrc.json app/ && brunch build --production",
+
+    "update:konnectorlist": "wget -O assets/data/konnectors.json https://raw.githubusercontent.com/cozy/cozy-collect/master/src/config/konnectors.json",
+    "update:cozy_usetracker": "wget -O vendor/cozy_usetracker.js https://raw.githubusercontent.com/jacquarg/cozy-usetracker/master/cozy_usetracker.js",
     "lint": "eslint -c .eslintrc.json app/"
   },
   "dependencies": {

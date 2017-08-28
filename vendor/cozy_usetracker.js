@@ -1,10 +1,12 @@
-const TRACKER_URL = 'https://piwik.cozycloud.cc/piwik.php'
-const SITE_ID = 8
-// const SITEID_MOBILE = 12
-const DIMENSION_ID_APP = 1
-const HEARTBEAT = 15
+'use-strict'
 
-module.exports = () => {
+cozyUsetracker = () => new Promise((resolve, reject) => {
+  const TRACKER_URL = 'https://piwik.cozycloud.cc/piwik.php'
+  const SITE_ID = 8
+  // const SITEID_MOBILE = 12
+  const DIMENSION_ID_APP = 1
+  const HEARTBEAT = 15
+
   const root = document.querySelector('[role=application]')
   if (!(root && root.dataset &&
     (root.dataset.cozyTracking === '' || root.dataset.cozyTracking === 'true'))) return
@@ -34,5 +36,12 @@ module.exports = () => {
   elem.defer = true
   elem.src = `//${domain}/assets/js/piwik.js`
 
+  elem.onload = resolve
+  elem.onerror = reject
+
   document.getElementsByTagName('script')[0].parentNode.append(elem)
-}
+})
+
+typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = cozyUsetracker :
+// typeof define === 'function' && define.aPLDd ? define(factory) :
+this.cozyUsetracker = cozyUsetracker // put on window.

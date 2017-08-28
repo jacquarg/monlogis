@@ -152,7 +152,6 @@ require.register("application.js", function(exports, require, module) {
 
 // Main application that create a Mn.Application singleton and
 // exposes it.
-const Tracking = require('lib/cozy_tracking')
 const Router = require('router')
 const AppLayout = require('views/app_layout')
 const Properties = require('models/properties')
@@ -178,14 +177,12 @@ const Application = Mn.Application.extend({
       cozyURL: `//${this.cozyDomain}`,
       token: appElem.dataset.cozyToken,
     })
-    cozy.bar.init({ appName: 'Mon Logis' })
 
     this.properties = Properties
     this.vendors = new VendorsCollection()
     this.objects = new ObjectsCollection()
     this.logis = new Logis()
     this.konnectors = []
-    Tracking()
     return this.properties.fetch()
     .then(() => $.getJSON('/assets/data/konnectors.json'))
     .then((data) => { this.konnectors = data })
@@ -208,8 +205,9 @@ const Application = Mn.Application.extend({
   },
 
   prepareInBackground: function () {
-  //   return Promise.resolve()
-  //   .catch(err => this.trigger('message:error', err))
+    return cozyUsetracker()
+    .catch(err => console.warn('Error while initializing tracking.', err))
+    .then(() => cozy.bar.init({ appName: 'Mon Logis' }))
   },
 
   _splashMessages: function () {
@@ -676,48 +674,6 @@ module.exports = CozyModel.extend({
 
 });
 
-;require.register("lib/cozy_tracking.js", function(exports, require, module) {
-const TRACKER_URL = 'https://piwik.cozycloud.cc/piwik.php'
-const SITE_ID = 8
-// const SITEID_MOBILE = 12
-const DIMENSION_ID_APP = 1
-const HEARTBEAT = 15
-
-module.exports = () => {
-  const root = document.querySelector('[role=application]')
-  if (!(root && root.dataset &&
-    (root.dataset.cozyTracking === '' || root.dataset.cozyTracking === 'true'))) return
-
-  const appName = root.dataset.cozyAppName
-  const domain = root.dataset.cozyDomain
-  let userId = domain || ''
-  // remove PORT from userId.
-  const indexOfPort = userId.indexOf(':')
-  if (indexOfPort >= 0) userId = userId.substring(0, indexOfPort)
-
-
-  window._paq = []
-  _paq.push(['trackPageView'])
-  // _paq.push(['enableLinkTracking']);
-
-  _paq.push(['setTrackerUrl', TRACKER_URL])
-  _paq.push(['setSiteId', SITE_ID])
-
-  _paq.push(['enableHeartBeatTimer', HEARTBEAT])
-  _paq.push(['setUserId', userId])
-  _paq.push(['setCustomDimension', DIMENSION_ID_APP, appName])
-
-  const elem = document.createElement('script')
-  elem.type = 'text/javascript'
-  elem.async = true
-  elem.defer = true
-  elem.src = `//${domain}/assets/js/piwik.js`
-
-  document.getElementsByTagName('script')[0].parentNode.append(elem)
-}
-
-});
-
 ;require.register("lib/mimetype2fa.js", function(exports, require, module) {
 /* eslint-disable */
 var mapping = [
@@ -1057,7 +1013,7 @@ module.exports = VendorModel.extend({
     }
 
     if (vendorMaif && vendorMaif.home) {
-      home = vendorMaif.home.get('home')[0]
+      home = vendorMaif.home
     }
 
     return home

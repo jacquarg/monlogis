@@ -59,7 +59,7 @@ module.exports = VendorModel.extend({
     }
 
     if (vendorMaif && vendorMaif.home) {
-      home = vendorMaif.home.get('home')[0]
+      home = vendorMaif.home
     }
 
     return home

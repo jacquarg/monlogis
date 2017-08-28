@@ -2,7 +2,6 @@
 
 // Main application that create a Mn.Application singleton and
 // exposes it.
-const Tracking = require('lib/cozy_tracking')
 const Router = require('router')
 const AppLayout = require('views/app_layout')
 const Properties = require('models/properties')
@@ -28,14 +27,12 @@ const Application = Mn.Application.extend({
       cozyURL: `//${this.cozyDomain}`,
       token: appElem.dataset.cozyToken,
     })
-    cozy.bar.init({ appName: 'Mon Logis' })
 
     this.properties = Properties
     this.vendors = new VendorsCollection()
     this.objects = new ObjectsCollection()
     this.logis = new Logis()
     this.konnectors = []
-    Tracking()
     return this.properties.fetch()
     .then(() => $.getJSON('/assets/data/konnectors.json'))
     .then((data) => { this.konnectors = data })
@@ -58,8 +55,9 @@ const Application = Mn.Application.extend({
   },
 
   prepareInBackground: function () {
-  //   return Promise.resolve()
-  //   .catch(err => this.trigger('message:error', err))
+    return cozyUsetracker()
+    .catch(err => console.warn('Error while initializing tracking.', err))
+    .then(() => cozy.bar.init({ appName: 'Mon Logis' }))
   },
 
   _splashMessages: function () {

@@ -21,6 +21,11 @@ Open source, développée par la Fing, sous licence AGPL v3.
 
 ### Changelog
 
+#### V0.1.5
+##### Évolutions :
+* Écran mon logis
+* Dispositif de recueil des traces d'usages (si activé par l'utilisateur =, dans les paramètres de son cozy)
+
 #### V0.1.4
 ##### Corrections Bugs :
 ##### Évolutions :
