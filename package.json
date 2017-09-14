@@ -1,6 +1,6 @@
 {
   "name": "monlogis",
-  "version": "0.1.5-dev",
+  "version": "0.1.6-dev",
   "description": "Le tableau de bord de mon logement",
   "scripts": {
     "update": "npm run update:konnectorlist && npm run update:cozy_usetracker",

@@ -59,7 +59,7 @@ module.exports = VendorModel.extend({
     }
 
     if (vendorMaif && vendorMaif.home) {
-      home = vendorMaif.home
+      home = vendorMaif.home.toJSON()
     }
 
     return home

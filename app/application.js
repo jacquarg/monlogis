@@ -37,17 +37,18 @@ const Application = Mn.Application.extend({
     .then(() => $.getJSON('/assets/data/konnectors.json'))
     .then((data) => { this.konnectors = data })
     .then(() => Promise.all([
-      this._fetchAppDriveURI(),
+      this._fetchAppsURI(),
       this.vendors.init(),
       // this.objects.fetch(),
     ]))
     .then(() => this._defineViews())
   },
 
-  _fetchAppDriveURI: function () {
+  _fetchAppsURI: function () {
     cozy.client.fetchJSON('GET', '/apps/')
     .then((apps) => {
       this.appDriveURI = _.findWhere(apps, { _id: 'io.cozy.apps/drive' }).links.related
+      this.appCollectURI = _.findWhere(apps, { _id: 'io.cozy.apps/collect' }).links.related
     })
     .catch((err) => {
       console.warn("Can't fetch drive app url. In drive links won't work.", err)

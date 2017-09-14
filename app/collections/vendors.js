@@ -28,19 +28,21 @@ module.exports = CozyCollection.extend({
           && ['orangemobile', 'orangelivebox'].indexOf((konnector.slug)) === -1
       })
       .forEach((account) => {
-        if (this.some(v => v.get('slug') === account.get('account_type'))) { return }
-
-        const konnector = konnectorsBySlug[account.get('account_type')]
-        const vendor = new Vendor({
-          slug: konnector.slug,
-          name: konnector.name,
-          folderPath: account.has('auth') ? account.get('auth').folderPath : '',
-          login: account.has('auth') ? account.get('auth').login : '',
-          domain: konnector.domain,
-        })
-
-        this.add(vendor)
-        vendor.save() // TODO
+        let vendor = this.findWhere({ slug: account.get('account_type') })
+        // if (this.some(v => v.get('slug') === account.get('account_type'))) { return }
+        if (!vendor) {
+          const konnector = konnectorsBySlug[account.get('account_type')]
+          vendor = new Vendor({
+            slug: konnector.slug,
+            name: konnector.name,
+            folderPath: account.has('auth') ? account.get('auth').folderPath : '',
+            login: account.has('auth') ? account.get('auth').login : '',
+            domain: konnector.domain,
+          })
+          this.add(vendor)
+          vendor.save() // TODO
+        }
+        vendor.account = account
       })
     })
   },

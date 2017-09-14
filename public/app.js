@@ -187,17 +187,18 @@ const Application = Mn.Application.extend({
     .then(() => $.getJSON('/assets/data/konnectors.json'))
     .then((data) => { this.konnectors = data })
     .then(() => Promise.all([
-      this._fetchAppDriveURI(),
+      this._fetchAppsURI(),
       this.vendors.init(),
       // this.objects.fetch(),
     ]))
     .then(() => this._defineViews())
   },
 
-  _fetchAppDriveURI: function () {
+  _fetchAppsURI: function () {
     cozy.client.fetchJSON('GET', '/apps/')
     .then((apps) => {
       this.appDriveURI = _.findWhere(apps, { _id: 'io.cozy.apps/drive' }).links.related
+      this.appCollectURI = _.findWhere(apps, { _id: 'io.cozy.apps/collect' }).links.related
     })
     .catch((err) => {
       console.warn("Can't fetch drive app url. In drive links won't work.", err)
@@ -480,19 +481,21 @@ module.exports = CozyCollection.extend({
           && ['orangemobile', 'orangelivebox'].indexOf((konnector.slug)) === -1
       })
       .forEach((account) => {
-        if (this.some(v => v.get('slug') === account.get('account_type'))) { return }
-
-        const konnector = konnectorsBySlug[account.get('account_type')]
-        const vendor = new Vendor({
-          slug: konnector.slug,
-          name: konnector.name,
-          folderPath: account.has('auth') ? account.get('auth').folderPath : '',
-          login: account.has('auth') ? account.get('auth').login : '',
-          domain: konnector.domain,
-        })
-
-        this.add(vendor)
-        vendor.save() // TODO
+        let vendor = this.findWhere({ slug: account.get('account_type') })
+        // if (this.some(v => v.get('slug') === account.get('account_type'))) { return }
+        if (!vendor) {
+          const konnector = konnectorsBySlug[account.get('account_type')]
+          vendor = new Vendor({
+            slug: konnector.slug,
+            name: konnector.name,
+            folderPath: account.has('auth') ? account.get('auth').folderPath : '',
+            login: account.has('auth') ? account.get('auth').login : '',
+            domain: konnector.domain,
+          })
+          this.add(vendor)
+          vendor.save() // TODO
+        }
+        vendor.account = account
       })
     })
   },
@@ -505,7 +508,7 @@ module.exports = CozyCollection.extend({
 
 const name = 'monlogis'
 // use brunch-version plugin to populate these.
-const version = '0.1.5'
+const version = '0.1.6'
 
 module.exports = `${name}-${version}`
 
@@ -787,7 +790,6 @@ const CozyModel = require('../lib/backbone_cozymodel')
 
 module.exports = CozyModel.extend({
   docType: 'io.cozy.accounts',
-
 })
 
 });
@@ -1013,7 +1015,7 @@ module.exports = VendorModel.extend({
     }
 
     if (vendorMaif && vendorMaif.home) {
-      home = vendorMaif.home
+      home = vendorMaif.home.toJSON()
     }
 
     return home
@@ -1231,6 +1233,21 @@ module.exports = CozyModel.extend({
       this.getFiles().fetch(),
       this.getBills().fetch(),
     ]
+  },
+
+  toJSON: function () {
+    const data = CozyModel.prototype.toJSON.call(this)
+    data.collectUri = this.getKonnectorInCollectUri()
+    data.konnectorHasError = this.konnectorHasError()
+    return data
+  },
+
+  konnectorHasError: function () {
+    return !this.account || this.account && this.account.has('error')
+  },
+
+  getKonnectorInCollectUri: function () {
+    return `${app.appCollectURI}#/connected/${this.get('slug')}`
   },
 
   createDir: function () {
@@ -2182,7 +2199,7 @@ module.exports = DetailsVendorView.extend({
 
   serializeData: function () {
     const data = {
-      home: this.model.getHome().toJSON()
+      home: this.model.getHome()
     }
     return data
   },
@@ -3037,13 +3054,18 @@ var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-;var locals_for_with = (locals || {});(function (category, login, name, slug) {
-buf.push("<div class=\"col-xs-12\"><h2>Mon fournisseur&ensp;" + (jade.escape(null == (jade_interp = category) ? "" : jade_interp)) + "&ensp;<img" + (jade.attr("src", "/assets/img/icon_konnectors/" + (slug) + ".svg", true, false)) + " class=\"icon\"/></h2></div><div class=\"col-xs-12 frame\"><div class=\"row\"><div class=\"col-xs-12 budget\"></div></div><div class=\"row\"><div class=\"col-lg-8 files\"></div><div class=\"col-lg-4 relation\"><h3><i class=\"fa fa-handshake-o\"></i>Ma relation avec&ensp;" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "</h3><div class=\"contract\"></div><div class=\"identifiers\"><h4>Mes identifiants :</h4><ul>");
+;var locals_for_with = (locals || {});(function (category, collectUri, konnectorHasError, login, name, slug) {
+buf.push("<div class=\"col-xs-12\"><h2>Mon fournisseur&ensp;" + (jade.escape(null == (jade_interp = category) ? "" : jade_interp)) + "&ensp;<img" + (jade.attr("src", "/assets/img/icon_konnectors/" + (slug) + ".svg", true, false)) + " class=\"icon\"/></h2>");
+if ( konnectorHasError == true)
+{
+buf.push("<span class=\"konnectorError\">la dernière récupération de données s'est mal passée :&ensp;<a" + (jade.attr("href", collectUri, true, false)) + " target=\"_blank\">vérifier l'état du connecteur</a></span>");
+}
+buf.push("</div><div class=\"col-xs-12 frame\"><div class=\"row\"><div class=\"col-xs-12 budget\"></div></div><div class=\"row\"><div class=\"col-lg-8 files\"></div><div class=\"col-lg-4 relation\"><h3><i class=\"fa fa-handshake-o\"></i>Ma relation avec&ensp;" + (jade.escape(null == (jade_interp = name) ? "" : jade_interp)) + "</h3><div class=\"contract\"></div><div class=\"identifiers\"><h4>Mes identifiants :</h4><ul>");
 if ( login)
 {
 buf.push("<li><span class=\"label\">login web :&ensp;</span><span class=\"value\">" + (jade.escape(null == (jade_interp = login) ? "" : jade_interp)) + "</span></li>");
 }
-buf.push("</ul></div></div></div></div>");}.call(this,"category" in locals_for_with?locals_for_with.category:typeof category!=="undefined"?category:undefined,"login" in locals_for_with?locals_for_with.login:typeof login!=="undefined"?login:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"slug" in locals_for_with?locals_for_with.slug:typeof slug!=="undefined"?slug:undefined));;return buf.join("");
+buf.push("</ul></div></div></div></div>");}.call(this,"category" in locals_for_with?locals_for_with.category:typeof category!=="undefined"?category:undefined,"collectUri" in locals_for_with?locals_for_with.collectUri:typeof collectUri!=="undefined"?collectUri:undefined,"konnectorHasError" in locals_for_with?locals_for_with.konnectorHasError:typeof konnectorHasError!=="undefined"?konnectorHasError:undefined,"login" in locals_for_with?locals_for_with.login:typeof login!=="undefined"?login:undefined,"name" in locals_for_with?locals_for_with.name:typeof name!=="undefined"?name:undefined,"slug" in locals_for_with?locals_for_with.slug:typeof slug!=="undefined"?slug:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

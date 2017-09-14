@@ -4,6 +4,12 @@
     | &ensp;
     img.icon(src="/assets/img/icon_konnectors/#{slug}.svg")
 
+
+  if konnectorHasError == true
+    span.konnectorError
+      | la dernière récupération de données s'est mal passée :&ensp;
+      a(href=collectUri, target='_blank') vérifier l'état du connecteur
+
 .col-xs-12.frame
   .row
     .col-xs-12.budget

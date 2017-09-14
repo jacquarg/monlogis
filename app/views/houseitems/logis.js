@@ -18,7 +18,7 @@ module.exports = DetailsVendorView.extend({
 
   serializeData: function () {
     const data = {
-      home: this.model.getHome().toJSON()
+      home: this.model.getHome()
     }
     return data
   },

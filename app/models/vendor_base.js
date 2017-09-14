@@ -24,6 +24,21 @@ module.exports = CozyModel.extend({
     ]
   },
 
+  toJSON: function () {
+    const data = CozyModel.prototype.toJSON.call(this)
+    data.collectUri = this.getKonnectorInCollectUri()
+    data.konnectorHasError = this.konnectorHasError()
+    return data
+  },
+
+  konnectorHasError: function () {
+    return !this.account || this.account && this.account.has('error')
+  },
+
+  getKonnectorInCollectUri: function () {
+    return `${app.appCollectURI}#/connected/${this.get('slug')}`
+  },
+
   createDir: function () {
     if (this.dirID) { return Promise.resolve() }
 
