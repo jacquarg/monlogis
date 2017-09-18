@@ -36,11 +36,12 @@ module.exports = Mn.View.extend({
   },
 
   events: {
-    'click @ui.logisLabel': () => app.trigger('houseitemdetails:show', app.logis)
+    'click @ui.logisLabel': () => app.trigger('houseitemdetails:show', app.logis),
   },
 
   triggers: {
     'click .add': 'show:addvendors',
+    'click .howitworks': 'show:howitworks',
   },
 
   initialize: function () {

@@ -1,0 +1,33 @@
+{
+  "@context": "http://mesinfos.fing.org/cartographies/wikiapi/semantic/context_software.json",
+  "@base": "https://raw.githubusesrcontent.com/jacquarg/monlogis/master/",
+  "@id": "software",
+  "features": [
+    {
+      "@id": "Q1000",
+      "label": "Mes fournisseurs",
+      "howItWorks": "Liste l'ensemble des fournisseurs pour lesquel un connecteur est actif."
+    },
+    {
+      "@id": "Q1001",
+      "label": "Ajouter un fournisseur",
+      "howItWorks": "Propose de configurer les connecteurs, compatibles avec l'app Mon Logis."
+    },
+    {
+      "@id": "Q1002",
+      "label": "Mon logis",
+      "howItWorks": "Mon Logis présente l'adresse, et d'uatres informatiosn de base, issue des données EDF ou Maif. Le budget de Mon Logis est la somme des budgets de tous les fournisseurs ratachés à ce logis. L'encadré documents permet de visualiser et d'avjouter des fichiers dans le répertoire : /Administration/Mon Logis."
+    },
+
+    {
+      "@id": "Q1003",
+      "label": "Budget",
+      "howItWorks": "Le budget alloué à ce fournisseur est représenté, ramené au prix par jour, mois et ans ; à partir des factures des 12 derniers mois."
+    },
+    {
+      "@id": "Q1004",
+      "label": "Documents",
+      "howItWorks": "Visualiser et ajouter des documents dans le répertoire dédié à ce fournisseur."
+    }
+  ]
+}

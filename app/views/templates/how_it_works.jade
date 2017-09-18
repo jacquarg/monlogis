@@ -1,0 +1,13 @@
+mixin featureInfos(feature)
+  if feature
+    h3= feature.label
+      |&ensp;?
+    .howitworks!= feature.howItWorks
+
+h2 Dans l'application, comment ça marche pour ...
+
++featureInfos(features['Q1000'])
++featureInfos(features['Q1001'])
++featureInfos(features['Q1002'])
++featureInfos(features['Q1003'])
++featureInfos(features['Q1004'])

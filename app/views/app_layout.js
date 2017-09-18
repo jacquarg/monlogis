@@ -11,6 +11,7 @@ const LogisView = require('views/houseitems/logis')
 const MenuView = require('views/menu')
 // const ObjectsView = require('views/houseitems/objects')
 const AddVendorsView = require('views/add_vendors')
+const HowItWorksView = require('views/how_it_works')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -96,4 +97,8 @@ module.exports = Mn.View.extend({
   onChildviewShowAddvendors: function () {
     this._showMain(new AddVendorsView())
   },
+
+  onChildviewShowHowitworks: function () {
+    this._showMain(new HowItWorksView())
+  }
 })

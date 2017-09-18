@@ -56,9 +56,11 @@ const Application = Mn.Application.extend({
   },
 
   prepareInBackground: function () {
-    return cozyUsetracker()
+    cozyUsetracker()
     .catch(err => console.warn('Error while initializing tracking.', err))
     .then(() => cozy.bar.init({ appName: 'Mon Logis' }))
+
+    return Promise.resolve()
   },
 
   _splashMessages: function () {

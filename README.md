@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/jacquarg/monlogis.png)](https://travis-ci.org/jacquarg/monlogis)
 
-# Mon Logis une applcation MesInfos !
+# Mon Logis une application MesInfos !
 
 Open source, développée par la Fing, sous licence AGPL v3.
 
@@ -8,8 +8,7 @@ Open source, développée par la Fing, sous licence AGPL v3.
 [Venez en discuter sur le forum MesInfos](https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions)
 
 ## En cours
-* Écran mon logis
-
+* convertisseurs pour doctypes proches.
 
 ## TODO-list
 
@@ -20,6 +19,14 @@ Open source, développée par la Fing, sous licence AGPL v3.
 * Gestion de _Plusieurs logis_
 
 ### Changelog
+
+#### V0.1.7
+* documentation, liste des fonctionnalités, et leur fonctionnement, à l'attention des utilisateurs.
+* documentation des données utilisées (format attendus), données générées
+
+#### V0.1.6
+##### Évolutions :
+* Affichage de l'état du connecteur, dans la vue du fournisseur.
 
 #### V0.1.5
 ##### Évolutions :

@@ -1,5 +1,7 @@
 {
-  "version": "0.1.6-dev",
+  "@id": "https://raw.githubusercontent.com/jacquarg/monlogis/master/software",
+  "@context": "http://mesinfos.fing.org/cartographies/wikiapi/semantic/context_cozy_manifest.json",
+  "version": "0.1.7",
   "name": "MonLogis",
   "slug": "app",
   "icon": "/assets/img/icon.svg",
@@ -53,6 +55,10 @@
       "verbs": [
         "GET"
       ]
+    },
+    "Logis": {
+      "description": "Gérer la liste de ses logements.",
+      "type": "org.fing.mesinfos.logis"
     },
     "Vendors": {
       "description": "Gérer la liste de ses fournisseurs.",

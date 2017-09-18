@@ -206,9 +206,11 @@ const Application = Mn.Application.extend({
   },
 
   prepareInBackground: function () {
-    return cozyUsetracker()
+    cozyUsetracker()
     .catch(err => console.warn('Error while initializing tracking.', err))
     .then(() => cozy.bar.init({ appName: 'Mon Logis' }))
+
+    return Promise.resolve()
   },
 
   _splashMessages: function () {
@@ -508,7 +510,7 @@ module.exports = CozyCollection.extend({
 
 const name = 'monlogis'
 // use brunch-version plugin to populate these.
-const version = '0.1.6'
+const version = '0.1.7'
 
 module.exports = `${name}-${version}`
 
@@ -1528,6 +1530,7 @@ const LogisView = require('views/houseitems/logis')
 const MenuView = require('views/menu')
 // const ObjectsView = require('views/houseitems/objects')
 const AddVendorsView = require('views/add_vendors')
+const HowItWorksView = require('views/how_it_works')
 
 module.exports = Mn.View.extend({
   template: template,
@@ -1613,6 +1616,10 @@ module.exports = Mn.View.extend({
   onChildviewShowAddvendors: function () {
     this._showMain(new AddVendorsView())
   },
+
+  onChildviewShowHowitworks: function () {
+    this._showMain(new HowItWorksView())
+  }
 })
 
 });
@@ -2497,6 +2504,36 @@ module.exports = Mn.View.extend({
 
 });
 
+;require.register("views/how_it_works.js", function(exports, require, module) {
+'use strict'
+
+const template = require('./templates/how_it_works')
+
+module.exports = Mn.View.extend({
+  className: 'howitworks',
+  template: template,
+
+  initialize: function () {
+    this.features = {}
+
+    $.getJSON('/doc/features.json')
+    .then((software) => {
+      software.features.forEach((feature) => {
+        this.features[feature['@id']] = feature
+      })
+    })
+    .then(() => this.render())
+  },
+
+  serializeData: function () {
+    // TODO
+    return { features: this.features }
+  },
+
+})
+
+});
+
 ;require.register("views/infos_client.js", function(exports, require, module) {
 'use strict'
 
@@ -2566,11 +2603,12 @@ module.exports = Mn.View.extend({
   },
 
   events: {
-    'click @ui.logisLabel': () => app.trigger('houseitemdetails:show', app.logis)
+    'click @ui.logisLabel': () => app.trigger('houseitemdetails:show', app.logis),
   },
 
   triggers: {
     'click .add': 'show:addvendors',
+    'click .howitworks': 'show:howitworks',
   },
 
   initialize: function () {
@@ -3367,6 +3405,37 @@ if (typeof define === 'function' && define.amd) {
 }
 });
 
+;require.register("views/templates/how_it_works.jade", function(exports, require, module) {
+var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (features) {
+jade_mixins["featureInfos"] = jade_interp = function(feature){
+var block = (this && this.block), attributes = (this && this.attributes) || {};
+if ( feature)
+{
+buf.push("<h3>" + (jade.escape(null == (jade_interp = feature.label) ? "" : jade_interp)) + "&ensp;?</h3><div class=\"howitworks\">" + (null == (jade_interp = feature.howItWorks) ? "" : jade_interp) + "</div>");
+}
+};
+buf.push("<h2>Dans l'application, comment ça marche pour ...</h2>");
+jade_mixins["featureInfos"](features['Q1000']);
+jade_mixins["featureInfos"](features['Q1001']);
+jade_mixins["featureInfos"](features['Q1002']);
+jade_mixins["featureInfos"](features['Q1003']);
+jade_mixins["featureInfos"](features['Q1004']);}.call(this,"features" in locals_for_with?locals_for_with.features:typeof features!=="undefined"?features:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+});
+
 ;require.register("views/templates/infos_client.jade", function(exports, require, module) {
 var __templateData = function template(locals) {
 var buf = [];
@@ -3395,7 +3464,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (nameVersion) {
-buf.push("<div class=\"logis\"><span>Mon Logis</span><div class=\"category\">Mes fournisseurs\n&ensp;<button title=\"ajouter un fournisseur\" class=\"leftbar btn btn-primary btn-sm add\"><i class=\"fa fa-plus\"></i></button></div><ul></ul></div><div class=\"codesign\"><a href=\"https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions\" title=\"un peu d'aide pour bien utiliser l'application ?\" target=\"_blank\" class=\"help\"><i class=\"fa fa-question-circle\"></i><span class=\"leftbar\">&ensp;Aide</span></a><a href=\"https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions\" title=\"suggestion pour améliorer l'application,\nrapports de bugs, ...\" target=\"_blank\" class=\"feedback\"><i class=\"fa fa-comments\"></i><span class=\"leftbar\">&ensp;Suggestions</span></a><a href=\"https://github.com/jacquarg/monlogis\" title=\"code source de l'application\" target=\"_blank\" class=\"code\"><i class=\"fa fa-code\"></i><span class=\"leftbar\">&ensp;" + (jade.escape(null == (jade_interp = nameVersion) ? "" : jade_interp)) + "</span></a></div><button class=\"bottombar btn btn-primary btn-sm add\"><i class=\"fa fa-plus\"></i></button>");}.call(this,"nameVersion" in locals_for_with?locals_for_with.nameVersion:typeof nameVersion!=="undefined"?nameVersion:undefined));;return buf.join("");
+buf.push("<div class=\"logis\"><span>Mon Logis</span><div class=\"category\">Mes fournisseurs\n&ensp;<button title=\"ajouter un fournisseur\" class=\"leftbar btn btn-primary btn-sm add\"><i class=\"fa fa-plus\"></i></button></div><ul></ul></div><div class=\"codesign\"><div class=\"howitworks\">Comment ça marche ?</div><a href=\"https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions\" title=\"un peu d'aide pour bien utiliser l'application ?\" target=\"_blank\" class=\"help\"><i class=\"fa fa-question-circle\"></i><span class=\"leftbar\">&ensp;Aide</span></a><a href=\"https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions\" title=\"suggestion pour améliorer l'application,\nrapports de bugs, ...\" target=\"_blank\" class=\"feedback\"><i class=\"fa fa-comments\"></i><span class=\"leftbar\">&ensp;Suggestions</span></a><a href=\"https://github.com/jacquarg/monlogis\" title=\"code source de l'application\" target=\"_blank\" class=\"code\"><i class=\"fa fa-code\"></i><span class=\"leftbar\">&ensp;" + (jade.escape(null == (jade_interp = nameVersion) ? "" : jade_interp)) + "</span></a></div><button class=\"bottombar btn btn-primary btn-sm add\"><i class=\"fa fa-plus\"></i></button>");}.call(this,"nameVersion" in locals_for_with?locals_for_with.nameVersion:typeof nameVersion!=="undefined"?nameVersion:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

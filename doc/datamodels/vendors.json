@@ -1,0 +1,33 @@
+{
+  "@context": "http://mesinfos.fing.org/cartographies/wikiapi/semantic/context.json",
+  "@base": "https://raw.githubusesrcontent.com/jacquarg/monlogis/master/",
+  "@id": "Q100",
+  "@type": "q:Q102",
+  "generatedBy": "https://raw.githubusesrcontent.com/jacquarg/monlogis/master/software",
+  "usedBy": [
+    "https://raw.githubusesrcontent.com/jacquarg/monlogis/master/software"
+  ],
+  "label": "Fournisseurs",
+  "description": "Détails d'un fournisseur.",
+  "typology": "Finance",
+  "updateFrequency": "P7D",
+  "updateLatency": "P7D",
+  "cozyDoctypeName": "org.fing.mesinfos.vendors",
+  "cozyIndex": "[\"_id\"]",
+  "cozySelector": "{\"_id\": { \"$gte\": null } }",
+  "hasProperty": [
+    "q:Q133", "q:Q134", "q:Q109", "q:Q162",
+    {
+      "label": "slug",
+      "propName": "slug",
+      "@id": "Q101",
+      "@type": "q:Q104",
+      "description": "Nom simplifié et débarassé de ses caractères spéciaux.",
+      "exampleValue": "free",
+      "kind": "Metadata"
+    }
+  ],
+  "hasOptionalProperty": [
+    "q:Q553"
+  ]
+}
