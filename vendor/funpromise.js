@@ -1,12 +1,13 @@
 'use-strict'
 
-module.exports.series = function (iterable, callback, self) {
+const funpromise = {}
+funpromise.series = function (iterable, callback) {
   const results = []
 
   return iterable.reduce((sequence, id, index, array) => {
     return sequence.then((res) => {
       results.push(res)
-      return callback.call(self, id, index, array)
+      return callback(id, index, array)
     })
   }, Promise.resolve(true))
   .then(res => new Promise((resolve) => { // don't handle reject there.
@@ -21,7 +22,7 @@ const waitPromise = function (period) {
   })
 }
 
-module.exports.find = function (iterable, predicate, period) {
+funpromise.find = function (iterable, predicate, period) {
   const recursive = (list) => {
     const current = list.shift()
     if (current === undefined) { return Promise.resolve(undefined) }
@@ -39,10 +40,14 @@ module.exports.find = function (iterable, predicate, period) {
   return recursive(iterable.slice())
 }
 
-module.exports.backbone2Promise = function (obj, method, options) {
+funpromise.backbone2Promise = function (obj, method, options) {
   return new Promise((resolve, reject) => {
     options = options || {}
     options = $.extend(options, { success: resolve, error: reject })
     method.call(obj, options)
   })
 }
+
+typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = funpromise :
+// typeof define === 'function' && define.aPLDd ? define(factory) :
+this.funpromise = funpromise // put on window.

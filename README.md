@@ -8,6 +8,11 @@ Open source, développée par la Fing, sous licence AGPL v3.
 [Venez en discuter sur le forum MesInfos](https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions)
 
 ## En cours
+--> en attente d'une meilleur gestion des multi-compte dans collect !
+* Gestion de _Plusieurs logis_
+  * liste d'élément logis / affichage de chacun
+  * créer un logis
+  * attribuer un vendor à un autre logis
 * convertisseurs pour doctypes proches.
 
 ## TODO-list
@@ -16,7 +21,7 @@ Open source, développée par la Fing, sous licence AGPL v3.
 * Correction Bug : Calcul de la consommation erroné en cas de tarifs heures creuses
 
 ### Nouvelles fonctionnalités
-* Gestion de _Plusieurs logis_
+
 
 ### Changelog
 

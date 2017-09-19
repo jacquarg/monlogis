@@ -9,7 +9,7 @@ const Properties = require('models/properties')
 const VendorsCollection = require('collections/vendors')
 // const EquipmentsCollection = require('collections/equipments')
 const ObjectsCollection = require('collections/objects')
-const Logis = require('models/logis')
+const LogisCollection = require('collections/logis')
 
 
 require('views/behaviors')
@@ -31,13 +31,15 @@ const Application = Mn.Application.extend({
     this.properties = Properties
     this.vendors = new VendorsCollection()
     this.objects = new ObjectsCollection()
-    this.logis = new Logis()
+    this.logis = new LogisCollection()
     this.konnectors = []
     return this.properties.fetch()
     .then(() => $.getJSON('/assets/data/konnectors.json'))
     .then((data) => { this.konnectors = data })
+    .then(() => this.logis.init())
     .then(() => Promise.all([
       this._fetchAppsURI(),
+
       this.vendors.init(),
       // this.objects.fetch(),
     ]))
@@ -95,7 +97,7 @@ const Application = Mn.Application.extend({
     }
 
     // TODO : what appens without data !
-    app.trigger('houseitemdetails:show', this.logis)
+    app.trigger('houseitemdetails:show', this.logis.at(0))
 
     // if (app.vendors.size() > 0) {
     //   app.trigger('houseitemdetails:show', app.vendors.at(0))

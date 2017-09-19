@@ -5,6 +5,10 @@ const VendorModel = require('./vendor_base')
 module.exports = VendorModel.extend({
   docType: 'org.fing.mesinfos.logis',
 
+  defaults: {
+    vendors: [],
+  },
+
   toFetch: function () {
     return [
       this.getFiles().fetch(),
@@ -17,8 +21,12 @@ module.exports = VendorModel.extend({
 
   _getBillsVendor: () => 'logis',
 
+  getName: function () {
+    return this.get('address').street
+  },
+
   getFolderPath: function () {
-    return '/Administration/Mon Logis'
+    return `/Administration/Mon Logis ${this.getName()}`
   },
 
   getBudget: function () {

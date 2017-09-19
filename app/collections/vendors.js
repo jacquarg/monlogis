@@ -21,13 +21,14 @@ module.exports = CozyCollection.extend({
     ])
     .then(() => {
       const konnectorsBySlug = _.indexBy(app.konnectors, 'slug')
-      this.accounts.filter((account) => {
+      const targetAccounts = this.accounts.filter((account) => {
         const konnector = konnectorsBySlug[account.get('account_type')]
         return konnector
           && ['isp', 'telecom', 'energy', 'insurance'].indexOf(konnector.category) !== -1
           && ['orangemobile', 'orangelivebox'].indexOf((konnector.slug)) === -1
       })
-      .forEach((account) => {
+
+      return funpromise.series(targetAccounts, (account) => {
         let vendor = this.findWhere({ slug: account.get('account_type') })
         // if (this.some(v => v.get('slug') === account.get('account_type'))) { return }
         if (!vendor) {
@@ -43,6 +44,7 @@ module.exports = CozyCollection.extend({
           vendor.save() // TODO
         }
         vendor.account = account
+        return app.logis.attachVendor(vendor)
       })
     })
   },

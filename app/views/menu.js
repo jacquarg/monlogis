@@ -36,7 +36,7 @@ module.exports = Mn.View.extend({
   },
 
   events: {
-    'click @ui.logisLabel': () => app.trigger('houseitemdetails:show', app.logis),
+    'click @ui.logisLabel': () => app.trigger('houseitemdetails:show', app.logis.at(0)),
   },
 
   triggers: {
@@ -60,7 +60,7 @@ module.exports = Mn.View.extend({
   },
 
   showSelected: function (houseItem) {
-    this.ui.logisLabel.toggleClass('selected', houseItem === app.logis)
+    this.ui.logisLabel.toggleClass('selected', houseItem === app.logis.at(0))
   },
 
 })
