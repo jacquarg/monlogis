@@ -35,10 +35,10 @@ body {
     position: absolute;
     top: 50%;
     height: 10600px;
-    width: 10700px;
+    width: 10800px;
     left: 50%;
     margin-top: -5300px;
-    margin-left: -5350px;
+    margin-left: -5400px;
     z-index: 10000;
   }
 }
