@@ -18,36 +18,36 @@ Open source, développée par la Fing, sous licence AGPL v3.
 ### Nouvelles fonctionnalités
 * Gestion de _Plusieurs logis_
 
-### Changelog
+## Changelog
 
-#### V0.1.7
+### V0.1.7
 * documentation, liste des fonctionnalités, et leur fonctionnement, à l'attention des utilisateurs.
 * documentation des données utilisées (format attendus), données générées
 
-#### V0.1.6
-##### Évolutions :
+### V0.1.6
+#### Évolutions :
 * Affichage de l'état du connecteur, dans la vue du fournisseur.
 
-#### V0.1.5
-##### Évolutions :
+### V0.1.5
+#### Évolutions :
 * Écran mon logis
-* Dispositif de recueil des traces d'usages (si activé par l'utilisateur =, dans les paramètres de son cozy)
+* Dispositif de recueil des traces d'usages (si activé par l'utilisateur, dans les paramètres de son cozy)
 
-#### V0.1.4
-##### Corrections Bugs :
-##### Évolutions :
+### V0.1.4
+#### Corrections Bugs :
+#### Évolutions :
 
-#### V0.1.4
-##### Corrections Bugs :
+### V0.1.4
+#### Corrections Bugs :
 
 * Calcul de la consommation erroné (non testé sur un tarif heures creuses.).
 
-##### Évolutions :
+#### Évolutions :
 
 * Calcul du budget télécoms sur 12 mois de factures.
 
 
-### Howto hack this app
+## Howto hack this app
 
 TODO !
 

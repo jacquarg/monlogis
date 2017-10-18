@@ -39,7 +39,7 @@
       ]
     },
     "io.cozy.files": {
-      "description": "TODO",
+      "description": "Consulter les fichiers de vos founrisseurs, et ajouter des fichiers relatifs au logement.",
       "type": "io.cozy.files"
     },
     "apps": {
@@ -64,57 +64,75 @@
       "description": "Gérer la liste de ses fournisseurs.",
       "type": "org.fing.mesinfos.vendor"
     },
-    "Objects": {
-      "description": "Gérer la liste de ses objets.",
-      "type": "org.fing.mesinfos.object"
-    },
     "Foyer Maif": {
-      "description": "TODO",
-      "type": "fr.maif.maifuser.foyer"
+      "description": "Afficher les informations du foyer, en provenance de la Maif.",
+      "type": "fr.maif.maifuser.foyer",
+      "verbs": [
+        "GET"
+      ]
     },
     "Payment terms": {
-      "description": "TODO",
-      "type": "org.fing.mesinfos.paymentterms"
+      "description": "Afficher les modalités de paiement avec mes fournisseurs.",
+      "type": "org.fing.mesinfos.paymentterms",
+      "verbs": [
+        "GET"
+      ]
     },
     "Payment terms Maif": {
-      "description": "TODO",
-      "type": "fr.maif.maifuser.paymentterms"
+      "description": "Afficher les modalités de paiement Maif.",
+      "type": "fr.maif.maifuser.paymentterms",
+      "verbs": [
+        "GET"
+      ]
     },
-    "org.fing.mesinfos.consumptionstatement": {
-      "description": "TODO",
-      "type": "org.fing.mesinfos.consumptionstatement"
+    "Consumptionstatement": {
+      "description": "Afficher des informations provenant de mes relevés de cosommation d'énergie.",
+      "type": "org.fing.mesinfos.consumptionstatement",
+      "verbs": [
+        "GET"
+      ]
     },
     "io.cozy.bill": {
-      "description": "TODO",
-      "type": "io.cozy.bills"
+      "description": "Calculer le coût journalier, mensuel et annuel de mes factures.",
+      "type": "io.cozy.bills",
+      "verbs": [
+        "GET"
+      ]
     },
     "org.fing.mesinfos.client": {
-      "description": "TODO",
-      "type": "org.fing.mesinfos.client"
+      "description": "Afficher des informations relative à ma relation de client avec mes fourniseurs.",
+      "type": "org.fing.mesinfos.client",
+      "verbs": [
+        "GET"
+      ]
     },
     "Contract": {
-      "description": "TODO",
-      "type": "org.fing.mesinfos.contract"
+      "description": "Afficher des informations provenant de mes contrats avec mes fournisseurs.",
+      "type": "org.fing.mesinfos.contract",
+      "verbs": [
+        "GET"
+      ]
     },
     "Contract Maif": {
-      "description": "TODO",
-      "type": "fr.maif.maifuser.contrat"
+      "description": "Afficher des informations provenant de mes contrats Maif.",
+      "type": "fr.maif.maifuser.contrat",
+      "verbs": [
+        "GET"
+      ]
     },
     "Home": {
-      "description": "TODO",
-      "type": "org.fing.mesinfos.home"
+      "description": "Afficher des informations sur le logement, provenant de mes fournisseurs.",
+      "type": "org.fing.mesinfos.home",
+      "verbs": [
+        "GET"
+      ]
     },
     "Home Maif": {
-      "description": "TODO",
-      "type": "fr.maif.maifuser.home"
-    },
-    "org.fing.mesinfos.insuranceclaim": {
-      "description": "TODO",
-      "type": "org.fing.mesinfos.insuranceclaim"
-    },
-    "org.fing.meisnfos.vehicle": {
-      "description": "TODO",
-      "type": "org.fing.meisnfos.vehicle"
+      "description": "Afficher des informations sur le logement, provenant de la Maif.",
+      "type": "fr.maif.maifuser.home",
+      "verbs": [
+        "GET"
+      ]
     }
   }
 }
