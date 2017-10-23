@@ -18,7 +18,7 @@ module.exports = VendorModel.extend({
   _getBillsVendor: () => 'logis',
 
   getFolderPath: function () {
-    return '/Administration/Mon Logis'
+    return '/Administratif/Mon Logis'
   },
 
   getBudget: function () {

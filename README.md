@@ -20,6 +20,12 @@ Open source, développée par la Fing, sous licence AGPL v3.
 
 ## Changelog
 
+### V0.1.8
+
+* fix typo dans "comment ça marche" (thx [Pentux](https://mesinfos.fing.org/forum/d/86-application-mon-logis))
+* "/Administration/Mon Logis" --> "/Administratif/Mon Logis" (thx [Pentux](https://mesinfos.fing.org/forum/d/85-rangement-des-dossiers))
+* Ajout d'une icône (i) devant _Comment ça marche_ (thx [Pentux](https://mesinfos.fing.org/forum/d/87-application-mon-logis-pas-de-logo-mauvais-marquage))
+
 ### V0.1.7
 * documentation, liste des fonctionnalités, et leur fonctionnement, à l'attention des utilisateurs.
 * documentation des données utilisées (format attendus), données générées

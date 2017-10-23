@@ -2,7 +2,7 @@
   "@id": "https://raw.githubusesrcontent.com/jacquarg/monlogis/master/software",
   "@context": "http://mesinfos.fing.org/cartographies/wikiapi/semantic/context_npm_package.json",
   "name": "monlogis",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Le tableau de bord de mon logement",
   "scripts": {
     "update": "npm run update:konnectorlist && npm run update:cozy_usetracker",

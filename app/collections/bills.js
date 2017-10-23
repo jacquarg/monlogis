@@ -13,7 +13,13 @@ module.exports = CozyCollection.extend({
 
   getFetchIndex: function () { return ['vendor', 'date'] },
   getFetchQuery: function () {
-    return { selector: { vendor: this.vendor } }
-  },
+    // TODO : howto automatic link to wikiapi ?
+    const vendorMap = {
+      sfrmobile: 'SFR MOBILE',
+      sfrbox: 'SFR BOX',
+    }
+    const vendor = vendorMap[this.vendor] || this.vendor
 
+    return { selector: { vendor: vendor } }
+  },
 })

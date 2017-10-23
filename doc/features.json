@@ -11,12 +11,12 @@
     {
       "@id": "Q1001",
       "label": "Ajouter un fournisseur",
-      "howItWorks": "Propose de configurer les connecteurs, compatibles avec l'app Mon Logis."
+      "howItWorks": "Propose de configurer les connecteurs compatibles avec l'app Mon Logis."
     },
     {
       "@id": "Q1002",
       "label": "Mon logis",
-      "howItWorks": "Mon Logis présente l'adresse, et d'uatres informatiosn de base, issue des données EDF ou Maif. Le budget de Mon Logis est la somme des budgets de tous les fournisseurs ratachés à ce logis. L'encadré documents permet de visualiser et d'avjouter des fichiers dans le répertoire : /Administration/Mon Logis."
+      "howItWorks": "Mon Logis présente l'adresse, et d'autres informations de base issues des données EDF ou Maif. Le budget de Mon Logis est la somme des budgets de tous les fournisseurs ratachés à ce logis. L'encadré documents permet de visualiser et d'ajouter des fichiers dans le répertoire : /Administratif/Mon Logis."
     },
 
     {

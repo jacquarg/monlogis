@@ -140,6 +140,7 @@ aside .btn {
   text-decoration: unset;
 }
 
+.howitworks,
 .code,
 .help,
 .feedback {
@@ -151,6 +152,7 @@ aside .btn {
 }
 
 
+.howitworks i.fa,
 .help i.fa,
 .feedback i.fa {
   font-size: 120%;

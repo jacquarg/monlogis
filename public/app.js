@@ -308,9 +308,15 @@ module.exports = CozyCollection.extend({
 
   getFetchIndex: function () { return ['vendor', 'date'] },
   getFetchQuery: function () {
-    return { selector: { vendor: this.vendor } }
-  },
+    // TODO : howto automatic link to wikiapi ?
+    const vendorMap = {
+      sfrmobile: 'SFR MOBILE',
+      sfrbox: 'SFR BOX',
+    }
+    const vendor = vendorMap[this.vendor] || this.vendor
 
+    return { selector: { vendor: vendor } }
+  },
 })
 
 });
@@ -510,7 +516,7 @@ module.exports = CozyCollection.extend({
 
 const name = 'monlogis'
 // use brunch-version plugin to populate these.
-const version = '0.1.7'
+const version = '0.1.8'
 
 module.exports = `${name}-${version}`
 
@@ -775,12 +781,45 @@ module.exports = mimetype2fa
 ;require.register("lib/walktree_utils.js", function(exports, require, module) {
 'use_strict'
 
-module.exports.get = function (obj, ...prop) {
-  return prop.reduce((current, key) => (current ? current[key] : undefined), obj)
+module.exports.get = (obj, ...prop) => prop.reduce((current, key) => (current ? current[key] : undefined), obj)
+
+module.exports.getFirst = obj => obj[Object.keys(obj)[0]]
+
+module.exports.safeSet = (data, obj, ...prop) => {
+  if (!prop || prop.length === 0) { return false }
+
+  const lastProp = prop.pop()
+  const lastObj = module.exports.get(obj, ...prop)
+  if (lastObj) {
+    lastObj[lastProp] = data
+    return true
+  }
+
+  return false
 }
 
-module.exports.getFirst = function (obj) {
-  return obj[Object.keys(obj)[0]]
+module.exports.getByMangoSubfields = (obj, key) => {
+  const props = []
+  key += '.'
+  let curProp = ''
+  let prev
+  let c
+  for (let i; i < key.length; i++) {
+    c = key.charAt(i)
+    if (c === '.') {
+      if (prev === '\\') {
+        curProp += '.'
+      } else {
+        props.push(curProp)
+        curProp = ''
+      }
+    } else if (c !== '\\') {
+      curProp += c
+    }
+    prev = c
+  }
+
+  return module.exports.get(obj, ...props)
 }
 
 });
@@ -976,7 +1015,7 @@ module.exports = VendorModel.extend({
   _getBillsVendor: () => 'logis',
 
   getFolderPath: function () {
-    return '/Administration/Mon Logis'
+    return '/Administratif/Mon Logis'
   },
 
   getBudget: function () {
@@ -3464,7 +3503,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (nameVersion) {
-buf.push("<div class=\"logis\"><span>Mon Logis</span><div class=\"category\">Mes fournisseurs\n&ensp;<button title=\"ajouter un fournisseur\" class=\"leftbar btn btn-primary btn-sm add\"><i class=\"fa fa-plus\"></i></button></div><ul></ul></div><div class=\"codesign\"><div class=\"howitworks\">Comment ça marche ?</div><a href=\"https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions\" title=\"un peu d'aide pour bien utiliser l'application ?\" target=\"_blank\" class=\"help\"><i class=\"fa fa-question-circle\"></i><span class=\"leftbar\">&ensp;Aide</span></a><a href=\"https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions\" title=\"suggestion pour améliorer l'application,\nrapports de bugs, ...\" target=\"_blank\" class=\"feedback\"><i class=\"fa fa-comments\"></i><span class=\"leftbar\">&ensp;Suggestions</span></a><a href=\"https://github.com/jacquarg/monlogis\" title=\"code source de l'application\" target=\"_blank\" class=\"code\"><i class=\"fa fa-code\"></i><span class=\"leftbar\">&ensp;" + (jade.escape(null == (jade_interp = nameVersion) ? "" : jade_interp)) + "</span></a></div><button class=\"bottombar btn btn-primary btn-sm add\"><i class=\"fa fa-plus\"></i></button>");}.call(this,"nameVersion" in locals_for_with?locals_for_with.nameVersion:typeof nameVersion!=="undefined"?nameVersion:undefined));;return buf.join("");
+buf.push("<div class=\"logis\"><span>Mon Logis</span><div class=\"category\">Mes fournisseurs\n&ensp;<button title=\"ajouter un fournisseur\" class=\"leftbar btn btn-primary btn-sm add\"><i class=\"fa fa-plus\"></i></button></div><ul></ul></div><div class=\"codesign\"><a href=\"#\" class=\"howitworks\"><i class=\"fa fa-info-circle\"></i><span class=\"leftbar\">&ensp;Comment ça marche ?</span></a><a href=\"https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions\" title=\"un peu d'aide pour bien utiliser l'application ?\" target=\"_blank\" class=\"help\"><i class=\"fa fa-question-circle\"></i><span class=\"leftbar\">&ensp;Aide</span></a><a href=\"https://mesinfos.fing.org/forum/d/71-mon-logis-pr-sentation-commentaires-volutions\" title=\"suggestion pour améliorer l'application,\nrapports de bugs, ...\" target=\"_blank\" class=\"feedback\"><i class=\"fa fa-comments\"></i><span class=\"leftbar\">&ensp;Suggestions</span></a><a href=\"https://github.com/jacquarg/monlogis\" title=\"code source de l'application\" target=\"_blank\" class=\"code\"><i class=\"fa fa-code\"></i><span class=\"leftbar\">&ensp;" + (jade.escape(null == (jade_interp = nameVersion) ? "" : jade_interp)) + "</span></a></div><button class=\"bottombar btn btn-primary btn-sm add\"><i class=\"fa fa-plus\"></i></button>");}.call(this,"nameVersion" in locals_for_with?locals_for_with.nameVersion:typeof nameVersion!=="undefined"?nameVersion:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {
