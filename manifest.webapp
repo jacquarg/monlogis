@@ -1,7 +1,7 @@
 {
   "@id": "https://raw.githubusercontent.com/jacquarg/monlogis/master/software",
   "@context": "http://mesinfos.fing.org/cartographies/wikiapi/semantic/context_cozy_manifest.json",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "name": "MonLogis",
   "slug": "app",
   "icon": "/assets/img/icon.svg",

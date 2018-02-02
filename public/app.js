@@ -315,7 +315,7 @@ module.exports = CozyCollection.extend({
     }
     const vendor = vendorMap[this.vendor] || this.vendor
 
-    return { selector: { vendor: vendor } }
+    return { selector: { vendor: vendor, date: { $gte: null } } }
   },
 })
 
@@ -516,7 +516,7 @@ module.exports = CozyCollection.extend({
 
 const name = 'monlogis'
 // use brunch-version plugin to populate these.
-const version = '0.1.8'
+const version = '0.1.9'
 
 module.exports = `${name}-${version}`
 

@@ -20,6 +20,6 @@ module.exports = CozyCollection.extend({
     }
     const vendor = vendorMap[this.vendor] || this.vendor
 
-    return { selector: { vendor: vendor } }
+    return { selector: { vendor: vendor, date: { $gte: null } } }
   },
 })

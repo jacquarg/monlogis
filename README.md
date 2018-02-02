@@ -20,6 +20,9 @@ Open source, développée par la Fing, sous licence AGPL v3.
 
 ## Changelog
 
+### V0.1.9
+* fix bills ne chargent pas, selector mal formaté --> aucun chiffre dans l'UI.
+
 ### V0.1.8
 
 * fix typo dans "comment ça marche" (thx [Pentux](https://mesinfos.fing.org/forum/d/86-application-mon-logis))
