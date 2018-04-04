@@ -13,3 +13,5 @@ cache:
   - node_modules
 script:
 - npm run lint
+- yarn add cozy-app-publish
+- yarn cozy-app-publish --travis --build-dir '.' --on-branch master --space mes_infos
