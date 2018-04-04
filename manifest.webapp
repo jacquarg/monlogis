@@ -3,21 +3,31 @@
   "@context": "http://mesinfos.fing.org/cartographies/wikiapi/semantic/context_cozy_manifest.json",
   "version": "0.1.9",
   "name": "MonLogis",
-  "slug": "app",
+  "slug": "monlogis",
+  "type": "webapp",
   "icon": "/assets/img/icon.svg",
-  "description": "Le tableau de bord de mon logement",
-  "category": "partners",
-  "source": "",
+  "categories": ["partners"],
   "developer": {
     "name": "Fing",
     "url": "http://mesinfos.fing.org"
   },
-  "default_locale": "fr",
   "locales": {
     "fr": {
-      "description": "Le tableau de bord de mon logement."
+      "name": "MonLogis",
+      "short_description": "Le tableau de bord de mon logement."
+    },
+    "en": {
+      "name": "MonLogis",
+      "short_description": "The dashboard of my home."
     }
   },
+  "langs": ["fr"],
+  "platforms": [],
+  "source": "https://github.com/jacquarg/monlogis.git",
+  "editor": "jacquarg",
+  "screenshots": [],
+  "tags": [],
+  "licence": "AGPL-3.0",
   "routes": {
     "/": {
       "folder": "/",
@@ -25,7 +35,6 @@
       "public": false
     }
   },
-  "licence": "AGPL-3.0",
   "permissions": {
     "properties": {
       "description": "App properties.",
