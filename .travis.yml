@@ -11,7 +11,17 @@ branches:
 cache:
   directories:
   - node_modules
+env:
+  global:
+    secure: vQYokEUB9ic7IZ8O5/8mXX8fP1zpaWGyi+mi1ESuP0pUnVyny0nQrFTx1F9WzVufM7QJsYZib2wtm3MGjAxil8wANVqjpLjDBTy9LCV5h1ZJ1T+pskSKr26n7wiJ/WupsyXqB6uV1+1ZPnsVrB6HrBNBIBhlzolyRmLIPWjK1Xzliz9kcw7FoD75J7RinBeK1noBYOnChkNwxf8cTLxyZ8TNt3A67h8F5M82vwRsP/eczi0X50TZmsV+GoklqP84GheSVLBnXvi7JWgFSZ29JwqSrskSYbSpwkJ2Lter/Y+SRSbBKej6xJc3vNxuaOdC95D8JFztcgX8pxgkeJ6gDKbPHqj1taEkJAwC32gEtrTrZLy807u8NT9+XdcYaEHbKHqAXgsye0LNsow43Du05zIbR8xhfNlIp0wXnPf7EC7dI2mfDeqiT7y2n1hUEKB18fIIlF9+fXtnB6ZTVK8SshSJzYPvZc4G0FGLsumqbH97FBid8yKYBAU5CCAox2njFkjzY0DY0GO8dsaeSoc14U01iwc/8JRJ5JvWdM/ZoAfC2I0V+GVchg8w04uOH0chbuZOAblzPAHl/1OC5J22BX1K6gN+4iJNoK/Znhn36LvA0fsL5Kd3YKJyZg6PN13l38dLcUMKqMwVGusoZzEOkpzF7jdYjjzD9vlEXT6107s=
 script:
 - npm run lint
-- yarn add cozy-app-publish
-- yarn cozy-app-publish --travis --build-dir '.' --on-branch master --space mes_infos
+deploy:
+- provider: script
+  repo: jacquarg/monlogis
+  skip-cleanup: true
+  script:
+  - yarn add cozy-app-publish
+  - yarn cozy-app-publish --token $REGISTRY_TOKEN --build-dir '.' --space mes_infos
+  on:
+    branch: master
