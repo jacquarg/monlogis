@@ -21,7 +21,6 @@ deploy:
   repo: jacquarg/monlogis
   skip-cleanup: true
   script:
-  - yarn add cozy-app-publish
-  - yarn cozy-app-publish --token $REGISTRY_TOKEN --build-dir '.' --space mes_infos
+  - yarn add cozy-app-publish && yarn cozy-app-publish --token $REGISTRY_TOKEN --build-dir '.' --space mes_infos
   on:
     branch: master
